@@ -10,7 +10,7 @@ class ClientsPage extends StatefulWidget {
 
 class _ClientsPageState extends State<ClientsPage> {
   final String getClientsUrl =
-      'http://192.168.56.1:8080/api/getClients'; // Corrected URL
+      'http://192.168.1.105:8080/api/getClients'; // Corrected URL
 
   Future<List<dynamic>> _fetchClients() async {
     final response = await http
@@ -18,6 +18,8 @@ class _ClientsPageState extends State<ClientsPage> {
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
       return jsonDecode(utf8Body);
+    } else if (response.statusCode == 204) {
+      return List.empty();
     } else {
       throw Exception('Failed to load Clients');
     }

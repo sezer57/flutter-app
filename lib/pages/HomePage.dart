@@ -28,12 +28,12 @@ class HomePage extends StatelessWidget {
                 }).toList(),
               ),
             ),
-            Expanded(
-              child: Image.asset(
-                'images/a.jpeg', // Change path to your image file
-                fit: BoxFit.fitWidth,
-              ),
-            ),
+            //   Expanded(
+            //     child: Image.asset(
+            //      'images/a.jpeg', // Change path to your image file
+            //      fit: BoxFit.fitWidth,
+            //    ),
+            //  ),
           ],
         ),
       ),
