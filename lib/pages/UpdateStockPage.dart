@@ -51,9 +51,9 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
     int quantityIn = int.tryParse(quantityInController.text) ?? 0;
     int quantityOut = int.tryParse(quantityOutController.text) ?? 0;
     String urlQuantityIn =
-        'http://192.168.56.1:8080/api/${widget.stockId}/updateQuantityIn?quantityIn=$quantityIn';
+        'http://192.168.1.105:8080/api/${widget.stockId}/updateQuantityIn?quantityIn=$quantityIn';
     String urlQuantityOut =
-        'http://192.168.56.1:8080/api/${widget.stockId}/updateQuantityOut?quantityOut=$quantityOut';
+        'http://192.168.1.105:8080/api/${widget.stockId}/updateQuantityOut?quantityOut=$quantityOut';
 
     try {
       final responseQuantityIn = await http.patch(Uri.parse(urlQuantityIn));

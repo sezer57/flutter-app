@@ -9,9 +9,9 @@ class WarehouseTransferPage extends StatefulWidget {
 
 class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   final String transferUrl =
-      'http://192.168.56.1:8080/api/warehouseStock/transfer';
+      'http://192.168.1.105:8080/api/warehouseStock/transfer';
   final String getStocksUrl =
-      'http://192.168.56.1:8080/api/getStocksById?warehouse_id=';
+      'http://192.168.1.105:8080/api/getStocksById?warehouse_id=';
   TextEditingController quantityController = TextEditingController();
   List<dynamic> warehouses = [];
   List<dynamic> sourceWarehouseStocks = [];
@@ -27,7 +27,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
 
   Future<void> fetchWarehouses() async {
     final response =
-        await http.get(Uri.parse('http://192.168.56.1:8080/api/getWarehouse'));
+        await http.get(Uri.parse('http://192.168.1.105:8080/api/getWarehouse'));
 
     if (response.statusCode == 200) {
       setState(() {

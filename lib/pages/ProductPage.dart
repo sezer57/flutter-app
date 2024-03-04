@@ -10,7 +10,7 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-  final String getStocksUrl = 'http://192.168.56.1:8080/api/getStocks';
+  final String getStocksUrl = 'http://192.168.1.105:8080/api/getStocks';
 
   Future<List<dynamic>> _fetchStocks() async {
     final response = await http.get(Uri.parse(getStocksUrl));

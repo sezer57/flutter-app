@@ -11,19 +11,27 @@ class StockPage extends StatefulWidget {
 
 class _StockPageState extends State<StockPage> {
   List<dynamic> stocks = [];
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
     _fetchStocks();
 
-    // Timer.periodic kullanarak belirli aralıklarla _fetchStocks fonksiyonunu çağırın
-    Timer.periodic(Duration(seconds: 5), (Timer t) => _fetchStocks());
+    // Initialize the timer and call _fetchStocks every 5 seconds
+    _timer = Timer.periodic(Duration(seconds: 5), (Timer t) => _fetchStocks());
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timer when the widget is disposed
+    _timer.cancel();
+    super.dispose();
   }
 
   Future<void> _fetchStocks() async {
     final response = await http
-        .get(Uri.parse('http://192.168.56.1:8080/api/getWarehouseStock'));
+        .get(Uri.parse('http://192.168.1.105:8080/api/getWarehouseStock'));
 
     if (response.statusCode == 200) {
       setState(() {

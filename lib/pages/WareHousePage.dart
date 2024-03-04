@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/WaitingTransfer.dart';
+import 'package:flutter_application_1/pages/WarehouseTransferPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddWarehousePage.dart';
 
@@ -9,7 +11,7 @@ class WareHousePage extends StatefulWidget {
 }
 
 class _WareHousePageState extends State<WareHousePage> {
-  final String getWarehouseUrl = 'http://192.168.56.1:8080/api/getWarehouse';
+  final String getWarehouseUrl = 'http://192.168.1.105:8080/api/getWarehouse';
 
   Future<List<dynamic>> _fetchWarehouses() async {
     final response = await http.get(Uri.parse(getWarehouseUrl));
@@ -30,19 +32,57 @@ class _WareHousePageState extends State<WareHousePage> {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddWareHousePage()),
-              );
-              if (result == true) {
-                // Refresh the warehouse list if a new warehouse was added
-                setState(() {});
-              }
-            },
-            child: Text('Add Warehouse'),
-          ),
+          Column(children: [
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AddWareHousePage()),
+                    );
+                    if (result == true) {
+                      // Refresh the warehouse list if a new warehouse was added
+                      setState(() {});
+                    }
+                  },
+                  child: Text('Add Warehouse'),
+                ),
+                SizedBox(
+                    width: 8), // Adjust the space between buttons as needed
+                ElevatedButton(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WarehouseTransferPage()),
+                    );
+                    if (result == true) {
+                      // Refresh the warehouse list if a new warehouse was added
+                      setState(() {});
+                    }
+                  },
+                  child: Text('Warehouse Transfer'),
+                ),
+              ],
+            ),
+            Row(children: [
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WaitingTransfer()),
+                  );
+                  if (result == true) {
+                    // Refresh the warehouse list if a new warehouse was added
+                    setState(() {});
+                  }
+                },
+                child: Text('Waiting Transfers'),
+              ),
+            ])
+          ]),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
               future: _fetchWarehouses(),
@@ -59,20 +99,21 @@ class _WareHousePageState extends State<WareHousePage> {
                       var warehouse = warehouses[index];
 
                       return Card(
-                          child: ListTile(
-                        title: Text(warehouse['name']),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Authorized: ${warehouse['authorized']}'),
-                            Text('Phone: ${warehouse['phone']}'),
-                            Text('Address: ${warehouse['address']}'),
-                          ],
+                        child: ListTile(
+                          title: Text(warehouse['name']),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Authorized: ${warehouse['authorized']}'),
+                              Text('Phone: ${warehouse['phone']}'),
+                              Text('Address: ${warehouse['address']}'),
+                            ],
+                          ),
+                          onTap: () {
+                            // Handle tapping on a warehouse item
+                          },
                         ),
-                        onTap: () {
-                          // Handle tapping on a warehouse item
-                        },
-                      ));
+                      );
                     },
                   );
                 }
