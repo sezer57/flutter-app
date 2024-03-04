@@ -3,6 +3,14 @@ import 'package:flutter_application_1/pages/UpdateStockPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async'; // Eklemeyi unutmayın
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class StockPage extends StatefulWidget {
   @override
@@ -11,7 +19,10 @@ class StockPage extends StatefulWidget {
 
 class _StockPageState extends State<StockPage> {
   List<dynamic> stocks = [];
+  List<dynamic> filteredStocks = [];
   late Timer _timer;
+  TextEditingController searchController = TextEditingController();
+  String selectedWarehouseFilter = 'All';
 
   @override
   void initState() {
@@ -36,10 +47,39 @@ class _StockPageState extends State<StockPage> {
     if (response.statusCode == 200) {
       setState(() {
         stocks = json.decode(utf8.decode(response.bodyBytes));
+        filteredStocks =
+            stocks; // Initialize filteredStocks with all stocks initially
+        _applyWarehouseFilter();
       });
     } else {
       throw Exception('Failed to fetch stocks');
     }
+  }
+
+  void _applyWarehouseFilter() {
+    setState(() {
+      if (selectedWarehouseFilter == 'All') {
+        filteredStocks = stocks;
+      } else {
+        filteredStocks = stocks
+            .where((stock) =>
+                stock['warehouse']['name'] == selectedWarehouseFilter)
+            .toList();
+      }
+    });
+  }
+
+  void searchStocks(String query) {
+    setState(() {
+      List<dynamic> filteredStocksBySearch = stocks.where((stock) {
+        final stockName = stock['stock']['stockName'].toString().toLowerCase();
+        return stockName.contains(query.toLowerCase());
+      }).toList();
+      filteredStocks = filteredStocksBySearch.where((stock) {
+        return selectedWarehouseFilter == 'All' ||
+            stock['warehouse']['name'] == selectedWarehouseFilter;
+      }).toList();
+    });
   }
 
   void _navigateToUpdateStockPage(int stockId, String stockName) async {
@@ -63,65 +103,110 @@ class _StockPageState extends State<StockPage> {
       appBar: AppBar(
         title: Text('Stocks Page'),
       ),
-      body: Center(
-        child: stocks.isEmpty
-            ? CircularProgressIndicator()
-            : ListView.builder(
-                itemCount: stocks.length,
-                itemBuilder: (context, index) {
-                  final stock = stocks[index];
-                  return Card(
-                    color: index % 2 == 0
-                        ? Colors.grey[200]
-                        : Colors.white, // Alternate row colors
-                    child: ListTile(
-                      title: Text(
-                        stock['stock']['stockName'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.blue, // Text color for stock name
-                        ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search stocks...',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.grey),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Quantity In: ${stock['quantityIn']}',
-                            style: TextStyle(
-                                color:
-                                    Colors.green), // Text color for quantity in
-                          ),
-                          Text(
-                            'Quantity Out: ${stock['quantityOut']}',
-                            style: TextStyle(
-                                color:
-                                    Colors.red), // Text color for quantity out
-                          ),
-                          Text(
-                            'Quantity Remaining: ${stock['quantityRemaining']}',
-                            style: TextStyle(
-                                color: Colors
-                                    .orange), // Text color for quantity remaining
-                          ),
-                          Text(
-                            'Warehouse: ${stock['warehouse']['name']}',
-                            style: TextStyle(
-                                color: Colors.grey[
-                                    600]), // Text color for warehouse name
-                          ),
-                        ],
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.blue),
                       ),
-                      onTap: () {
-                        _navigateToUpdateStockPage(
-                          stock['stock']['stockId'],
-                          stock['stock']['stockName'],
-                        );
-                      },
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 14.0),
                     ),
-                  );
-                },
-              ),
+                    onChanged: searchStocks,
+                  ),
+                ),
+                SizedBox(width: 10),
+                DropdownButton<String>(
+                  value: selectedWarehouseFilter,
+                  items: [
+                    DropdownMenuItem<String>(
+                      value: 'All',
+                      child: Text('All'),
+                    ),
+                    ...stocks
+                        .map((stock) => stock['warehouse']['name'] as String)
+                        .toSet()
+                        .toList()
+                        .map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedWarehouseFilter = newValue!;
+                      _applyWarehouseFilter();
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredStocks.length,
+              itemBuilder: (context, index) {
+                final stock = filteredStocks[index];
+                return Card(
+                  color: index % 2 == 0 ? Colors.grey[200] : Colors.white,
+                  child: ListTile(
+                    title: Text(
+                      stock['stock']['stockName'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Quantity In: ${stock['quantityIn']}',
+                          style: TextStyle(color: Colors.green),
+                        ),
+                        Text(
+                          'Quantity Out: ${stock['quantityOut']}',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        Text(
+                          'Quantity Remaining: ${stock['quantityRemaining']}',
+                          style: TextStyle(color: Colors.orange),
+                        ),
+                        Text(
+                          'Warehouse: ${stock['warehouse']['name']}',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      _navigateToUpdateStockPage(
+                        stock['stock']['stockId'],
+                        stock['stock']['stockName'],
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

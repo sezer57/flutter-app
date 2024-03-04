@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/AddProductPage.dart';
 import 'package:flutter_application_1/pages/ClientsPage.dart';
 import 'package:flutter_application_1/pages/HomePage.dart';
 import 'package:flutter_application_1/pages/BottomNavBarLayout.dart';
 import 'package:flutter_application_1/pages/Invoice.dart';
+import 'package:flutter_application_1/pages/NotificationsPage.dart';
 import 'package:flutter_application_1/pages/PurchaseClientSelectionPage.dart';
 import 'package:flutter_application_1/pages/PurchaseList.dart';
 import 'package:flutter_application_1/pages/SalesList.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_application_1/pages/StockPage.dart';
 import 'package:flutter_application_1/pages/WareHousePage.dart';
 import 'package:flutter_application_1/pages/ProductPage.dart';
 import 'package:flutter_application_1/pages/WaitingTransfer.dart';
+import 'package:flutter_application_1/pages/Stocks.dart';
 
 void main() {
   runApp(MyApp());
@@ -65,7 +68,7 @@ class MyApp extends StatelessWidget {
                       case 3:
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => StockPage()),
+                          MaterialPageRoute(builder: (context) => Stocks()),
                         );
 
                       case 4:
@@ -77,7 +80,8 @@ class MyApp extends StatelessWidget {
                       case 5:
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SalesList()),
+                          MaterialPageRoute(
+                              builder: (context) => NotificationsPage()),
                         );
 
                       default:
@@ -85,11 +89,11 @@ class MyApp extends StatelessWidget {
                     }
                   },
                 ),
-                ProductPage(),
                 WareHousePage(),
+                ProductPage(),
                 ClientsPage(),
-                StockPage(),
-                WaitingTransfer()
+                Stocks(),
+                NotificationsPage()
               ],
             ),
           );

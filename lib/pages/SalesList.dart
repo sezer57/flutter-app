@@ -23,7 +23,7 @@ class _SalesListState extends State<SalesList> {
     if (response.statusCode == 200) {
       setState(() {
         purchases = json.decode(response.body);
-        purchases.sort((a, b) => b['sales_id'].compareTo(a['sales_id']));
+        purchases.sort((a, b) => b['expense_id'].compareTo(a['expense_id']));
       });
     } else {
       // Handle errors
