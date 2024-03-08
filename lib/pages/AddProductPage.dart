@@ -20,14 +20,29 @@ class _AddStockPageState extends State<AddStockPage> {
   final TextEditingController unitController = TextEditingController();
   final TextEditingController salesPriceController = TextEditingController();
   final TextEditingController purchasePriceController = TextEditingController();
-  final TextEditingController warehouseIdController = TextEditingController();
-
+  String? warehouseIdController;
+  List<dynamic> warehouses = [];
   @override
   void initState() {
     super.initState();
+    fetchWarehouses();
     // Automatically generate registration date
     registrationDateController.text =
         DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
+  }
+
+  Future<void> fetchWarehouses() async {
+    final response =
+        await http.get(Uri.parse('http://192.168.1.105:8080/api/getWarehouse'));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        warehouses = jsonDecode(utf8.decode(response.bodyBytes));
+      });
+    } else {
+      // Handle API error
+      print('Failed to fetch warehouses');
+    }
   }
 
   @override
@@ -82,10 +97,21 @@ class _AddStockPageState extends State<AddStockPage> {
               keyboardType: TextInputType.numberWithOptions(
                   decimal: true), // Accept decimal numbers
             ),
-            TextField(
-              controller: warehouseIdController,
-              decoration: InputDecoration(labelText: 'Warehouse ID'),
-              keyboardType: TextInputType.number, // Only accept numbers
+            DropdownButtonFormField<String>(
+              onChanged: (newValue) {
+                setState(() {
+                  warehouseIdController = newValue;
+                });
+              },
+              items: warehouses.map((warehouse) {
+                return DropdownMenuItem<String>(
+                  value: warehouse['warehouseId'].toString(),
+                  child: Text(warehouse['name']),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                labelText: 'Warehouse',
+              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -101,7 +127,7 @@ class _AddStockPageState extends State<AddStockPage> {
   }
 
   Future<void> _addStock(BuildContext context) async {
-    final String apiUrl = 'http://192.168.56.1:8080/api/stocks';
+    final String apiUrl = 'http://192.168.1.105:8080/api/stocks';
 
     final Map<String, dynamic> postData = {
       "registrationDate": registrationDateController.text,
@@ -114,7 +140,7 @@ class _AddStockPageState extends State<AddStockPage> {
           0, // Parse as int, default to 0 if parsing fails
       "salesPrice": double.parse(salesPriceController.text),
       "purchasePrice": double.parse(purchasePriceController.text),
-      "warehouse_id": int.tryParse(warehouseIdController.text) ??
+      "warehouse_id": warehouseIdController ??
           0, // Parse as int, default to 0 if parsing fails
     };
 
