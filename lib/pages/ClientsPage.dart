@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddClientsPage.dart';
+import 'package:flutter_application_1/pages/FilterClientsPage.dart';
 
 class ClientsPage extends StatefulWidget {
   @override
@@ -9,19 +10,31 @@ class ClientsPage extends StatefulWidget {
 }
 
 class _ClientsPageState extends State<ClientsPage> {
-  final String getClientsUrl =
-      'http://192.168.1.105:8080/api/getClients'; // Corrected URL
+  final String getClientsUrl = 'http://192.168.1.105:8080/api/getClients';
+  List<dynamic> _clients = [];
 
   Future<List<dynamic>> _fetchClients() async {
-    final response = await http
-        .get(Uri.parse(getClientsUrl)); // Fetch clients instead of warehouses
+    final response = await http.get(Uri.parse(getClientsUrl));
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
       return jsonDecode(utf8Body);
     } else if (response.statusCode == 204) {
-      return List.empty();
+      return [];
     } else {
       throw Exception('Failed to load Clients');
+    }
+  }
+
+  void _filterClients() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FilterClientsPage()),
+    );
+
+    if (result != null && result is List<dynamic>) {
+      setState(() {
+        _clients = result;
+      });
     }
   }
 
@@ -33,58 +46,48 @@ class _ClientsPageState extends State<ClientsPage> {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddClientsPage()),
-              );
-              if (result == true) {
-                _fetchClients();
-                setState(() {});
-              }
-            },
-            child: Text('Add Client'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddClientsPage()),
+                  );
+                  if (result == true) {
+                    _fetchClients().then((clients) {
+                      setState(() {
+                        _clients = clients;
+                      });
+                    });
+                  }
+                },
+                child: Text('Add Client'),
+              ),
+              SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: _filterClients,
+                child: Text('Filter Clients'),
+              ),
+            ],
           ),
           Expanded(
-            child: FutureBuilder<List<dynamic>>(
-              future: _fetchClients(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  List<dynamic> clients = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: clients.length,
-                    itemBuilder: (context, index) {
-                      var client = clients[index];
-
-                      return Card(
-                        child: ListTile(
-                          title: Text(client['name'] +
-                              ' ' +
-                              client[
-                                  'surname']), // Display client name and surname
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  'Commercial Title: ${client['commercialTitle']}'),
-                              Text('Phone: ${client['phone']}'),
-                              Text(
-                                  'Address: ${client['address']}, ${client['city']}, ${client['country']}'),
-                            ],
-                          ),
-                          onTap: () {
-                            // Handle tapping on a client item
-                          },
-                        ),
-                      );
-                    },
-                  );
-                }
+            child: ListView.builder(
+              itemCount: _clients.length,
+              itemBuilder: (context, index) {
+                var client = _clients[index];
+                return ListTile(
+                  title: Text(client['name'] + ' ' + client['surname']),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Commercial Title: ${client['commercialTitle']}'),
+                      Text('Phone: ${client['phone']}'),
+                      Text('Address: ${client['address']}, ${client['city']}, ${client['country']}'),
+                    ],
+                  ),
+                );
               },
             ),
           ),
@@ -93,3 +96,4 @@ class _ClientsPageState extends State<ClientsPage> {
     );
   }
 }
+
