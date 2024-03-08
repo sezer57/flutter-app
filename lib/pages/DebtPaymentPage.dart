@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class DebtPaymentPage extends StatefulWidget {
   final dynamic client;
@@ -14,6 +17,9 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
   TextEditingController paymentAmountController = TextEditingController();
 
   DateTime selectedDate = DateTime.now();
+  Map<String, dynamic>? balanceData;
+  String? selectedPaymentType;
+  String? selectedDebtType;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -26,6 +32,31 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
       setState(() {
         selectedDate = picked;
       });
+  }
+
+  Future<void> _fetchBalanceData() async {
+    final url = Uri.parse('http://192.168.1.105:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      setState(() {
+        balanceData = json.decode(response.body);
+      });
+    } else {
+      throw Exception('Failed to load balance data');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBalanceData();
+  }
+
+  String getDebtTypeAmount(String debtType) {
+    if (balanceData != null && balanceData!.containsKey(debtType)) {
+      return balanceData![debtType].toString();
+    }
+    return '';
   }
 
   @override
@@ -44,11 +75,59 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-            TextFormField(
-              controller: debtAmountController,
-              decoration: InputDecoration(labelText: 'Debt Amount'),
-              keyboardType: TextInputType.number,
+            if (balanceData != null) ...[
+              for (var entry in balanceData!.entries)
+                Text(
+                  '${entry.key}: ${entry.value}',
+                  style: TextStyle(fontSize: 16),
+                ),
+            ],
+            SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              value: selectedPaymentType,
+              onChanged: (value) {
+                setState(() {
+                  selectedPaymentType = value;
+                  selectedDebtType = null; // Reset selected debt type when payment type changes
+                });
+              },
+              decoration: InputDecoration(labelText: 'Payment Type'),
+              items: [
+                DropdownMenuItem(
+                  value: 'turnoverDebit',
+                  child: Text('Turnover Debit'),
+                ),
+                DropdownMenuItem(
+                  value: 'turnoverCredit',
+                  child: Text('Turnover Credit'),
+                ),
+                DropdownMenuItem(
+                  value: 'turnoverBalance',
+                  child: Text('Turnover Balance'),
+                ),
+                DropdownMenuItem(
+                  value: 'transactionalDebit',
+                  child: Text('Transactional Debit'),
+                ),
+                DropdownMenuItem(
+                  value: 'transactionalCredit',
+                  child: Text('Transactional Credit'),
+                ),
+                DropdownMenuItem(
+                  value: 'transactionalBalance',
+                  child: Text('Transactional Balance'),
+                ),
+              ],
             ),
+            SizedBox(height: 10),
+            if (selectedPaymentType != null) ...[
+              SizedBox(height: 0),
+              Text(
+                'Selected Debt Amount: ${getDebtTypeAmount(selectedPaymentType!)}',
+                style: TextStyle(fontSize: 10),
+              ),
+            ],
+            
             SizedBox(height: 20),
             Row(
               children: [
