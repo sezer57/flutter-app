@@ -190,6 +190,11 @@ class _StockPageState extends State<StockPage> {
                           style: TextStyle(color: Colors.orange),
                         ),
                         Text(
+                          'Quantity Transfer: ${stock['quantityTransfer']}',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 136, 112, 245)),
+                        ),
+                        Text(
                           'Warehouse: ${stock['warehouse']['name']}',
                           style: TextStyle(color: Colors.grey[600]),
                         ),
