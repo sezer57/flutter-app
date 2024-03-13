@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/AddProductPage.dart';
+
 import 'package:flutter_application_1/pages/ClientsPage.dart';
 import 'package:flutter_application_1/pages/HomePage.dart';
 import 'package:flutter_application_1/pages/BottomNavBarLayout.dart';
 import 'package:flutter_application_1/pages/Invoice.dart';
+import 'package:flutter_application_1/pages/ClientsPurcListPage.dart';
 import 'package:flutter_application_1/pages/NotificationsPage.dart';
-import 'package:flutter_application_1/pages/PurchaseClientSelectionPage.dart';
-import 'package:flutter_application_1/pages/PurchaseList.dart';
-import 'package:flutter_application_1/pages/SalesList.dart';
-import 'package:flutter_application_1/pages/SettingsPage.dart';
-import 'package:flutter_application_1/pages/StockPage.dart';
 import 'package:flutter_application_1/pages/WareHousePage.dart';
 import 'package:flutter_application_1/pages/ProductPage.dart';
-import 'package:flutter_application_1/pages/WaitingTransfer.dart';
+import 'package:flutter_application_1/pages/Payment.dart';
 import 'package:flutter_application_1/pages/Stocks.dart';
 
 void main() {
@@ -39,6 +35,7 @@ class MyApp extends StatelessWidget {
                     MenuData('Clients', Icons.people),
                     MenuData('Stocks', Icons.cases_outlined),
                     MenuData('Invoice', Icons.description),
+                    MenuData('Payment', Icons.payment),
                     MenuData('Info', Icons.info),
                   ],
                   onMenuItemTap: (index) {
@@ -80,10 +77,14 @@ class MyApp extends StatelessWidget {
                       case 5:
                         Navigator.push(
                           context,
+                          MaterialPageRoute(builder: (context) => Payment()),
+                        );
+                      case 6:
+                        Navigator.push(
+                          context,
                           MaterialPageRoute(
                               builder: (context) => NotificationsPage()),
                         );
-
                       default:
                       // Do nothing or handle default case
                     }
@@ -93,7 +94,7 @@ class MyApp extends StatelessWidget {
                 ProductPage(),
                 ClientsPage(),
                 Stocks(),
-                NotificationsPage()
+                NotificationsPage(),
               ],
             ),
           );

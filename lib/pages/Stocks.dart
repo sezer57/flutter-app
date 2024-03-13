@@ -13,26 +13,6 @@ class Stocks extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddStockPage(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.add),
-              label: Text('Stocks Add'),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(Colors.orange),
-                textStyle: MaterialStateProperty.all<TextStyle>(
-                  TextStyle(fontSize: 18),
-                ),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-              ),
-            ),
             SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {

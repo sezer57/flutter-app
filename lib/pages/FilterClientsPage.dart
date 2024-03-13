@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/DebtPaymentPage.dart';
 import 'package:http/http.dart' as http;
-import 'DebtPaymentPage.dart'; // Gerekli olduğu sayıda 
+import 'DebtPaymentPage.dart'; // Gerekli olduğu sayıda
 
 class FilterClientsPage extends StatefulWidget {
   @override
@@ -21,14 +21,15 @@ class _FilterClientsPageState extends State<FilterClientsPage> {
   }
 
   Future<void> fetchClients() async {
-    final response = await http.get(Uri.parse('http://192.168.1.105:8080/api/getClients'));
+    final response =
+        await http.get(Uri.parse('http://192.168.1.105:8080/api/getClients'));
     if (response.statusCode == 200) {
       setState(() {
         clients = json.decode(response.body);
         filteredClients = List.from(clients);
       });
     } else {
-      throw Exception('Failed to load clients');
+      print("FilterClientsPage empty");
     }
   }
 
@@ -60,13 +61,16 @@ class _FilterClientsPageState extends State<FilterClientsPage> {
           final client = filteredClients[index];
           return Card(
             child: ListTile(
-              title: Text('Client Name: ${client['name']} ${client['surname']}'),
+              title:
+                  Text('Client Name: ${client['name']} ${client['surname']}'),
               subtitle: Text('Client ID: ${client['clientId']}'),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DebtPaymentPage(client: client,),
+                    builder: (context) => DebtPaymentPage(
+                      client: client,
+                    ),
                   ),
                 );
               },

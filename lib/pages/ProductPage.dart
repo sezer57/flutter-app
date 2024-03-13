@@ -19,7 +19,8 @@ class _ProductPageState extends State<ProductPage> {
           utf8.decode(response.bodyBytes); // Decode response body as UTF-8
       return jsonDecode(utf8Body);
     } else {
-      throw Exception('Failed to load stocks');
+      return List.empty();
+      print("product empty");
     }
   }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class WarehouseTransferPage extends StatefulWidget {
   @override
@@ -18,11 +19,13 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   String? selectedSourceWarehouse;
   String? selectedTargetWarehouse;
   String? selectedStockId;
+  String? DateController;
 
   @override
   void initState() {
     super.initState();
     fetchWarehouses();
+    DateController = DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
   }
 
   Future<void> fetchWarehouses() async {
@@ -149,6 +152,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
         'source_id': selectedSourceWarehouse,
         'target_id': selectedTargetWarehouse,
         'stock_id': selectedStockId,
+        'date': DateController,
         'quantity': quantity.toString(),
         'comment': 'yasihjn',
       };

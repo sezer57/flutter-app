@@ -1,16 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_1/pages/PurchasePage.dart';
+import 'package:flutter_application_1/pages/ClientsPayDoPage.dart';
 
-class PurchaseClientSelectionPage extends StatefulWidget {
+class ClientsPayListPage extends StatefulWidget {
   @override
-  State<PurchaseClientSelectionPage> createState() =>
-      _PurchaseClientSelectionPageState();
+  State<ClientsPayListPage> createState() => _ClientsPayListPageState();
 }
 
-class _PurchaseClientSelectionPageState
-    extends State<PurchaseClientSelectionPage> {
+class _ClientsPayListPageState extends State<ClientsPayListPage> {
   List<dynamic> clients = [];
   List<dynamic> filteredClients = [];
   dynamic selectedClient;
@@ -31,7 +29,7 @@ class _PurchaseClientSelectionPageState
         filteredClients = List.from(clients);
       });
     } else {
-      print("_PurchaseClientSelectionPageState empty");
+      print("product empty");
     }
   }
 
@@ -94,7 +92,7 @@ class _PurchaseClientSelectionPageState
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            PurchasePage(selectedClient: selectedClient),
+                            ClientsPayDoPage(selectedClient: selectedClient),
                       ),
                     );
                   },

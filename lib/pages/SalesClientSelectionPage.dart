@@ -30,7 +30,7 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
         filteredClients = List.from(clients);
       });
     } else {
-      throw Exception('Failed to load clients');
+      print("_SalesClientSelectionPageState empty");
     }
   }
 

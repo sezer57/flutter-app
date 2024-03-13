@@ -19,6 +19,7 @@ class StockPage extends StatefulWidget {
 
 class _StockPageState extends State<StockPage> {
   List<dynamic> stocks = [];
+
   List<dynamic> filteredStocks = [];
   late Timer _timer;
   TextEditingController searchController = TextEditingController();
@@ -52,7 +53,7 @@ class _StockPageState extends State<StockPage> {
         _applyWarehouseFilter();
       });
     } else {
-      throw Exception('Failed to fetch stocks');
+      print("STOCKPAGEERORR");
     }
   }
 
@@ -82,12 +83,11 @@ class _StockPageState extends State<StockPage> {
     });
   }
 
-  void _navigateToUpdateStockPage(int stockId, String stockName) async {
+  void _navigateToUpdateStockPage(dynamic stock) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            UpdateStockForm(stockId: stockId, stockName: stockName),
+        builder: (context) => UpdateStockForm(stock),
       ),
     );
 
@@ -201,10 +201,7 @@ class _StockPageState extends State<StockPage> {
                       ],
                     ),
                     onTap: () {
-                      _navigateToUpdateStockPage(
-                        stock['stock']['stockId'],
-                        stock['stock']['stockName'],
-                      );
+                      _navigateToUpdateStockPage(stock);
                     },
                   ),
                 );

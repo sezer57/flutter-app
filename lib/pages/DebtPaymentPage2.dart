@@ -3,16 +3,21 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class DebtPaymentPage extends StatefulWidget {
+class DebtPaymentPage2 extends StatefulWidget {
   final dynamic client;
+  final String initialPaymentAmount;
 
-  const DebtPaymentPage({Key? key, required this.client}) : super(key: key);
+  const DebtPaymentPage2({
+    Key? key,
+    required this.client,
+    required this.initialPaymentAmount, // Yeni parametre eklendi
+  }) : super(key: key);
 
   @override
-  _DebtPaymentPageState createState() => _DebtPaymentPageState();
+  _DebtPaymentPage2State createState() => _DebtPaymentPage2State();
 }
 
-class _DebtPaymentPageState extends State<DebtPaymentPage> {
+class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
   TextEditingController debtAmountController = TextEditingController();
   TextEditingController paymentAmountController = TextEditingController();
 
@@ -50,6 +55,8 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
   @override
   void initState() {
     super.initState();
+    paymentAmountController.text =
+        widget.initialPaymentAmount; // initialPaymentAmount değeri atanıyor
     _fetchBalanceData();
   }
 
@@ -185,6 +192,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
                     controller: paymentAmountController,
                     decoration: InputDecoration(labelText: 'Payment Amount'),
                     keyboardType: TextInputType.number,
+                    enabled: false, // Disable editing
                   ),
                 ),
                 IconButton(

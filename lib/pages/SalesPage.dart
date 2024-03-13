@@ -17,6 +17,7 @@ class _SettingPageState extends State<SalesPage> {
   dynamic selectedStock;
   TextEditingController searchController = TextEditingController();
 
+  String selectedWarehouseFilter = 'All';
   @override
   void initState() {
     super.initState();
@@ -34,6 +35,35 @@ class _SettingPageState extends State<SalesPage> {
     } else {
       throw Exception('Failed to load stocks');
     }
+  }
+
+  Future<void> _fetchStocks() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.1.105:8080/api/getWarehouseStock'));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        stocks = json.decode(utf8.decode(response.bodyBytes));
+        filteredStocks =
+            stocks; // Initialize filteredStocks with all stocks initially
+        _applyWarehouseFilter();
+      });
+    } else {
+      throw Exception('Failed to fetch stocks');
+    }
+  }
+
+  void _applyWarehouseFilter() {
+    setState(() {
+      if (selectedWarehouseFilter == 'All') {
+        filteredStocks = stocks;
+      } else {
+        filteredStocks = stocks
+            .where((stock) =>
+                stock['warehouse']['name'] == selectedWarehouseFilter)
+            .toList();
+      }
+    });
   }
 
   void searchStocks(String query) {
@@ -89,22 +119,81 @@ class _SettingPageState extends State<SalesPage> {
           onChanged: searchStocks,
         ),
       ),
-      body: ListView.builder(
-        itemCount: filteredStocks.length,
-        itemBuilder: (BuildContext context, int index) {
-          final stock = filteredStocks[index];
-          return Card(
-              child: ListTile(
-            title: Text('Stock Name: ${stock['stockCode']}'),
-            subtitle: Text('Sales Price: \$${stock['salesPrice']}'),
-            onTap: () {
-              setState(() {
-                selectedStock = stock;
-              });
-              _showSalesDialog();
-            },
-          ));
-        },
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search stocks...',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 14.0),
+                    ),
+                    onChanged: searchStocks,
+                  ),
+                ),
+                SizedBox(width: 10),
+                DropdownButton<String>(
+                  value: selectedWarehouseFilter,
+                  items: [
+                    DropdownMenuItem<String>(
+                      value: 'All',
+                      child: Text('All'),
+                    ),
+                    ...stocks
+                        .map((stock) => stock['warehouse']['name'] as String)
+                        .toSet()
+                        .toList()
+                        .map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedWarehouseFilter = newValue!;
+                      _applyWarehouseFilter();
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredStocks.length,
+              itemBuilder: (BuildContext context, int index) {
+                final stock = filteredStocks[index];
+                return Card(
+                    child: ListTile(
+                  title: Text('Stock Name: ${stock['stockName']}'),
+                  subtitle: Text('Sales Price: \$${stock['salesPrice']}'),
+                  onTap: () {
+                    setState(() {
+                      selectedStock = stock;
+                    });
+                    _showSalesDialog();
+                  },
+                ));
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

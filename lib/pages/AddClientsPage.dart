@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class AddClientsPage extends StatefulWidget {
   @override
@@ -20,6 +21,14 @@ class _AddClientsPageState extends State<AddClientsPage> {
   final TextEditingController cityController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController gsmController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+
+    // Automatically generate registration date
+    registrationDateController.text =
+        DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
+  }
 
   final String url =
       'http://192.168.1.105:8080/api/clients'; // Replace with your actual API endpoint

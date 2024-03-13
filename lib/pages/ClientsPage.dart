@@ -11,18 +11,23 @@ class ClientsPage extends StatefulWidget {
 
 class _ClientsPageState extends State<ClientsPage> {
   final String getClientsUrl = 'http://192.168.1.105:8080/api/getClients';
-  List<dynamic> _clients = [];
+  List<dynamic> clients = [];
 
-  Future<List<dynamic>> _fetchClients() async {
+  Future<void> _fetchClients() async {
     final response = await http.get(Uri.parse(getClientsUrl));
     if (response.statusCode == 200) {
-      final utf8Body = utf8.decode(response.bodyBytes);
-      return jsonDecode(utf8Body);
-    } else if (response.statusCode == 204) {
-      return [];
+      setState(() {
+        clients = json.decode(response.body);
+      });
     } else {
-      throw Exception('Failed to load Clients');
+      print("product empty");
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchClients();
   }
 
   void _filterClients() async {
@@ -33,7 +38,7 @@ class _ClientsPageState extends State<ClientsPage> {
 
     if (result != null && result is List<dynamic>) {
       setState(() {
-        _clients = result;
+        clients = result;
       });
     }
   }
@@ -58,7 +63,7 @@ class _ClientsPageState extends State<ClientsPage> {
                   if (result == true) {
                     _fetchClients().then((clients) {
                       setState(() {
-                        _clients = clients;
+                        clients = clients;
                       });
                     });
                   }
@@ -74,9 +79,9 @@ class _ClientsPageState extends State<ClientsPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _clients.length,
+              itemCount: clients.length,
               itemBuilder: (context, index) {
-                var client = _clients[index];
+                var client = clients[index];
                 return ListTile(
                   title: Text(client['name'] + ' ' + client['surname']),
                   subtitle: Column(
@@ -84,7 +89,8 @@ class _ClientsPageState extends State<ClientsPage> {
                     children: [
                       Text('Commercial Title: ${client['commercialTitle']}'),
                       Text('Phone: ${client['phone']}'),
-                      Text('Address: ${client['address']}, ${client['city']}, ${client['country']}'),
+                      Text(
+                          'Address: ${client['address']}, ${client['city']}, ${client['country']}'),
                     ],
                   ),
                 );
@@ -96,4 +102,3 @@ class _ClientsPageState extends State<ClientsPage> {
     );
   }
 }
-
