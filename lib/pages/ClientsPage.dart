@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddClientsPage.dart';
 import 'package:flutter_application_1/pages/FilterClientsPage.dart';
+import 'package:flutter_application_1/pages/ClientNotificationsPage.dart'; // Ekledik
 
 class ClientsPage extends StatefulWidget {
   @override
@@ -23,6 +24,7 @@ class _ClientsPageState extends State<ClientsPage> {
       print("product empty");
     }
   }
+  
 
   @override
   void initState() {
@@ -48,6 +50,17 @@ class _ClientsPageState extends State<ClientsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Clients'),
+        actions: [ // AppBar'a action ekledik
+          IconButton(
+            icon: Icon(Icons.calendar_today), // Takvim simgesi
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ClientNotificationsPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

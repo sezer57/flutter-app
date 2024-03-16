@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_application_1/pages/ClientsPage.dart';
 import 'package:flutter_application_1/pages/HomePage.dart';
 import 'package:flutter_application_1/pages/BottomNavBarLayout.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_application_1/pages/WareHousePage.dart';
 import 'package:flutter_application_1/pages/ProductPage.dart';
 import 'package:flutter_application_1/pages/Payment.dart';
 import 'package:flutter_application_1/pages/Stocks.dart';
+import 'package:flutter_application_1/pages/PdfViewPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
                           MaterialPageRoute(
                               builder: (context) => ProductPage()),
                         );
+                        break; // Make sure to break after each case
 
                       case 1:
                         Navigator.push(
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
                           MaterialPageRoute(
                               builder: (context) => WareHousePage()),
                         );
+                        break;
 
                       case 2:
                         Navigator.push(
@@ -61,12 +63,14 @@ class MyApp extends StatelessWidget {
                           MaterialPageRoute(
                               builder: (context) => ClientsPage()),
                         );
+                        break;
 
                       case 3:
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => Stocks()),
                         );
+                        break;
 
                       case 4:
                         Navigator.push(
@@ -74,17 +78,23 @@ class MyApp extends StatelessWidget {
                           MaterialPageRoute(
                               builder: (context) => InvoicePage()),
                         );
+                        break;
+
                       case 5:
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => Payment()),
                         );
+                        break;
+
                       case 6:
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => NotificationsPage()),
                         );
+                        break;
+
                       default:
                       // Do nothing or handle default case
                     }
@@ -102,4 +112,19 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+}
+
+// Entegre edilecek kod buradan başlıyor
+
+ class PdfPage extends StatelessWidget {
+  static final String title = 'Invoice';
+
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: title,
+        theme: ThemeData(primarySwatch: Colors.deepOrange),
+        home: PdfPage(),
+      );
 }

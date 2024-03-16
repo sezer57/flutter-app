@@ -86,7 +86,7 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
               _deleteStock();
             },
             style: ElevatedButton.styleFrom(
-              primary: const Color.fromARGB(255, 210, 27, 14), // Button color
+              backgroundColor: const Color.fromARGB(255, 210, 27, 14), // Button color
             ),
             child: Text(
               'Delete',

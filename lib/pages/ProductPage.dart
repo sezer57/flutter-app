@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddProductPage.dart';
 import 'package:flutter_application_1/pages/StockDetailesPage.dart';
+import 'package:flutter_application_1/pages/PdfViewPage.dart'; // Import PdfViewPage.dart
 
 class ProductPage extends StatefulWidget {
   @override
@@ -19,8 +20,7 @@ class _ProductPageState extends State<ProductPage> {
           utf8.decode(response.bodyBytes); // Decode response body as UTF-8
       return jsonDecode(utf8Body);
     } else {
-      return List.empty();
-      print("product empty");
+      throw Exception('Failed to load stocks');
     }
   }
 
@@ -35,6 +35,15 @@ class _ProductPageState extends State<ProductPage> {
             onPressed: () {
               // Handle adding new stock
               // Navigate to add stock page or show a dialog for adding stock
+            },
+          ),
+          IconButton( // Add IconButton for printing
+            icon: Icon(Icons.print),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PdfPage()), // Navigate to PdfViewPage.dart
+              );
             },
           ),
         ],

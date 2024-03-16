@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:convert';
-import 'dart:convert';
 // Add this import statement for HTTP requests
-import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/DailyExpensesPage.dart'; // Import SalesList.dart
 // Add the necessary imports
 
