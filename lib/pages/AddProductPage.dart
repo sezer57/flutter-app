@@ -17,7 +17,7 @@ class _AddStockPageState extends State<AddStockPage> {
   final TextEditingController groupNameController = TextEditingController();
   final TextEditingController middleGroupNameController =
       TextEditingController();
-  final TextEditingController unitController = TextEditingController();
+  String? selectedUnit = 'Cartons';
   final TextEditingController salesPriceController = TextEditingController();
   final TextEditingController purchasePriceController = TextEditingController();
   String? warehouseIdController;
@@ -80,10 +80,21 @@ class _AddStockPageState extends State<AddStockPage> {
               controller: middleGroupNameController,
               decoration: InputDecoration(labelText: 'Middle Group Name'),
             ),
-            TextField(
-              controller: unitController,
+            DropdownButtonFormField(
+              value: selectedUnit,
+              items: <String>['Cartons']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedUnit = newValue;
+                });
+              },
               decoration: InputDecoration(labelText: 'Unit'),
-              keyboardType: TextInputType.number, // Only accept numbers
             ),
             TextField(
               controller: salesPriceController,
@@ -136,7 +147,7 @@ class _AddStockPageState extends State<AddStockPage> {
       "barcode": barcodeController.text,
       "groupName": groupNameController.text,
       "middleGroupName": middleGroupNameController.text,
-      "unit": int.tryParse(unitController.text) ??
+      "unit": int.tryParse(selectedUnit.toString()) ??
           0, // Parse as int, default to 0 if parsing fails
       "salesPrice": double.parse(salesPriceController.text),
       "purchasePrice": double.parse(purchasePriceController.text),

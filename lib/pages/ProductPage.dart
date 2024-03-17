@@ -37,12 +37,15 @@ class _ProductPageState extends State<ProductPage> {
               // Navigate to add stock page or show a dialog for adding stock
             },
           ),
-          IconButton( // Add IconButton for printing
+          IconButton(
+            // Add IconButton for printing
             icon: Icon(Icons.print),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PdfPage()), // Navigate to PdfViewPage.dart
+                MaterialPageRoute(
+                    builder: (context) =>
+                        PdfPage()), // Navigate to PdfViewPage.dart
               );
             },
           ),
@@ -66,22 +69,6 @@ class _ProductPageState extends State<ProductPage> {
                   }
                 },
                 child: Text('Add Products'),
-              ),
-              SizedBox(width: 8), // Add some spacing between buttons
-              ElevatedButton(
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AddStockPage()),
-                  );
-                  if (result == true) {
-                    // Refresh the stock list if a new stock was added
-                    setState(() {
-                      _fetchStocks();
-                    });
-                  }
-                },
-                child: Text('Filter Warehouse'),
               ),
             ],
           ),

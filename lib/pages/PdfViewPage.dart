@@ -48,6 +48,7 @@ class _PdfPageState extends State<PdfPage> {
                         name: 'Apple Inc.',
                         address: 'Apple Street, Cupertino, CA 95014',
                       ),
+                      type: "test",
                       info: InvoiceInfo(
                         date: date,
                         dueDate: dueDate,

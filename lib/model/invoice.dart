@@ -6,13 +6,13 @@ class Invoice {
   final Supplier supplier;
   final Customer customer;
   final List<InvoiceItem> items;
-
-  const Invoice({
-    required this.info,
-    required this.supplier,
-    required this.customer,
-    required this.items,
-  });
+  final String type;
+  const Invoice(
+      {required this.info,
+      required this.supplier,
+      required this.customer,
+      required this.items,
+      required this.type});
 }
 
 class InvoiceInfo {
