@@ -22,7 +22,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _getDailyExpenses(String selectedDate) async {
     final response = await http.get(Uri.parse(
         'http://192.168.1.105:8080/api/getDailyExpenses?date=$selectedDate'));
-    print(response.body);
+
     if (response.statusCode == 200) {
       List<dynamic> expenses = json.decode(response.body);
       setState(() {
@@ -70,7 +70,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 return isSameDay(_selectedDay, day);
               },
               onDaySelected: (selectedDay, focusedDay) async {
-                if (!isSameDay(_selectedDay, selectedDay)) {
+                if (true) {
                   setState(() {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
