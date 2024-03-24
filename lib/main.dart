@@ -9,7 +9,7 @@ import 'package:flutter_application_1/pages/WareHousePage.dart';
 import 'package:flutter_application_1/pages/ProductPage.dart';
 import 'package:flutter_application_1/pages/Payment.dart';
 import 'package:flutter_application_1/pages/Stocks.dart';
-import 'package:flutter_application_1/pages/PdfViewPage.dart';
+import 'package:flutter_application_1/pages/ClientPdfPage.dart';
 
 void main() {
   runApp(MyApp());

@@ -3,14 +3,7 @@ import 'package:flutter_application_1/pages/UpdateStockPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async'; // Eklemeyi unutmayın
-import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+
 
 class StockPage extends StatefulWidget {
   @override
