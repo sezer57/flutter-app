@@ -13,6 +13,8 @@ class PdfApi {
     List<dynamic>? warehouseTransfers,
     List<dynamic>? expenses,
     List<dynamic>? purchases,
+    List<dynamic>? clients,
+    List<dynamic>? stocks,
     required double totalExpenses,
     required double totalPurchases,
     required double totalTransfers,
@@ -46,6 +48,10 @@ class PdfApi {
               _buildTable('Warehouse Transfers', warehouseTransfers),
             if (totalTransfers != 0.00)
               Text('Total Transfers: \$${totalTransfers.toStringAsFixed(2)}'),
+              if (clients != null && clients.isNotEmpty)
+              _buildTable('Clients', clients),
+              if (stocks != null && stocks.isNotEmpty)
+              _buildTable('Stocks', stocks),
           ],
         );
       },

@@ -22,6 +22,10 @@ class ClientItem {
   final String phone;
   final String gsm;
   final DateTime registrationDate;
+  final String balance;
+  final String comment;
+  final String debitCreditStatus;
+
 
   const ClientItem({
     required this.clientCode,
@@ -33,7 +37,12 @@ class ClientItem {
     required this.city,
     required this.phone,
     required this.gsm,
-    required this.registrationDate,
+    required this.registrationDate, 
+    required this.balance, 
+    required this.comment, 
+    required this.debitCreditStatus,
   });
+
+ 
 
 }

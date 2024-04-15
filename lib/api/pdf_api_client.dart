@@ -8,7 +8,7 @@ import 'package:flutter_application_1/pages/utils.dart';
 class PdfClientApi {
   static Future<File> generate(Client clients) async {
     final pdf = pw.Document();
-
+   
     pdf.addPage(
       pw.MultiPage(
         build: (context) => [
@@ -65,7 +65,10 @@ class PdfClientApi {
       'Phone',
       'Address',
       'Commercial Title',
-      'Registration Date'
+      'Registration Date',
+      'Balance',
+      'Comment',
+      'Debit Credit Status'
     ];
     final data = invoice.items.map((item) {
       return [
@@ -77,6 +80,9 @@ class PdfClientApi {
         '${item.address}',
         '${item.commercialTitle}',
         '${Utils.formatDate(item.registrationDate)}', // Tarih formatlama gerekebilir
+        '${item.balance}',
+        '${item.comment}',
+        '${item.debitCreditStatus}',
       ];
     }).toList();
     return pw.Table.fromTextArray(
@@ -95,6 +101,10 @@ class PdfClientApi {
         5: pw.Alignment.centerRight,
         6: pw.Alignment.centerRight,
         7: pw.Alignment.centerRight,
+        8: pw.Alignment.centerRight,
+        9: pw.Alignment.centerRight,
+        10: pw.Alignment.centerRight,
+        11: pw.Alignment.centerRight,
       },
     );
   }

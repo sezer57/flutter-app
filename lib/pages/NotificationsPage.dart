@@ -18,6 +18,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
   List<dynamic>? _warehouseTransfers; // Depo transferlerini tutar
   List<dynamic>? _expenses; // Harcamaları tutar
   List<dynamic>? _purchases; // Satın almaları tutar
+  List<dynamic>? _clients;
+  List<dynamic>? _stocks;
 
   // Seçilen tarihe göre günlük harcamaları getir
   Future<void> _getDailyExpenses(String selectedDate) async {
@@ -26,6 +28,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
     if (response.statusCode == 200) {
       List<dynamic> expenses = json.decode(response.body);
+      print(expenses);
       setState(() {
         _warehouseTransfers = expenses
             .where((expense) => expense.containsKey('warehousetransfer_id'))
@@ -36,6 +39,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
         _purchases = expenses
             .where((expense) => expense.containsKey('purchase_id'))
             .toList(); // Satın almaları filtrele
+        _clients = expenses
+            .where((expense) => expense.containsKey('client_id'))
+            .toList();
+        _stocks = expenses
+            .where((expense) => expense.containsKey('stock_id'))
+            .toList();        
       });
     } else {
       // Hata durumunda bir şey yapılabilir
@@ -52,6 +61,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
           warehouseTransfers: _warehouseTransfers,
           expenses: _expenses,
           purchases: _purchases,
+          clients: _clients,
+          stocks: _stocks,
         ),
       ),
     );
