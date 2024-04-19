@@ -4,6 +4,7 @@ import 'package:flutter_application_1/model/customer.dart';
 import 'package:flutter_application_1/model/invoice.dart';
 import 'package:flutter_application_1/model/supplier.dart';
 import 'package:flutter_application_1/pages/utils.dart';
+import 'package:flutter_application_1/model/client.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/widgets.dart';
@@ -115,6 +116,10 @@ class PdfInvoiceApi {
       );
 
   static Widget buildInvoice(Invoice invoice) {
+    if (invoice.items.isEmpty) {
+      return Center(child: Text('No items'));
+    }
+
     final headers = [
       'Description',
       'Date',
@@ -154,10 +159,15 @@ class PdfInvoiceApi {
     );
   }
 
-  static Widget buildTotal(Invoice invoice) {
+    static Widget buildTotal(Invoice invoice) {
+    if (invoice.items.isEmpty) {
+      return SizedBox(); // Return empty widget if there are no items
+    }
+
     final netTotal = invoice.items
         .map((item) => item.unitPrice * item.quantity)
         .reduce((item1, item2) => item1 + item2);
+    
     final vatPercent = invoice.items.first.vat;
     final vat = netTotal * vatPercent;
     final total = netTotal + vat;
@@ -203,6 +213,7 @@ class PdfInvoiceApi {
       ),
     );
   }
+
 
   static Widget buildFooter(Invoice invoice) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,

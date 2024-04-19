@@ -13,6 +13,7 @@ import 'package:flutter_application_1/pages/Stocks.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
+import 'package:flutter_application_1/pages/ClientPdfPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -130,4 +131,20 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+}
+
+
+// Entegre edilecek kod buradan başlıyor
+
+ class PdfPage extends StatelessWidget {
+  static final String title = 'Invoice';
+
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: title,
+        theme: ThemeData(primarySwatch: Colors.deepOrange),
+        home: PdfPage(),
+      );
 }

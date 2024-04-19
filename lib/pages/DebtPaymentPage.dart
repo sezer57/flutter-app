@@ -36,7 +36,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
       });
   }
 
-  Future<void> _fetchBalanceData() async {
+Future<void> _fetchBalanceData() async {
     final url = Uri.parse(
         'http://192.168.1.105:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
     final response = await http.get(url, headers: <String, String>{
@@ -44,7 +44,14 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
     });
     if (response.statusCode == 200) {
       setState(() {
-        balanceData = json.decode(response.body);
+        
+        balanceData = {
+          'Balance Id ': json.decode(response.body)['balanceID'],
+          'Client Id ': json.decode(response.body)['clientID'],
+          'Balance': json.decode(response.body)['balance'],
+          'Comment': json.decode(response.body)['comme'],
+          'Debit Credit Status': json.decode(response.body)['debitCrediStatus']
+        };
       });
     } else {
       throw Exception('Failed to load balance data');
@@ -147,28 +154,20 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
               decoration: InputDecoration(labelText: 'Payment Type'),
               items: [
                 DropdownMenuItem(
-                  value: 'turnoverDebit',
-                  child: Text('Turnover Debit'),
+                  value: 'Debit',
+                  child: Text('Debit'),
                 ),
                 DropdownMenuItem(
-                  value: 'turnoverCredit',
-                  child: Text('Turnover Credit'),
+                  value: 'Credit',
+                  child: Text('Credit'),
                 ),
                 DropdownMenuItem(
-                  value: 'turnoverBalance',
-                  child: Text('Turnover Balance'),
+                  value: 'Cash',
+                  child: Text('Cash'),
                 ),
                 DropdownMenuItem(
-                  value: 'transactionalDebit',
-                  child: Text('Transactional Debit'),
-                ),
-                DropdownMenuItem(
-                  value: 'transactionalCredit',
-                  child: Text('Transactional Credit'),
-                ),
-                DropdownMenuItem(
-                  value: 'transactionalBalance',
-                  child: Text('Transactional Balance'),
+                  value: 'Balance',
+                  child: Text('Balance'),
                 ),
               ],
             ),

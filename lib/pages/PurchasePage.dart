@@ -244,7 +244,7 @@ class _SettingPageState extends State<PurchasePage> {
                 int quantity = int.tryParse(quantityController.text) ?? 0;
                 double price = double.tryParse(priceController.text) ?? 0.0;
                 purchaseStock(selectedStock['stockId'], quantity, price,
-                    widget.selectedClient['clientId']);
+                    widget.selectedClient['warehouseId']);
                 Navigator.of(context).pop();
               },
               child: Text('Purchase'),

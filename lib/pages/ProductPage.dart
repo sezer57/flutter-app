@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/StockDetailesPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddProductPage.dart';
+
 import 'package:flutter_application_1/pages/StockDetailesPage.dart';
 import 'package:flutter_application_1/pages/PdfViewPage.dart'; // Import PdfViewPage.dart
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
+=======
+import 'package:flutter_application_1/pages/ProductPdfPage.dart'; // Import PdfViewPage.dart
+
 
 class ProductPage extends StatefulWidget {
   @override
@@ -34,48 +39,46 @@ class _ProductPageState extends State<ProductPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Products'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              // Handle adding new stock
-              // Navigate to add stock page or show a dialog for adding stock
-            },
-          ),
-          IconButton(
-            // Add IconButton for printing
-            icon: Icon(Icons.print),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        PdfPage()), // Navigate to PdfViewPage.dart
-              );
-            },
-          ),
-        ],
+        actions: [],
       ),
       body: Column(
         children: [
-          Row(
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AddStockPage()),
-                  );
-                  if (result == true) {
-                    // Refresh the stock list if a new stock was added
-                    setState(() {
-                      _fetchStocks();
-                    });
-                  }
-                },
-                child: Text('Add Products'),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddStockPage(),
+                      ),
+                    );
+                    if (result == true) {
+                      // Refresh the stock list if a new stock was added
+                      setState(() {
+                        _fetchStocks();
+                      });
+                    }
+                  },
+                  child: Text('Add Products'),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PdfPage(),
+                      ),
+                    );
+                  },
+                  child: Text('All Products'),
+                ),
+              ],
+            ),
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
@@ -94,25 +97,28 @@ class _ProductPageState extends State<ProductPage> {
                       var warehouseName = stock['warehouse']['name'];
                       var salesPrice = stock['salesPrice'];
                       return Card(
-                          child: ListTile(
-                        title: Text(stock['stockName']),
-                        subtitle: Text("Code: " +
-                            stock['stockCode'] +
-                            " Price: " +
-                            salesPrice.toString() +
-                            " Warehouse: " +
-                            warehouseName +
-                            " Date: " +
-                            stock['registrationDate']),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
+                        child: ListTile(
+                          title: Text(stock['stockName']),
+                          subtitle: Text("Code: " +
+                              stock['stockCode'] +
+                              " Price: " +
+                              salesPrice.toString() +
+                              " Warehouse: " +
+                              warehouseName +
+                              " Date: " +
+                              stock['registrationDate']),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
                                 builder: (context) => StockDetailsPage(
-                                    stock)), // Pass the selected stock to StockDetailsPage
-                          );
-                        },
-                      ));
+                                  stock,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
                     },
                   );
                 }

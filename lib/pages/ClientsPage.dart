@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddClientsPage.dart';
 import 'package:flutter_application_1/pages/FilterClientsPage.dart';
-import 'package:flutter_application_1/pages/ClientNotificationsPage.dart'; // Ekledik
+import 'package:flutter_application_1/pages/ClientPdfPage.dart'; // ClientPdfPage eklendi
 
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
@@ -49,11 +49,19 @@ class _ClientsPageState extends State<ClientsPage> {
     }
   }
 
+  void _navigateToPdfPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PdfPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Clients'),
+
         actions: [
           // AppBar'a action ekledik
           IconButton(
@@ -67,6 +75,7 @@ class _ClientsPageState extends State<ClientsPage> {
             },
           ),
         ],
+
       ),
       body: Column(
         children: [
@@ -89,10 +98,15 @@ class _ClientsPageState extends State<ClientsPage> {
                 },
                 child: Text('Add Client'),
               ),
-              SizedBox(width: 8),
+              SizedBox(width: 5),
               ElevatedButton(
                 onPressed: _filterClients,
                 child: Text('Filter Clients'),
+              ),
+              SizedBox(width: 5),
+              ElevatedButton(
+                onPressed: _navigateToPdfPage,
+                child: Text('All Clients'),
               ),
             ],
           ),

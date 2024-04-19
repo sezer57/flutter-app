@@ -26,7 +26,7 @@ class InvoicePage extends StatelessWidget {
                 );
               },
               icon: Icon(Icons.shopping_bag),
-              label: Text('Sales Invoice'),
+              label: Text('Sales'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
                 textStyle: MaterialStateProperty.all<TextStyle>(
@@ -47,7 +47,7 @@ class InvoicePage extends StatelessWidget {
                 );
               },
               icon: Icon(Icons.list),
-              label: Text('Sales List'),
+              label: Text('Sales&Invoice List'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
                 textStyle: MaterialStateProperty.all<TextStyle>(
@@ -70,7 +70,7 @@ class InvoicePage extends StatelessWidget {
                 );
               },
               icon: Icon(Icons.shopping_cart),
-              label: Text('Purchase Invoice'),
+              label: Text('Purchase'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
                 textStyle: MaterialStateProperty.all<TextStyle>(
@@ -91,7 +91,7 @@ class InvoicePage extends StatelessWidget {
                 );
               },
               icon: Icon(Icons.list),
-              label: Text('Purchase List'),
+              label: Text('Purchase&Invoice List'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
                 textStyle: MaterialStateProperty.all<TextStyle>(

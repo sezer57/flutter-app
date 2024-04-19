@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/api/pdf_api.dart';
+import 'package:flutter_application_1/pages/Stocks.dart';
 
 class DailyExpensesPage extends StatelessWidget {
   final String selectedDate;
   final List<dynamic>? warehouseTransfers;
   final List<dynamic>? expenses;
   final List<dynamic>? purchases;
+  final List<dynamic>? clients;
+  final List<dynamic>? stocks;
   double totalExpenses = 0;
   double totalTransfers = 0;
   double totalPurchases = 0;
@@ -15,6 +18,8 @@ class DailyExpensesPage extends StatelessWidget {
     this.warehouseTransfers,
     this.expenses,
     this.purchases,
+    this.clients,
+    this.stocks
   });
 
   @override
@@ -49,6 +54,14 @@ class DailyExpensesPage extends StatelessWidget {
                   _buildWarehouseTransfersTable(),
                   SizedBox(height: 16),
                 ],
+                if (stocks != null && stocks!.isNotEmpty) ...[
+                  _buildStocksTable(),
+                  SizedBox(height: 16),
+                ],
+                if (clients != null && clients!.isNotEmpty) ...[
+                  _buildClientsTable(),
+                  SizedBox(height: 16),
+                ],
               ],
             ),
           ),
@@ -63,7 +76,6 @@ class DailyExpensesPage extends StatelessWidget {
           .map((expense) => double.parse(expense['price'].toString()))
           .reduce((value, element) => value + element);
     }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -134,7 +146,7 @@ class DailyExpensesPage extends StatelessWidget {
               DataColumn(label: Text('Date')),
               DataColumn(label: Text('Stock Name')),
               DataColumn(label: Text('Quantity')),
-              DataColumn(label: Text('Client Name')),
+              DataColumn(label: Text('Authorized')),
               DataColumn(label: Text('Price')),
               DataColumn(label: Text('Purchase ID')),
               DataColumn(label: Text('Warehouse Name')),
@@ -146,7 +158,7 @@ class DailyExpensesPage extends StatelessWidget {
                     DataCell(Text(purchase['date'].toString())),
                     DataCell(Text(purchase['stockName'].toString())),
                     DataCell(Text(purchase['quantity'].toString())),
-                    DataCell(Text(purchase['clientName'].toString())),
+                    DataCell(Text(purchase['authorized'].toString())),
                     DataCell(Text('\$${purchase['price']}')),
                     DataCell(Text(purchase['purchase_id'].toString())),
                     DataCell(Text(purchase['warehouseName'].toString())),
@@ -232,6 +244,96 @@ class DailyExpensesPage extends StatelessWidget {
     );
   }
 
+  Widget _buildClientsTable() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Clients:',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: [
+              DataColumn(label: Text('Registration Date')),
+              DataColumn(label: Text('Client ID')),
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('Address')),
+              DataColumn(label: Text('Country')),
+              DataColumn(label: Text('City')),
+              DataColumn(label: Text('Phone')),
+              DataColumn(label: Text('Gsm')),
+              
+            ],
+            rows: [
+              ...clients!.map(
+                (transfer) => DataRow(
+                  cells: [
+                    DataCell(Text(transfer['registrationDate'].toString())),
+                    DataCell(Text(transfer['clientId'].toString())),
+                    DataCell(Text(transfer['name'].toString())),
+                    DataCell(Text(transfer['address'].toString())),
+                    DataCell(Text(transfer['country'].toString())),
+                    DataCell(Text(transfer['city'].toString())),
+                    DataCell(Text(transfer['phone'].toString())),
+                    DataCell(Text(transfer['gsm'].toString())),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStocksTable() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Stocks:',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: [
+              DataColumn(label: Text('Registration Date')),
+              DataColumn(label: Text('Stock ID')),
+              DataColumn(label: Text('Stock Code')),
+              DataColumn(label: Text('Stock Name')),
+              DataColumn(label: Text('Barcode')),
+              DataColumn(label: Text('Group Name')),
+              DataColumn(label: Text('Middle Group Name')),
+              DataColumn(label: Text('Unit')),
+              DataColumn(label: Text('Sales Price')),
+              DataColumn(label: Text('Purchase Price')),
+              
+            ],
+            rows: [
+              ...stocks!.map(
+                (transfer) => DataRow(
+                  cells: [
+                    DataCell(Text(transfer['registrationDate'].toString())),
+                    DataCell(Text(transfer['stockId'].toString())),
+                    DataCell(Text(transfer['stockCode'].toString())),
+                    DataCell(Text(transfer['stockName'].toString())),
+                    DataCell(Text(transfer['barcode'].toString())),
+                    DataCell(Text(transfer['groupName'].toString())),
+                    DataCell(Text(transfer['middleGroupName'].toString())),
+                    DataCell(Text(transfer['unit'].toString())),
+                    DataCell(Text(transfer['salesPrice'].toString())),
+                    DataCell(Text(transfer['purchasePrice'].toString())),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> _generatePDF(BuildContext context) async {
     final pdfFile = await PdfApi.generateExpenseReport(
       selectedDate: selectedDate,
@@ -241,6 +343,8 @@ class DailyExpensesPage extends StatelessWidget {
       totalExpenses: totalExpenses,
       totalPurchases: totalPurchases,
       totalTransfers: totalTransfers,
+      stocks : stocks,
+      clients : clients
     );
 
     PdfApi.openFile(pdfFile);
