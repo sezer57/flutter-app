@@ -7,6 +7,7 @@ import 'package:flutter_application_1/model/invoice.dart';
 import 'package:flutter_application_1/model/supplier.dart';
 import 'package:flutter_application_1/pages/utils.dart';
 import 'package:flutter_application_1/api/pdf_invoice_api.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class SalesList extends StatefulWidget {
   @override
@@ -24,8 +25,10 @@ class _SalesListState extends State<SalesList> {
 
   Future<void> fetchSales() async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.105:8080/api/getSales'),
-    );
+        Uri.parse('http://192.168.1.105:8080/api/getSales'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       setState(() {
         purchases = json.decode(response.body);

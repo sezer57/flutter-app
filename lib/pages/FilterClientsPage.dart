@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/DebtPaymentPage.dart';
 import 'package:http/http.dart' as http;
 import 'DebtPaymentPage.dart'; // Gerekli olduğu sayıda
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class FilterClientsPage extends StatefulWidget {
   @override
@@ -21,8 +22,11 @@ class _FilterClientsPageState extends State<FilterClientsPage> {
   }
 
   Future<void> fetchClients() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.105:8080/api/getClients'));
+    final response = await http.get(
+        Uri.parse('http://192.168.1.105:8080/api/getClients'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       setState(() {
         clients = json.decode(response.body);

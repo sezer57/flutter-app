@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class SalesPage extends StatefulWidget {
   final dynamic selectedClient;
@@ -25,8 +26,11 @@ class _SettingPageState extends State<SalesPage> {
   }
 
   Future<void> fetchStocks() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.105:8080/api/getStocks'));
+    final response = await http.get(
+        Uri.parse('http://192.168.1.105:8080/api/getStocks'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       setState(() {
         stocks = json.decode(response.body);
@@ -38,8 +42,11 @@ class _SettingPageState extends State<SalesPage> {
   }
 
   Future<void> _fetchStocks() async {
-    final response = await http
-        .get(Uri.parse('http://192.168.1.105:8080/api/getWarehouseStock'));
+    final response = await http.get(
+        Uri.parse('http://192.168.1.105:8080/api/getWarehouseStock'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
     if (response.statusCode == 200) {
       setState(() {
@@ -86,7 +93,10 @@ class _SettingPageState extends State<SalesPage> {
         "clientId": clientId,
         "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
       }),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+      },
     );
 
     if (response.statusCode == 200) {

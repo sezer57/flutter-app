@@ -4,6 +4,7 @@ import 'package:flutter_application_1/pages/WaitingTransfer.dart';
 import 'package:flutter_application_1/pages/WarehouseTransferPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddWarehousePage.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class WareHousePage extends StatefulWidget {
   @override
@@ -14,13 +15,17 @@ class _WareHousePageState extends State<WareHousePage> {
   final String getWarehouseUrl = 'http://192.168.1.105:8080/api/getWarehouse';
 
   Future<List<dynamic>> _fetchWarehouses() async {
-    final response = await http.get(Uri.parse(getWarehouseUrl));
+    final response = await http.get(Uri.parse(getWarehouseUrl),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       final utf8Body =
           utf8.decode(response.bodyBytes); // Decode response body as UTF-8
       return jsonDecode(utf8Body);
     } else {
-      throw Exception('Failed to load Warehouses');
+      return List.empty();
+      print('Failed to load Warehouses');
     }
   }
 

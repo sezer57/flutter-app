@@ -8,6 +8,7 @@ import 'package:flutter_application_1/model/invoice.dart';
 import 'package:flutter_application_1/model/supplier.dart';
 import 'package:flutter_application_1/pages/utils.dart';
 import 'package:flutter_application_1/api/pdf_invoice_api.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class PurchaseList extends StatefulWidget {
   @override
@@ -25,8 +26,10 @@ class _PurchaseListState extends State<PurchaseList> {
 
   Future<void> fetchPurchases() async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.105:8080/api/getPurchases'),
-    );
+        Uri.parse('http://192.168.1.105:8080/api/getPurchases'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       setState(() {
         purchases = json.decode(response.body);

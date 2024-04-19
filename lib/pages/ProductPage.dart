@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddProductPage.dart';
 import 'package:flutter_application_1/pages/StockDetailesPage.dart';
 import 'package:flutter_application_1/pages/PdfViewPage.dart'; // Import PdfViewPage.dart
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class ProductPage extends StatefulWidget {
   @override
@@ -14,13 +15,17 @@ class _ProductPageState extends State<ProductPage> {
   final String getStocksUrl = 'http://192.168.1.105:8080/api/getStocks';
 
   Future<List<dynamic>> _fetchStocks() async {
-    final response = await http.get(Uri.parse(getStocksUrl));
+    final response = await http.get(Uri.parse(getStocksUrl),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       final utf8Body =
           utf8.decode(response.bodyBytes); // Decode response body as UTF-8
       return jsonDecode(utf8Body);
     } else {
-      throw Exception('Failed to load stocks');
+      return List.empty();
+      print('Failed to load stocks');
     }
   }
 

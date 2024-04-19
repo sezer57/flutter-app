@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/DebtPaymentPage2.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class ClientsPayDoPage extends StatefulWidget {
   final dynamic selectedClient;
@@ -22,9 +23,11 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
 
   Future<void> fetchSaless() async {
     final response = await http.get(
-      Uri.parse(
-          'http://192.168.1.105:8080/api/getSalesInvoiceClient?client_id=${widget.selectedClient['clientId']}'),
-    );
+        Uri.parse(
+            'http://192.168.1.105:8080/api/getSalesInvoiceClient?client_id=${widget.selectedClient['clientId']}'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       setState(() {
         purchases = json.decode(response.body);

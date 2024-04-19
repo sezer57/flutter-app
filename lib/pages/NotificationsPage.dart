@@ -5,6 +5,7 @@ import 'dart:convert';
 // Add this import statement for HTTP requests
 import 'package:flutter_application_1/pages/DailyExpensesPage.dart'; // Import SalesList.dart
 // Add the necessary imports
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class NotificationsPage extends StatefulWidget {
   @override
@@ -20,8 +21,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
   List<dynamic>? _purchases;
 
   Future<void> _getDailyExpenses(String selectedDate) async {
-    final response = await http.get(Uri.parse(
-        'http://192.168.1.105:8080/api/getDailyExpenses?date=$selectedDate'));
+    final response = await http.get(
+        Uri.parse(
+            'http://192.168.1.105:8080/api/getDailyExpenses?date=$selectedDate'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
     if (response.statusCode == 200) {
       List<dynamic> expenses = json.decode(response.body);

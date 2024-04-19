@@ -5,6 +5,8 @@ import 'package:flutter_application_1/pages/AddClientsPage.dart';
 import 'package:flutter_application_1/pages/FilterClientsPage.dart';
 import 'package:flutter_application_1/pages/ClientNotificationsPage.dart'; // Ekledik
 
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
+
 class ClientsPage extends StatefulWidget {
   @override
   _ClientsPageState createState() => _ClientsPageState();
@@ -15,7 +17,10 @@ class _ClientsPageState extends State<ClientsPage> {
   List<dynamic> clients = [];
 
   Future<void> _fetchClients() async {
-    final response = await http.get(Uri.parse(getClientsUrl));
+    final response = await http.get(Uri.parse(getClientsUrl),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       setState(() {
         clients = json.decode(response.body);
@@ -24,7 +29,6 @@ class _ClientsPageState extends State<ClientsPage> {
       print("product empty");
     }
   }
-  
 
   @override
   void initState() {
@@ -50,13 +54,15 @@ class _ClientsPageState extends State<ClientsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Clients'),
-        actions: [ // AppBar'a action ekledik
+        actions: [
+          // AppBar'a action ekledik
           IconButton(
             icon: Icon(Icons.calendar_today), // Takvim simgesi
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ClientNotificationsPage()),
+                MaterialPageRoute(
+                    builder: (context) => ClientNotificationsPage()),
               );
             },
           ),

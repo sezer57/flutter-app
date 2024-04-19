@@ -11,6 +11,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class StockPage extends StatefulWidget {
   @override
@@ -42,8 +43,11 @@ class _StockPageState extends State<StockPage> {
   }
 
   Future<void> _fetchStocks() async {
-    final response = await http
-        .get(Uri.parse('http://192.168.1.105:8080/api/getWarehouseStock'));
+    final response = await http.get(
+        Uri.parse('http://192.168.1.105:8080/api/getWarehouseStock'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
     if (response.statusCode == 200) {
       setState(() {
