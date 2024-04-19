@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddClientsPage.dart';
 import 'package:flutter_application_1/pages/FilterClientsPage.dart';
 import 'package:flutter_application_1/pages/ClientPdfPage.dart'; // ClientPdfPage eklendi
-
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class ClientsPage extends StatefulWidget {
@@ -61,21 +60,6 @@ class _ClientsPageState extends State<ClientsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Clients'),
-
-        actions: [
-          // AppBar'a action ekledik
-          IconButton(
-            icon: Icon(Icons.calendar_today), // Takvim simgesi
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ClientNotificationsPage()),
-              );
-            },
-          ),
-        ],
-
       ),
       body: Column(
         children: [

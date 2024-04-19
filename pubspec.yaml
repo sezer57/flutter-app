@@ -41,9 +41,7 @@ dependencies:
   pdf: ^3.10.8
   printing: ^5.12.0
   open_file: ^3.3.2
-t
   shared_preferences: ^2.0.8
-
   flutter_svg: ^2.0.10+1
 
 dev_dependencies:

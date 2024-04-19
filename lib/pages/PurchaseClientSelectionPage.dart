@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/PurchasePage.dart';
-import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class PurchaseClientSelectionPage extends StatefulWidget {
   @override
@@ -24,16 +23,8 @@ class _PurchaseClientSelectionPageState
   }
 
   Future<void> fetchClients() async {
-
-    final response = await http.get(
-        Uri.parse('http://192.168.1.105:8080/api/getClients'),
-        headers: <String, String>{
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        });
-
     final response =
         await http.get(Uri.parse('http://192.168.1.105:8080/api/getWarehouse'));
-
     if (response.statusCode == 200) {
       setState(() {
         warehouse = json.decode(response.body);
@@ -47,7 +38,8 @@ class _PurchaseClientSelectionPageState
   void searchClients(String query) {
     setState(() {
       filteredWarehouse = warehouse.where((Warehouse) {
-        final clientName = Warehouse['commercialTitle'].toString().toLowerCase();
+        final clientName =
+            Warehouse['commercialTitle'].toString().toLowerCase();
         return clientName.contains(query.toLowerCase());
       }).toList();
     });
@@ -86,7 +78,8 @@ class _PurchaseClientSelectionPageState
                 final Warehouse = filteredWarehouse[index];
                 return Card(
                     child: ListTile(
-                  title: Text(Warehouse['name']), // Display client name and surname
+                  title: Text(
+                      Warehouse['name']), // Display client name and surname
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
