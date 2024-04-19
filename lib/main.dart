@@ -116,9 +116,8 @@ class MyApp extends StatelessWidget {
 
 // Entegre edilecek kod buradan başlıyor
 
- class PdfPage extends StatelessWidget {
+class PdfPage extends StatelessWidget {
   static final String title = 'Invoice';
-
 
   @override
   Widget build(BuildContext context) => MaterialApp(
