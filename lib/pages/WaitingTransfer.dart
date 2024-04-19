@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async'; // Eklemeyi unutmayın
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class WaitingTransfer extends StatefulWidget {
   @override
@@ -26,8 +27,12 @@ class _WaitingTransferState extends State<WaitingTransfer> {
   }
 
   Future<void> _fetchWaitingTransfers() async {
-    final response = await http.get(Uri.parse(
-        'http://192.168.1.105:8080/api/warehouseStock/get_waiting_transfer'));
+    final response = await http.get(
+        Uri.parse(
+            'http://192.168.1.105:8080/api/warehouseStock/get_waiting_transfer'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
     if (_isMounted && response.statusCode == 200) {
       setState(() {
@@ -39,8 +44,12 @@ class _WaitingTransferState extends State<WaitingTransfer> {
   }
 
   Future<void> _updateTransferStatus(String id, String status) async {
-    final response = await http.patch(Uri.parse(
-        'http://192.168.1.105:8080/api/$id/approvelStatus?status=$status'));
+    final response = await http.patch(
+        Uri.parse(
+            'http://192.168.1.105:8080/api/$id/approvelStatus?status=$status'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
     if (_isMounted && response.statusCode == 200) {
       // Successfully updated transfer status, fetch waiting transfers again

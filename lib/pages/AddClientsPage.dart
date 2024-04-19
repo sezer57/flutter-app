@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class AddClientsPage extends StatefulWidget {
   @override
@@ -52,6 +53,7 @@ class _AddClientsPageState extends State<AddClientsPage> {
         Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         },
         body: jsonEncode(postData),
       );

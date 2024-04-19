@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+// Add this import statement for HTTP requests
+import 'package:flutter_application_1/pages/DailyExpensesPage.dart'; // Import SalesList.dart
+// Add the necessary imports
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
+
 import 'package:flutter_application_1/pages/DailyExpensesPage.dart'; // Satış Listesi sayfasını içeri aktar
 // HTTP istekleri için bu import ifadesini ekle
 // Gerekli import ifadelerini ekle
+
 
 class NotificationsPage extends StatefulWidget {
   @override
@@ -23,8 +30,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   // Seçilen tarihe göre günlük harcamaları getir
   Future<void> _getDailyExpenses(String selectedDate) async {
-    final response = await http.get(Uri.parse(
-        'http://192.168.1.105:8080/api/getDailyExpenses?date=$selectedDate'));
+    final response = await http.get(
+        Uri.parse(
+            'http://192.168.1.105:8080/api/getDailyExpenses?date=$selectedDate'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
     if (response.statusCode == 200) {
       List<dynamic> expenses = json.decode(response.body);

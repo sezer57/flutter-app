@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
+
 class UpdateStockForm extends StatefulWidget {
   final int stockId;
   final String stockName;
@@ -56,8 +58,14 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
         'http://192.168.1.105:8080/api/${widget.stockId}/updateQuantityOut?quantityOut=$quantityOut';
 
     try {
-      final responseQuantityIn = await http.patch(Uri.parse(urlQuantityIn));
-      final responseQuantityOut = await http.patch(Uri.parse(urlQuantityOut));
+      final responseQuantityIn = await http.patch(Uri.parse(urlQuantityIn),
+          headers: <String, String>{
+            'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+          });
+      final responseQuantityOut = await http.patch(Uri.parse(urlQuantityOut),
+          headers: <String, String>{
+            'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+          });
 
       if (responseQuantityIn.statusCode == 200 &&
           responseQuantityOut.statusCode == 200) {

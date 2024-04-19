@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class AddStockPage extends StatefulWidget {
   @override
@@ -32,8 +33,11 @@ class _AddStockPageState extends State<AddStockPage> {
   }
 
   Future<void> fetchWarehouses() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.105:8080/api/getWarehouse'));
+    final response = await http.get(
+        Uri.parse('http://192.168.1.105:8080/api/getWarehouse'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
     if (response.statusCode == 200) {
       setState(() {
@@ -159,6 +163,7 @@ class _AddStockPageState extends State<AddStockPage> {
       Uri.parse(apiUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
       body: jsonEncode(postData),
     );

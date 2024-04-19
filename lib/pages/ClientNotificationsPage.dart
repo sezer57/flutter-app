@@ -3,10 +3,12 @@ import 'package:flutter_application_1/pages/DailyMovementsOfClient.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class ClientNotificationsPage extends StatefulWidget {
   @override
-  _ClientNotificationsPageState createState() => _ClientNotificationsPageState();
+  _ClientNotificationsPageState createState() =>
+      _ClientNotificationsPageState();
 }
 
 class _ClientNotificationsPageState extends State<ClientNotificationsPage> {
@@ -15,34 +17,37 @@ class _ClientNotificationsPageState extends State<ClientNotificationsPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   List<dynamic>? _dailyMovementsOfClient;
 
- Future<void> _getDailyExpenses(String selectedDate) async {
-  final response = await http.get(Uri.parse(
-    'http://192.168.1.105:8080/api/getDailyMovementsOfClient?date=$selectedDate'));
+  Future<void> _getDailyExpenses(String selectedDate) async {
+    final response = await http.get(
+        Uri.parse(
+            'http://192.168.1.105:8080/api/getDailyMovementsOfClient?date=$selectedDate'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
-  if (response.statusCode == 200) {
-    List<dynamic> clientInfoList = json.decode(response.body);
-    setState(() {
-      _dailyMovementsOfClient = clientInfoList;
-    });
-    _navigateToDailyMovementsOfClient(selectedDate);
-  } else {
-    // Handle error
+    if (response.statusCode == 200) {
+      List<dynamic> clientInfoList = json.decode(response.body);
+      setState(() {
+        _dailyMovementsOfClient = clientInfoList;
+      });
+      _navigateToDailyMovementsOfClient(selectedDate);
+    } else {
+      // Handle error
+    }
   }
-}
-
 
   void _navigateToDailyMovementsOfClient(String selectedDate) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => DailyMovementsOfClient(
-        selectedDate: selectedDate,
-        dailyMovementsOfClient: _dailyMovementsOfClient,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DailyMovementsOfClient(
+          selectedDate: selectedDate,
+          dailyMovementsOfClient: _dailyMovementsOfClient,
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +72,8 @@ class _ClientNotificationsPageState extends State<ClientNotificationsPage> {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
                   });
-                  String formattedDate = "${selectedDay.year}-${selectedDay.month.toString().padLeft(2, '0')}-${selectedDay.day.toString().padLeft(2, '0')}";
+                  String formattedDate =
+                      "${selectedDay.year}-${selectedDay.month.toString().padLeft(2, '0')}-${selectedDay.day.toString().padLeft(2, '0')}";
                   await _getDailyExpenses(formattedDate);
                 }
               },

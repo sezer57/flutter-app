@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class WarehouseTransferPage extends StatefulWidget {
   @override
@@ -29,8 +30,11 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   }
 
   Future<void> fetchWarehouses() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.105:8080/api/getWarehouse'));
+    final response = await http.get(
+        Uri.parse('http://192.168.1.105:8080/api/getWarehouse'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
     if (response.statusCode == 200) {
       setState(() {
@@ -43,7 +47,10 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   }
 
   Future<void> fetchStocks(String warehouseId) async {
-    final response = await http.get(Uri.parse('$getStocksUrl$warehouseId'));
+    final response = await http.get(Uri.parse('$getStocksUrl$warehouseId'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
 
     if (response.statusCode == 200) {
       setState(() {
@@ -160,7 +167,10 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
       final response = await http.post(
         Uri.parse(transferUrl),
         body: jsonEncode(transferData),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        },
       );
 
       if (response.statusCode == 200) {

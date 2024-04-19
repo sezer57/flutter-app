@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/LoginPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatelessWidget {
   final List<MenuData> menuItems;
@@ -11,6 +13,38 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Menu'),
+        actions: [
+          // Add a SizedBox to create space between the logout icon and the user's name
+          SizedBox(width: 10),
+          // Display the user's name retrieved from SharedPreferences
+          FutureBuilder<String>(
+            future: getUserNameFromSharedPreferences(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Padding(
+                  padding: EdgeInsets.only(right: 10.0),
+                  child: Text(
+                    snapshot.data ?? 'User Name',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                );
+              } else {
+                return SizedBox(); // Return an empty SizedBox if data is not yet available
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              // Delete the token from SharedPreferences
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.remove('token');
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => LoginPage()));
+              // Add any additional logout logic here
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -38,6 +72,12 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<String> getUserNameFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('name') ??
+        ''; // Return empty string if name is not found
   }
 
   Widget _buildMenuCard(BuildContext context, String title, IconData icon) {

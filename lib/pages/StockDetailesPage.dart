@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -96,7 +97,8 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
                 deleteStock();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 210, 27, 14), // Button color
+                backgroundColor:
+                    const Color.fromARGB(255, 210, 27, 14), // Button color
               ),
               child: Text(
                 'Delete',
@@ -137,6 +139,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
       Uri.parse('http://192.168.1.105:8080/api/stockUpdate'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
       body: jsonEncode(requestBody),
     );
@@ -159,6 +162,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
       Uri.parse('http://192.168.1.105:8080/api/productDelete'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
       body: jsonEncode(<String, dynamic>{'id': widget.stock['stockId']}),
     );

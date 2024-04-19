@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
+
 class DebtPaymentPage extends StatefulWidget {
   final dynamic client;
 
@@ -37,7 +39,9 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
 Future<void> _fetchBalanceData() async {
     final url = Uri.parse(
         'http://192.168.1.105:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
-    final response = await http.get(url);
+    final response = await http.get(url, headers: <String, String>{
+      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+    });
     if (response.statusCode == 200) {
       setState(() {
         
@@ -73,13 +77,12 @@ Future<void> _fetchBalanceData() async {
           paymentAmountController.text.isNotEmpty) {
         final url = Uri.parse(
             'http://192.168.1.105:8080/api/${widget.client['clientId']}/updateBalance');
-        final response = await http.patch(
-          url,
-          body: {
-            'paymentType': selectedPaymentType!,
-            'value': paymentAmountController.text,
-          },
-        );
+        final response = await http.patch(url, body: {
+          'paymentType': selectedPaymentType!,
+          'value': paymentAmountController.text,
+        }, headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
         if (response.statusCode == 200) {
           // If successful, update balance data
           await _fetchBalanceData();
