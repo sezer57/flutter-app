@@ -21,7 +21,7 @@ class _AddStockPageState extends State<AddStockPage> {
   String? selectedUnit = 'Cartons';
   final TextEditingController salesPriceController = TextEditingController();
   final TextEditingController purchasePriceController = TextEditingController();
-  String? warehouseIdController;
+  List<String?> warehouseIdController = [];
   List<dynamic> warehouses = [];
   @override
   void initState() {
@@ -115,7 +115,7 @@ class _AddStockPageState extends State<AddStockPage> {
             DropdownButtonFormField<String>(
               onChanged: (newValue) {
                 setState(() {
-                  warehouseIdController = newValue;
+                  warehouseIdController.add(newValue);
                 });
               },
               items: warehouses.map((warehouse) {

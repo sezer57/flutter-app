@@ -25,10 +25,27 @@ class _AddClientsPageState extends State<AddClientsPage> {
   @override
   void initState() {
     super.initState();
-
+    _fetchClientCode();
     // Automatically generate registration date
     registrationDateController.text =
         DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
+  }
+
+  Future<void> _fetchClientCode() async {
+    final response = await http.get(
+        Uri.parse('http://192.168.1.105:8080/api/getClientCode'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
+
+    if (response.statusCode == 200) {
+      setState(() {
+        print(response.body);
+        clientCodeController.text = "C" + response.body;
+      });
+    } else {
+      print("_fetchClientCode");
+    }
   }
 
   final String url =
@@ -37,7 +54,7 @@ class _AddClientsPageState extends State<AddClientsPage> {
   Future<void> _postData() async {
     if (_validateInputs()) {
       final Map<String, dynamic> postData = {
-        "clientCode": int.parse(clientCodeController.text),
+        "clientCode": (clientCodeController.text),
         "registrationDate": registrationDateController.text,
         "commercialTitle": commercialTitleController.text,
         "name": nameController.text,
@@ -127,12 +144,14 @@ class _AddClientsPageState extends State<AddClientsPage> {
                 controller: clientCodeController,
                 decoration: InputDecoration(labelText: 'Client Code'),
                 keyboardType: TextInputType.number,
+                enabled: false,
               ),
               SizedBox(height: 16),
               TextField(
                 controller: registrationDateController,
                 decoration: InputDecoration(labelText: 'Registration Date'),
                 keyboardType: TextInputType.datetime,
+                enabled: false,
               ),
               SizedBox(height: 16),
               TextField(

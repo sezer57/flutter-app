@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/UpdateStockPage.dart';
+import 'package:flutter_application_1/pages/StockDetailesPageList.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async'; // Eklemeyi unutmayın
@@ -92,7 +93,7 @@ class _StockPageState extends State<StockPage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UpdateStockForm(stock),
+        builder: (context) => StockDetailesPageList(stock),
       ),
     );
 
