@@ -21,10 +21,11 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   String? selectedTargetWarehouse;
   String? selectedStockId;
   String? DateController;
-
+  String? quantityRemaing;
   @override
   void initState() {
     super.initState();
+    quantityRemaing = "0";
     fetchWarehouses();
     DateController = DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
   }
@@ -55,6 +56,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
     if (response.statusCode == 200) {
       setState(() {
         sourceWarehouseStocks = jsonDecode(utf8.decode(response.bodyBytes));
+        print(sourceWarehouseStocks);
       });
     } else {
       // Handle API error
@@ -103,8 +105,10 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
               items: sourceWarehouseStocks.map((stock) {
                 return DropdownMenuItem<String>(
                   value: stock['stockId'].toString(),
-                  child: Text(stock[
-                      'stockName']), // Adjust this according to your stock data structure
+                  child: Text(stock['stockName'] +
+                      " Remaining : " +
+                      stock['quantity']
+                          .toString()), // Adjust this according to your stock data structure
                 );
               }).toList(),
               decoration: InputDecoration(

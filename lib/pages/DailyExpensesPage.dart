@@ -13,20 +13,19 @@ class DailyExpensesPage extends StatelessWidget {
   double totalExpenses = 0;
   double totalTransfers = 0;
   double totalPurchases = 0;
-  DailyExpensesPage({
-    required this.selectedDate,
-    this.warehouseTransfers,
-    this.expenses,
-    this.purchases,
-    this.clients,
-    this.stocks
-  });
+  DailyExpensesPage(
+      {required this.selectedDate,
+      this.warehouseTransfers,
+      this.expenses,
+      this.purchases,
+      this.clients,
+      this.stocks});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daily Expenses - $selectedDate'),
+        title: Text('Report - $selectedDate'),
         actions: [
           IconButton(
             icon: Icon(Icons.picture_as_pdf),
@@ -248,8 +247,7 @@ class DailyExpensesPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Clients:',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        Text('Clients:', style: TextStyle(fontWeight: FontWeight.bold)),
         SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -263,7 +261,6 @@ class DailyExpensesPage extends StatelessWidget {
               DataColumn(label: Text('City')),
               DataColumn(label: Text('Phone')),
               DataColumn(label: Text('Gsm')),
-              
             ],
             rows: [
               ...clients!.map(
@@ -291,8 +288,7 @@ class DailyExpensesPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Stocks:',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        Text('Stocks:', style: TextStyle(fontWeight: FontWeight.bold)),
         SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -308,7 +304,6 @@ class DailyExpensesPage extends StatelessWidget {
               DataColumn(label: Text('Unit')),
               DataColumn(label: Text('Sales Price')),
               DataColumn(label: Text('Purchase Price')),
-              
             ],
             rows: [
               ...stocks!.map(
@@ -336,16 +331,15 @@ class DailyExpensesPage extends StatelessWidget {
 
   Future<void> _generatePDF(BuildContext context) async {
     final pdfFile = await PdfApi.generateExpenseReport(
-      selectedDate: selectedDate,
-      expenses: expenses,
-      purchases: purchases,
-      warehouseTransfers: warehouseTransfers,
-      totalExpenses: totalExpenses,
-      totalPurchases: totalPurchases,
-      totalTransfers: totalTransfers,
-      stocks : stocks,
-      clients : clients
-    );
+        selectedDate: selectedDate,
+        expenses: expenses,
+        purchases: purchases,
+        warehouseTransfers: warehouseTransfers,
+        totalExpenses: totalExpenses,
+        totalPurchases: totalPurchases,
+        totalTransfers: totalTransfers,
+        stocks: stocks,
+        clients: clients);
 
     PdfApi.openFile(pdfFile);
   }

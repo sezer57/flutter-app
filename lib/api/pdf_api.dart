@@ -5,8 +5,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 
-
-
 class PdfApi {
   static Future<File> generateExpenseReport({
     required String selectedDate,
@@ -28,10 +26,10 @@ class PdfApi {
           children: [
             Header(
               level: 1,
-              child: Text('Expense Report - $selectedDate'),
+              child: Text('Report - $selectedDate'),
             ),
             SizedBox(height: 10),
-            Text('Daily Raport',
+            Text('Raport',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
             if (expenses != null && expenses.isNotEmpty)
@@ -48,20 +46,17 @@ class PdfApi {
               _buildTable('Warehouse Transfers', warehouseTransfers),
             if (totalTransfers != 0.00)
               Text('Total Transfers: \$${totalTransfers.toStringAsFixed(2)}'),
-              if (clients != null && clients.isNotEmpty)
+            if (clients != null && clients.isNotEmpty)
               _buildTable('Clients', clients),
-              if (stocks != null && stocks.isNotEmpty)
+            if (stocks != null && stocks.isNotEmpty)
               _buildTable('Stocks', stocks),
           ],
         );
       },
     ));
 
-    return saveDocument(name: 'expense_report_$selectedDate.pdf', pdf: pdf);
+    return saveDocument(name: 'report_$selectedDate.pdf', pdf: pdf);
   }
-  
-
-  
 
   static Widget _buildTable(String title, List<dynamic> data) {
     final headers = data.first.keys.toList();
