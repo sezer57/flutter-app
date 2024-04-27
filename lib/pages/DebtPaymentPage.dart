@@ -46,11 +46,7 @@ Future<void> _fetchBalanceData() async {
       setState(() {
         
         balanceData = {
-          'Balance Id ': json.decode(response.body)['balanceID'],
-          'Client Id ': json.decode(response.body)['clientID'],
           'Balance': json.decode(response.body)['balance'],
-          'Comment': json.decode(response.body)['comme'],
-          'Debit Credit Status': json.decode(response.body)['debitCrediStatus']
         };
       });
     } else {
@@ -164,10 +160,6 @@ Future<void> _fetchBalanceData() async {
                 DropdownMenuItem(
                   value: 'Cash',
                   child: Text('Cash'),
-                ),
-                DropdownMenuItem(
-                  value: 'Balance',
-                  child: Text('Balance'),
                 ),
               ],
             ),
