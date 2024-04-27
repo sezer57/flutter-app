@@ -79,9 +79,10 @@ class _WaitingTransferState extends State<WaitingTransfer> {
                   Text('From: ${transfer['source']}'),
                   Text('To: ${transfer['target']}'),
                   Text('Quantity: ${transfer['quantity']}'),
-                  Text('Comment: ${transfer['comment']}'),
                   Text('Approvel Status: ${transfer['approvelstatus']}'),
+                  Text('Transfer Date: ${transfer['date']}'),
                 ],
+                
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,

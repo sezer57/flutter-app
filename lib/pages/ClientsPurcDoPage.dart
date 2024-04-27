@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_application_1/pages/DebtPaymentPage.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_1/pages/DebtPaymentPage2.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class ClientsPurcDoPage extends StatefulWidget {
@@ -63,10 +63,8 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DebtPaymentPage2(
+                  builder: (context) => DebtPaymentPage(
                     client: widget.selectedClient,
-                    initialPaymentAmount: purchase['price']
-                        .toString(), // Double değeri String'e dönüştürüldü
                   ),
                 ),
               );

@@ -2,44 +2,39 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/PurchasePage.dart';
-
 class PurchaseClientSelectionPage extends StatefulWidget {
   @override
   State<PurchaseClientSelectionPage> createState() =>
       _PurchaseClientSelectionPageState();
 }
-
 class _PurchaseClientSelectionPageState
     extends State<PurchaseClientSelectionPage> {
-  List<dynamic> warehouse = [];
-  List<dynamic> filteredWarehouse = [];
+  List<dynamic> clients = [];
+  List<dynamic> filteredClients = [];
   dynamic selectedClient;
   TextEditingController searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     fetchClients();
   }
-
   Future<void> fetchClients() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.105:8080/api/getWarehouse'));
+        await http.get(Uri.parse('http://192.168.1.105:8080/api/getClients'));
     if (response.statusCode == 200) {
       setState(() {
-        warehouse = json.decode(response.body);
-        filteredWarehouse = List.from(warehouse);
+        clients = json.decode(response.body);
+        filteredClients = List.from(clients);
+        print(clients);
       });
     } else {
       print("_PurchaseClientSelectionPageState empty");
     }
   }
-
   void searchClients(String query) {
     setState(() {
-      filteredWarehouse = warehouse.where((Warehouse) {
-        final clientName =
-            Warehouse['commercialTitle'].toString().toLowerCase();
+      filteredClients = clients.where((client) {
+        final clientName = client['commercialTitle'].toString().toLowerCase();
         return clientName.contains(query.toLowerCase());
       }).toList();
     });
@@ -49,7 +44,7 @@ class _PurchaseClientSelectionPageState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select Warehouse'),
+        title: Text('Select Client'),
       ),
       body: Column(
         children: [
@@ -73,22 +68,23 @@ class _PurchaseClientSelectionPageState
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredWarehouse.length,
+              itemCount: filteredClients.length,
               itemBuilder: (BuildContext context, int index) {
-                final Warehouse = filteredWarehouse[index];
+                final client = filteredClients[index];
                 return Card(
                     child: ListTile(
-                  title: Text(
-                      Warehouse['name']), // Display client name and surname
+                  title: Text(client['name'] +
+                      ' ' +
+                      client['surname']), // Display client name and surname
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Authorized: ${Warehouse['authorized']}'),
+                      Text('Commercial Title: ${client['commercialTitle']}'),
                     ],
                   ),
                   onTap: () {
                     setState(() {
-                      selectedClient = Warehouse;
+                      selectedClient = client;
                     });
                     Navigator.push(
                       context,

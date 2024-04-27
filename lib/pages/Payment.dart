@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/ClientsPayListPage.dart';
 import 'package:flutter_application_1/pages/ClientsPurcListPage.dart';
+import 'package:flutter_application_1/pages/SalesList.dart'; // Import the sales list page
 
 class Payment extends StatelessWidget {
   @override
@@ -33,11 +34,30 @@ class Payment extends StatelessWidget {
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20), // Add space between buttons
 
-            SizedBox(height: 20), // Spacer
-
-            SizedBox(height: 40), // Spacer
+            ElevatedButton.icon(
+              onPressed: () {
+                // Navigate to SalesListPage.dart
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SalesList(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.list),
+              label: Text('Sales List'),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.orange), // You can change color as desired
+                textStyle: MaterialStateProperty.all<TextStyle>(
+                  TextStyle(fontSize: 18),
+                ),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+            ),
+            SizedBox(height: 20), // Add space between buttons
+            
             ElevatedButton.icon(
               onPressed: () {
                 // Navigate to PurchaseClientSelectionPage.dart
@@ -58,7 +78,8 @@ class Payment extends StatelessWidget {
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20), // Add space between buttons
+
           ],
         ),
       ),
