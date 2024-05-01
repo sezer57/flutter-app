@@ -87,12 +87,22 @@ class _SalesTestPageState extends State<SalesTestPage> {
           builder: (context) =>
               SalesPage(selectedSourceWarehouse: selectedSourceWarehouse)),
     );
+
     if (result != null) {
       setState(() {
         selectedStock = result;
-        stockController.text = selectedStock['stockName'] ?? '';
       });
+      await fetchAndSetRemainingStock(); // Wait for remaining stock information
     }
+  }
+
+  Future<void> fetchAndSetRemainingStock() async {
+    final String? remaningValue = await fetchStocksRemaing();
+    setState(() {
+      remaning = remaningValue;
+      stockController.text =
+          selectedStock['stockName'] + " Remaing: " + (remaning ?? '');
+    });
   }
 
   void _navigateToClientSelectionPage() async {
@@ -123,6 +133,22 @@ class _SalesTestPageState extends State<SalesTestPage> {
     } else {
       // Handle API error
       print('Failed to fetch warehouses');
+    }
+  }
+
+  final String getStocksUrl =
+      'http://104.248.42.73:8080/api/getStocksRemainigById?warehouse_id=';
+  String? remaning;
+  Future<String?> fetchStocksRemaing() async {
+    final response = await http.get(
+        Uri.parse('$getStocksUrl${selectedStock['stockId']}'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to load stocks');
     }
   }
 
