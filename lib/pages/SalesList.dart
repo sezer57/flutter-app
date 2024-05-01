@@ -45,8 +45,6 @@ class _SalesListState extends State<SalesList> {
     InvoiceInfo info = InvoiceInfo(
       number: sale['expense_id'].toString(),
       date: DateTime.now(),
-      dueDate:
-          DateTime.now().add(Duration(days: 30)), // Örnek olarak 30 gün sonra
       description: 'Invoice for ${sale['stockName']}',
     );
 
@@ -54,13 +52,17 @@ class _SalesListState extends State<SalesList> {
     Customer customer = Customer(
       name: sale['clientName'],
       address: sale['clientAdress'],
+      number: sale['clientPhone']
     );
 
     // Supplier oluşturma (Varsayılan değerler kullanıldı, isteğe bağlı olarak değiştirilebilir)
     Supplier supplier = Supplier(
-      name: 'Cekir Trading Co. ',
-      address: 'Dubai',
-      paymentInfo: 'TR5254657894564510000',
+      Tel:' +971 4 2266114',
+      WhatsApp: ' +971559438444',
+      POBox: 'P.O.Box 65127',
+      name: 'Murshid Bazar',
+      name2: 'Obaid Omayar Bldg',
+      address: 'Shop No:1, Dubai, U.A.E',
     );
 
     // Item oluşturma
@@ -69,7 +71,7 @@ class _SalesListState extends State<SalesList> {
       date: DateTime.now(),
       quantity: sale['quantity'],
       unitPrice: sale['price'],
-      vat: 0.18, // Örnek olarak KDV oranı %18
+      vat: 0.05, // Örnek olarak KDV oranı %18
     );
 
     // Invoice oluşturma

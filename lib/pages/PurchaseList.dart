@@ -47,22 +47,25 @@ class _PurchaseListState extends State<PurchaseList> {
     InvoiceInfo info = InvoiceInfo(
       number: purchase['purchase_id'].toString(),
       date: DateTime.now(),
-      dueDate:
-          DateTime.now().add(Duration(days: 30)), // Örnek olarak 30 gün sonra
-      description: 'Invoice for ${purchase['stockName']}',
+      description: 'Purchase Invoice for ${purchase['stockName']}',
     );
 
     // Supplier oluşturma (Varsayılan değerler kullanıldı, isteğe bağlı olarak değiştirilebilir)
     Supplier supplier = Supplier(
-      name: 'Cekir Trading Co. ',
-      address: 'Dubai',
-      paymentInfo: 'TR5254657894564510000',
+      Tel:' +971 4 2266114',
+      WhatsApp: ' +971559438444',
+      POBox: 'P.O.Box 65127',
+      name: 'Murshid Bazar',
+      name2: 'Obaid Omayar Bldg',
+      address: 'Shop No:1, Dubai, U.A.E',
     );
+
 
     // Customer oluşturma
     Customer customer = Customer(
       name: purchase['clientName'],
       address: purchase['clientAdress'],
+      number: purchase['clientPhone']
     );
 
     // Item oluşturma
@@ -71,7 +74,7 @@ class _PurchaseListState extends State<PurchaseList> {
       date: DateTime.now(),
       quantity: purchase['quantity'],
       unitPrice: purchase['price'],
-      vat: 0.18, // Örnek olarak KDV oranı %18
+      vat: 0.05, // Örnek olarak KDV oranı %18
     );
 
     // Invoice oluşturma
