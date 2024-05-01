@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WarehouseTransferPage extends StatefulWidget {
   @override
@@ -11,9 +12,9 @@ class WarehouseTransferPage extends StatefulWidget {
 
 class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   final String transferUrl =
-      'http://192.168.1.105:8080/api/warehouseStock/transfer';
+      'http://104.248.42.73:8080/api/warehouseStock/transfer';
   final String getStocksUrl =
-      'http://192.168.1.105:8080/api/getStocksById?warehouse_id=';
+      'http://104.248.42.73:8080/api/getStocksById?warehouse_id=';
   TextEditingController quantityController = TextEditingController();
   List<dynamic> warehouses = [];
   List<dynamic> sourceWarehouseStocks = [];
@@ -25,6 +26,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   @override
   void initState() {
     super.initState();
+
     quantityRemaing = "0";
     fetchWarehouses();
     DateController = DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
@@ -32,7 +34,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.105:8080/api/getWarehouse'),
+        Uri.parse('http://104.248.42.73:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -152,6 +154,11 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
     );
   }
 
+  Future<String> getUserNameFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('name') ?? '';
+  }
+
   Future<void> _transfer() async {
     final int quantity = int.tryParse(quantityController.text) ?? 0;
 
@@ -159,13 +166,15 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
         selectedSourceWarehouse != null &&
         selectedTargetWarehouse != null &&
         selectedStockId != null) {
+      final String userName =
+          await getUserNameFromSharedPreferences(); // Await here
       final Map<String, dynamic> transferData = {
         'source_id': selectedSourceWarehouse,
         'target_id': selectedTargetWarehouse,
         'stock_id': selectedStockId,
         'date': DateController,
         'quantity': quantity.toString(),
-        'comment': 'yasihjn',
+        'comment': "process owner:" + userName,
       };
 
       final response = await http.post(

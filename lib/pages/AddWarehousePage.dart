@@ -9,7 +9,7 @@ class AddWareHousePage extends StatefulWidget {
 }
 
 class _AddWareHousePageState extends State<AddWareHousePage> {
-  final String url = 'http://192.168.1.105:8080/api/warehouse';
+  final String url = 'http://104.248.42.73:8080/api/warehouse';
   TextEditingController nameController = TextEditingController();
   TextEditingController authorizedController = TextEditingController();
   TextEditingController phoneController = TextEditingController();

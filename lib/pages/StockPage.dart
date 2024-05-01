@@ -46,7 +46,7 @@ class _StockPageState extends State<StockPage> {
 
   Future<void> _fetchStocks() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.105:8080/api/getWarehouseStock'),
+        Uri.parse('http://104.248.42.73:8080/api/getWarehouseStock'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });

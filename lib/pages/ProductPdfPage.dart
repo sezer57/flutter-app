@@ -24,7 +24,7 @@ class _PdfPageState extends State<PdfPage> {
 
   Future<void> fetchclnts() async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.105:8080/api/getStocks'),
+      Uri.parse('http://104.248.42.73:8080/api/getStocks'),
     );
     if (response.statusCode == 200) {
       setState(() {

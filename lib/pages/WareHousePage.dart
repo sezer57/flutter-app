@@ -12,7 +12,7 @@ class WareHousePage extends StatefulWidget {
 }
 
 class _WareHousePageState extends State<WareHousePage> {
-  final String getWarehouseUrl = 'http://192.168.1.105:8080/api/getWarehouse';
+  final String getWarehouseUrl = 'http://104.248.42.73:8080/api/getWarehouse';
 
   Future<List<dynamic>> _fetchWarehouses() async {
     final response = await http.get(Uri.parse(getWarehouseUrl),

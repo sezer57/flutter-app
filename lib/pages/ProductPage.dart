@@ -7,13 +7,27 @@ import 'package:flutter_application_1/pages/AddProductPage.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:flutter_application_1/pages/ProductPdfPage.dart'; // Import PdfViewPage.dart
 
+TextEditingController searchController = TextEditingController();
+
 class ProductPage extends StatefulWidget {
   @override
   _ProductPageState createState() => _ProductPageState();
 }
 
 class _ProductPageState extends State<ProductPage> {
-  final String getStocksUrl = 'http://192.168.1.105:8080/api/getStocks';
+  final String getStocksUrl = 'http://104.248.42.73:8080/api/getStocks';
+  @override
+  void initState() {
+    super.initState();
+    // Load stocks initially
+    _fetchStocks().then((stocks) {
+      setState(() {
+        _stocks = stocks;
+        filteredStocks =
+            stocks; // Initially, filteredStocks will be same as _stocks
+      });
+    });
+  }
 
   Future<List<dynamic>> _fetchStocks() async {
     final response = await http.get(Uri.parse(getStocksUrl),
@@ -38,6 +52,22 @@ class _ProductPageState extends State<ProductPage> {
       ),
     );
   }
+
+  void searchStocks(String query) {
+    setState(() {
+      // Filter the list of stocks based on the query
+      // Assuming you want to filter by stockName
+      filteredStocks = _stocks
+          .where((stock) =>
+              stock['stockName'].toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  List<dynamic> _stocks =
+      []; // Add this variable to hold the original list of stocks
+  List<dynamic> filteredStocks =
+      []; // Add this variable to hold the filtered list of stocks
 
   @override
   Widget build(BuildContext context) {
@@ -71,19 +101,26 @@ class _ProductPageState extends State<ProductPage> {
                   child: Text('Add Products'),
                 ),
                 SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PdfPage(),
-                      ),
-                    );
-                  },
-                  child: Text('All Products'),
-                ),
               ],
             ),
+          ),
+          TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              hintText: 'Search Product...',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+            ),
+            onChanged: searchStocks,
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
@@ -94,11 +131,11 @@ class _ProductPageState extends State<ProductPage> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  List<dynamic> stocks = snapshot.data!;
+                  // List<dynamic> stocks = snapshot.data!;
                   return ListView.builder(
-                    itemCount: stocks.length,
+                    itemCount: filteredStocks.length,
                     itemBuilder: (context, index) {
-                      var stock = stocks[index];
+                      var stock = filteredStocks[index];
                       var warehouseName = stock['warehouse']['name'];
                       var salesPrice = stock['salesPrice'];
                       return Card(

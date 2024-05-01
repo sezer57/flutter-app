@@ -136,7 +136,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
       "purchasePrice": purchasePrice,
     };
     final response = await http.post(
-      Uri.parse('http://192.168.1.105:8080/api/stockUpdate'),
+      Uri.parse('http://104.248.42.73:8080/api/stockUpdate'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
@@ -159,7 +159,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
 
   Future<void> deleteStock() async {
     final response = await http.post(
-      Uri.parse('http://192.168.1.105:8080/api/productDelete'),
+      Uri.parse('http://104.248.42.73:8080/api/productDelete'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'

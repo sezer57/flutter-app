@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/PurchasePage.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
+
 class PurchaseClientSelectionPage extends StatefulWidget {
   @override
   State<PurchaseClientSelectionPage> createState() =>
       _PurchaseClientSelectionPageState();
 }
+
 class _PurchaseClientSelectionPageState
     extends State<PurchaseClientSelectionPage> {
   List<dynamic> clients = [];
@@ -18,9 +21,13 @@ class _PurchaseClientSelectionPageState
     super.initState();
     fetchClients();
   }
+
   Future<void> fetchClients() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.105:8080/api/getClients'));
+    final response = await http.get(
+        Uri.parse('http://104.248.42.73:8080/api/getClients'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       setState(() {
         clients = json.decode(response.body);
@@ -31,6 +38,7 @@ class _PurchaseClientSelectionPageState
       print("_PurchaseClientSelectionPageState empty");
     }
   }
+
   void searchClients(String query) {
     setState(() {
       filteredClients = clients.where((client) {

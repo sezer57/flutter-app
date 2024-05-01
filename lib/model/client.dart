@@ -3,16 +3,14 @@ import 'package:flutter_application_1/model/supplier.dart';
 import 'package:flutter/material.dart'; // Importing for the use of the DateTime type
 
 class Client {
-
   final List<ClientItem> items;
   const Client({
-
     required this.items,
   });
 }
 
 class ClientItem {
-  final int clientCode;
+  final String clientCode;
   final String commercialTitle;
   final String name;
   final String surname;
@@ -26,7 +24,6 @@ class ClientItem {
   final String comment;
   final String debitCreditStatus;
 
-
   const ClientItem({
     required this.clientCode,
     required this.commercialTitle,
@@ -37,12 +34,9 @@ class ClientItem {
     required this.city,
     required this.phone,
     required this.gsm,
-    required this.registrationDate, 
-    required this.balance, 
-    required this.comment, 
+    required this.registrationDate,
+    required this.balance,
+    required this.comment,
     required this.debitCreditStatus,
   });
-
- 
-
 }

@@ -24,7 +24,7 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
   Future<void> fetchSaless() async {
     final response = await http.get(
         Uri.parse(
-            'http://192.168.1.105:8080/api/getPurchaseInvoiceClient?client_id=${widget.selectedClient['clientId']}'),
+            'http://104.248.42.73:8080/api/getPurchaseInvoiceClient?client_id=${widget.selectedClient['clientId']}'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });

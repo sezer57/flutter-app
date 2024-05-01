@@ -27,7 +27,7 @@ class _SettingPageState extends State<PurchasePage> {
 
   Future<void> fetchStocks() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.105:8080/api/getStocks'),
+        Uri.parse('http://104.248.42.73:8080/api/getStocks'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -43,7 +43,7 @@ class _SettingPageState extends State<PurchasePage> {
 
   Future<void> _fetchStocks() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.105:8080/api/getWarehouseStock'),
+        Uri.parse('http://104.248.42.73:8080/api/getWarehouseStock'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -85,7 +85,7 @@ class _SettingPageState extends State<PurchasePage> {
   Future<void> purchaseStock(
       int stockCode, int quantity, double price, int clientId) async {
     final response = await http.post(
-      Uri.parse('http://192.168.1.105:8080/api/purchase'),
+      Uri.parse('http://104.248.42.73:8080/api/purchase'),
       body: json.encode({
         "stockCode": stockCode,
         "quantity": quantity,
@@ -192,7 +192,8 @@ class _SettingPageState extends State<PurchasePage> {
                 return Card(
                     child: ListTile(
                   title: Text('Stock Name: ${stock['stockName']}'),
-                  subtitle: Text('Sales Price: \$${stock['salesPrice']}'),
+                  subtitle: Text('Sales Price: \$${stock['salesPrice']}' +
+                      " Warehouse: ${stock['warehouse']['name']}"),
                   onTap: () {
                     setState(() {
                       selectedStock = stock;
@@ -244,7 +245,7 @@ class _SettingPageState extends State<PurchasePage> {
                 int quantity = int.tryParse(quantityController.text) ?? 0;
                 double price = double.tryParse(priceController.text) ?? 0.0;
                 purchaseStock(selectedStock['stockId'], quantity, price,
-                    widget.selectedClient['warehouseId']);
+                    widget.selectedClient['clientId']);
                 Navigator.of(context).pop();
               },
               child: Text('Purchase'),

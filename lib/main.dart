@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:flutter_application_1/pages/ClientPdfPage.dart';
+import 'package:flutter_application_1/pages/StockPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -47,6 +48,8 @@ class MyApp extends StatelessWidget {
                           MenuData('Stocks', Icons.cases_outlined),
                           MenuData('Invoice', Icons.description),
                           MenuData('Payment', Icons.payment),
+                          MenuData('Sales', Icons.shopping_cart_checkout),
+                          MenuData('Purchases', Icons.add_shopping_cart),
                           MenuData('Info', Icons.info),
                         ],
                         onMenuItemTap: (index) {
@@ -80,7 +83,7 @@ class MyApp extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Stocks()),
+                                    builder: (context) => StockPage()),
                               );
                               break;
 
@@ -116,7 +119,7 @@ class MyApp extends StatelessWidget {
                       WareHousePage(),
                       ProductPage(),
                       ClientsPage(),
-                      Stocks(),
+                      StockPage(),
                       NotificationsPage(),
                     ],
                   ),
@@ -133,12 +136,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 // Entegre edilecek kod buradan başlıyor
 
- class PdfPage extends StatelessWidget {
+class PdfPage extends StatelessWidget {
   static final String title = 'Invoice';
-
 
   @override
   Widget build(BuildContext context) => MaterialApp(

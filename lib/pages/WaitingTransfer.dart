@@ -29,7 +29,7 @@ class _WaitingTransferState extends State<WaitingTransfer> {
   Future<void> _fetchWaitingTransfers() async {
     final response = await http.get(
         Uri.parse(
-            'http://192.168.1.105:8080/api/warehouseStock/get_waiting_transfer'),
+            'http://104.248.42.73:8080/api/warehouseStock/get_waiting_transfer'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -46,7 +46,7 @@ class _WaitingTransferState extends State<WaitingTransfer> {
   Future<void> _updateTransferStatus(String id, String status) async {
     final response = await http.patch(
         Uri.parse(
-            'http://192.168.1.105:8080/api/$id/approvelStatus?status=$status'),
+            'http://104.248.42.73:8080/api/$id/approvelStatus?status=$status'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -82,7 +82,6 @@ class _WaitingTransferState extends State<WaitingTransfer> {
                   Text('Approvel Status: ${transfer['approvelstatus']}'),
                   Text('Transfer Date: ${transfer['date']}'),
                 ],
-                
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,

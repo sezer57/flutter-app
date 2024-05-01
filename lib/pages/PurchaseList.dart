@@ -26,7 +26,7 @@ class _PurchaseListState extends State<PurchaseList> {
 
   Future<void> fetchPurchases() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.105:8080/api/getPurchases'),
+        Uri.parse('http://104.248.42.73:8080/api/getPurchases'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });

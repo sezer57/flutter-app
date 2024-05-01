@@ -8,12 +8,12 @@ import 'package:flutter_application_1/pages/utils.dart';
 class PdfClientApi {
   static Future<File> generate(Client clients) async {
     final pdf = pw.Document();
-   
+
     pdf.addPage(
       pw.MultiPage(
         build: (context) => [
           _buildHeader(clients),
-          pw.SizedBox(height: 3 * PdfPageFormat.cm),
+          pw.SizedBox(height: 1 * PdfPageFormat.cm), // Reduced height
           _buildTitle(),
           _buildInvoice(clients),
           pw.Divider(),
@@ -28,7 +28,7 @@ class PdfClientApi {
   static pw.Widget _buildHeader(Client client) => pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.SizedBox(height: 1 * PdfPageFormat.cm),
+          pw.SizedBox(height: 0.5 * PdfPageFormat.cm), // Reduced height
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
@@ -39,7 +39,7 @@ class PdfClientApi {
               ),
             ],
           ),
-          pw.SizedBox(height: 1 * PdfPageFormat.cm),
+          pw.SizedBox(height: 0.5 * PdfPageFormat.cm), // Reduced height
           // Buraya başlık veya firma adı ekleyebilirsiniz.
         ],
       );
@@ -51,24 +51,23 @@ class PdfClientApi {
             'Client List',
             style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
           ),
-          pw.SizedBox(height: 0.8 * PdfPageFormat.cm),
+          pw.SizedBox(height: 0.4 * PdfPageFormat.cm), // Reduced height
           // İsterseniz ek açıklamalar veya bilgiler ekleyebilirsiniz.
         ],
       );
 
   static pw.Widget _buildInvoice(Client invoice) {
     final headers = [
-      'Client Code',
+      'C. Code',
       'Name',
       'Surname',
       'Gsm',
       'Phone',
       'Address',
-      'Commercial Title',
-      'Registration Date',
+      'Comm. Title',
+      'Reg. Date',
       'Balance',
-      'Comment',
-      'Debit Credit Status'
+      'DC Status'
     ];
     final data = invoice.items.map((item) {
       return [
@@ -81,7 +80,7 @@ class PdfClientApi {
         '${item.commercialTitle}',
         '${Utils.formatDate(item.registrationDate)}', // Tarih formatlama gerekebilir
         '${item.balance}',
-        '${item.comment}',
+
         '${item.debitCreditStatus}',
       ];
     }).toList();
@@ -89,30 +88,33 @@ class PdfClientApi {
       headers: headers,
       data: data,
       border: null,
-      headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+      headerStyle: pw.TextStyle(
+        fontWeight: pw.FontWeight.bold,
+        fontSize: 9, // Adjust the font size as needed
+      ),
       headerDecoration: pw.BoxDecoration(color: PdfColors.grey300),
-      cellHeight: 30,
+      cellHeight: 10,
       cellAlignments: {
         0: pw.Alignment.centerLeft,
-        1: pw.Alignment.centerRight,
-        2: pw.Alignment.centerRight,
-        3: pw.Alignment.centerRight,
-        4: pw.Alignment.centerRight,
-        5: pw.Alignment.centerRight,
-        6: pw.Alignment.centerRight,
-        7: pw.Alignment.centerRight,
-        8: pw.Alignment.centerRight,
-        9: pw.Alignment.centerRight,
-        10: pw.Alignment.centerRight,
-        11: pw.Alignment.centerRight,
+        1: pw.Alignment.centerLeft,
+        2: pw.Alignment.centerLeft,
+        3: pw.Alignment.centerLeft,
+        4: pw.Alignment.centerLeft,
+        5: pw.Alignment.centerLeft,
+        6: pw.Alignment.centerLeft,
+        7: pw.Alignment.centerLeft,
+        8: pw.Alignment.centerLeft,
+        9: pw.Alignment.centerLeft,
+        10: pw.Alignment.centerLeft,
       },
     );
   }
+
   static pw.Widget _buildFooter(Client invoice) => pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.center,
         children: [
           pw.Divider(),
-          pw.SizedBox(height: 2 * PdfPageFormat.mm),
+          pw.SizedBox(height: 0.2 * PdfPageFormat.cm), // Reduced height
           // Buraya firma bilgileri veya iletişim bilgileri ekleyebilirsiniz.
         ],
       );
