@@ -15,7 +15,6 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
   List<dynamic> filteredClients = [];
   dynamic selectedClient;
   TextEditingController searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -32,6 +31,7 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
       setState(() {
         clients = json.decode(response.body);
         filteredClients = List.from(clients);
+        print(clients);
       });
     } else {
       print("_SalesClientSelectionPageState empty");
@@ -93,13 +93,7 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
                     setState(() {
                       selectedClient = client;
                     });
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            SalesPage(selectedClient: selectedClient),
-                      ),
-                    );
+                    Navigator.pop(context, selectedClient);
                   },
                 ));
               },

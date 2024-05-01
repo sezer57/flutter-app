@@ -6,6 +6,7 @@ import 'package:flutter_application_1/pages/BottomNavBarLayout.dart';
 import 'package:flutter_application_1/pages/Invoice.dart';
 import 'package:flutter_application_1/pages/LoginPage.dart';
 import 'package:flutter_application_1/pages/NotificationsPage.dart';
+import 'package:flutter_application_1/pages/PurchaseTestPage.dart';
 import 'package:flutter_application_1/pages/WareHousePage.dart';
 import 'package:flutter_application_1/pages/ProductPage.dart';
 import 'package:flutter_application_1/pages/Payment.dart';
@@ -15,6 +16,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:flutter_application_1/pages/ClientPdfPage.dart';
 import 'package:flutter_application_1/pages/StockPage.dart';
+import 'package:flutter_application_1/pages/PurchaseTestPage.dart';
+import 'package:flutter_application_1/pages/SalesTestPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -102,8 +105,21 @@ class MyApp extends StatelessWidget {
                                     builder: (context) => Payment()),
                               );
                               break;
-
                             case 6:
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SalesTestPage()),
+                              );
+                              break;
+                            case 7:
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PurchaseTestPage()),
+                              );
+                              break;
+                            case 8:
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
