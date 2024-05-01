@@ -1,18 +1,19 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/SalesClientSelectionPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
-import 'package:flutter_application_1/pages/PurchaseClientSelectionPage.dart';
+import 'package:flutter_application_1/pages/SalesClientSelectionPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_application_1/pages/PurchasePage.dart';
+import 'package:flutter_application_1/pages/SalesPage.dart';
 
-class PurchaseTestPage extends StatefulWidget {
+class SalesTestPage extends StatefulWidget {
   final dynamic selectedClient;
   final dynamic selectedStock;
-  PurchaseTestPage({this.selectedClient, this.selectedStock});
+  SalesTestPage({this.selectedClient, this.selectedStock});
   @override
-  _PurchaseTestPageState createState() => _PurchaseTestPageState();
+  _SalesTestPageState createState() => _SalesTestPageState();
 }
 
 List<dynamic> filteredClients = [];
@@ -23,7 +24,7 @@ String? selectedSourceWarehouse;
 
 String? selectedStockId;
 
-class _PurchaseTestPageState extends State<PurchaseTestPage> {
+class _SalesTestPageState extends State<SalesTestPage> {
   final TextEditingController clientCodeController = TextEditingController();
   final TextEditingController DateController = TextEditingController();
   final TextEditingController commercialTitleController =
@@ -84,20 +85,30 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
       context,
       MaterialPageRoute(
           builder: (context) =>
-              PurchasePage(selectedSourceWarehouse: selectedSourceWarehouse)),
+              SalesPage(selectedSourceWarehouse: selectedSourceWarehouse)),
     );
+
     if (result != null) {
       setState(() {
         selectedStock = result;
-        stockController.text = selectedStock['stockName'] ?? '';
       });
+      await fetchAndSetRemainingStock(); // Wait for remaining stock information
     }
+  }
+
+  Future<void> fetchAndSetRemainingStock() async {
+    final String? remaningValue = await fetchStocksRemaing();
+    setState(() {
+      remaning = remaningValue;
+      stockController.text =
+          selectedStock['stockName'] + " Remaing: " + (remaning ?? '');
+    });
   }
 
   void _navigateToClientSelectionPage() async {
     final dynamic result1 = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => PurchaseClientSelectionPage()),
+      MaterialPageRoute(builder: (context) => SalesClientSelectionPage()),
     );
     if (result1 != null) {
       setState(() {
@@ -125,11 +136,27 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
     }
   }
 
+  final String getStocksUrl =
+      'http://104.248.42.73:8080/api/getStocksRemainigById?warehouse_id=';
+  String? remaning;
+  Future<String?> fetchStocksRemaing() async {
+    final response = await http.get(
+        Uri.parse('$getStocksUrl${selectedStock['stockId']}'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to load stocks');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Purchase'),
+        title: Text('Sales'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -146,7 +173,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
               SizedBox(height: 16),
               TextField(
                 controller: commercialTitleController,
-                decoration: InputDecoration(labelText: 'Seller'),
+                decoration: InputDecoration(labelText: 'Buyer'),
                 onTap: _navigateToClientSelectionPage,
               ),
               SizedBox(height: 16),
@@ -179,9 +206,9 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                 controller: quantityController,
                 onChanged: (newValue) {
                   setState(() {
-                    priceController.text = (double.parse(newValue!) *
-                            selectedStock['purchasePrice'])
-                        .toString();
+                    priceController.text =
+                        (double.parse(newValue!) * selectedStock['salesPrice'])
+                            .toString();
                   });
                 },
                 decoration: InputDecoration(labelText: 'Quantity'),
@@ -204,11 +231,11 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                 onPressed: () {
                   int quantity = int.tryParse(quantityController.text) ?? 0;
                   double price = double.tryParse(priceController.text) ?? 0.0;
-                  print(selectedStock);
+                  print(selectedClient);
                   purchaseStock(selectedStock['stockId'], quantity, price,
                       selectedClient['clientId']);
                 },
-                child: Text('Purchase'),
+                child: Text('Sales'),
               ),
             ],
           ),
@@ -220,7 +247,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
   Future<void> purchaseStock(
       int stockCode, int quantity, double price, int clientId) async {
     final response = await http.post(
-      Uri.parse('http://104.248.42.73:8080/api/purchase'),
+      Uri.parse('http://104.248.42.73:8080/api/Sales'),
       body: json.encode({
         "stockCode": stockCode,
         "quantity": quantity,
@@ -235,19 +262,17 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
     );
 
     if (response.statusCode == 200) {
-      // Purchase successful, show confirmation message
+      // Sales successful, show confirmation message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Purchase successful!'),
+          content: Text('Sales successful!'),
         ),
       );
       Navigator.pop(context);
     } else {
-      // Purchase failed, show error message
+      // Sales failed, show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to complete purchase'),
-        ),
+        SnackBar(content: Text(response.body)),
       );
     }
   }

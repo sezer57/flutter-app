@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/PurchasePage.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
+import 'package:flutter_application_1/pages/PurchaseTestPage.dart';
 
 class PurchaseClientSelectionPage extends StatefulWidget {
   @override
@@ -94,13 +95,7 @@ class _PurchaseClientSelectionPageState
                     setState(() {
                       selectedClient = client;
                     });
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            PurchasePage(selectedClient: selectedClient),
-                      ),
-                    );
+                    Navigator.pop(context, selectedClient);
                   },
                 ));
               },

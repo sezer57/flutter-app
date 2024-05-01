@@ -5,12 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class PurchasePage extends StatefulWidget {
-  final dynamic selectedClient;
-
-  PurchasePage({required this.selectedClient});
+  final String? selectedSourceWarehouse;
+  PurchasePage({required this.selectedSourceWarehouse});
   @override
   State<PurchasePage> createState() => _SettingPageState();
 }
+
+String? selectedSourceWarehouse;
 
 class _SettingPageState extends State<PurchasePage> {
   List<dynamic> stocks = [];
@@ -18,16 +19,18 @@ class _SettingPageState extends State<PurchasePage> {
   dynamic selectedStock;
   TextEditingController searchController = TextEditingController();
 
-  String selectedWarehouseFilter = 'All';
   @override
   void initState() {
     super.initState();
+
     fetchStocks();
   }
 
   Future<void> fetchStocks() async {
+    print(selectedSourceWarehouse);
     final response = await http.get(
-        Uri.parse('http://104.248.42.73:8080/api/getStocks'),
+        Uri.parse(
+            'http://104.248.42.73:8080/api/getStockWithIdProduct?warehouse_id=${widget.selectedSourceWarehouse}'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -53,24 +56,11 @@ class _SettingPageState extends State<PurchasePage> {
         stocks = json.decode(utf8.decode(response.bodyBytes));
         filteredStocks =
             stocks; // Initialize filteredStocks with all stocks initially
-        _applyWarehouseFilter();
+        //  _applyWarehouseFilter();
       });
     } else {
       throw Exception('Failed to fetch stocks');
     }
-  }
-
-  void _applyWarehouseFilter() {
-    setState(() {
-      if (selectedWarehouseFilter == 'All') {
-        filteredStocks = stocks;
-      } else {
-        filteredStocks = stocks
-            .where((stock) =>
-                stock['warehouse']['name'] == selectedWarehouseFilter)
-            .toList();
-      }
-    });
   }
 
   void searchStocks(String query) {
@@ -80,40 +70,6 @@ class _SettingPageState extends State<PurchasePage> {
         return stockId.contains(query.toLowerCase());
       }).toList();
     });
-  }
-
-  Future<void> purchaseStock(
-      int stockCode, int quantity, double price, int clientId) async {
-    final response = await http.post(
-      Uri.parse('http://104.248.42.73:8080/api/purchase'),
-      body: json.encode({
-        "stockCode": stockCode,
-        "quantity": quantity,
-        "price": price,
-        "clientId": clientId,
-        "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      // Purchase successful, show confirmation message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Purchase successful!'),
-        ),
-      );
-    } else {
-      // Purchase failed, show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to complete purchase'),
-        ),
-      );
-    }
   }
 
   @override
@@ -156,31 +112,6 @@ class _SettingPageState extends State<PurchasePage> {
                   ),
                 ),
                 SizedBox(width: 10),
-                DropdownButton<String>(
-                  value: selectedWarehouseFilter,
-                  items: [
-                    DropdownMenuItem<String>(
-                      value: 'All',
-                      child: Text('All'),
-                    ),
-                    ...stocks
-                        .map((stock) => stock['warehouse']['name'] as String)
-                        .toSet()
-                        .toList()
-                        .map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ],
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedWarehouseFilter = newValue!;
-                      _applyWarehouseFilter();
-                    });
-                  },
-                ),
               ],
             ),
           ),
@@ -198,7 +129,7 @@ class _SettingPageState extends State<PurchasePage> {
                     setState(() {
                       selectedStock = stock;
                     });
-                    _showPurchaseDialog();
+                    Navigator.pop(context, selectedStock);
                   },
                 ));
               },
@@ -206,53 +137,6 @@ class _SettingPageState extends State<PurchasePage> {
           ),
         ],
       ),
-    );
-  }
-
-  Future<void> _showPurchaseDialog() async {
-    TextEditingController quantityController = TextEditingController();
-    TextEditingController priceController = TextEditingController();
-
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Purchase ${selectedStock['stockName']}'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: quantityController,
-                decoration: InputDecoration(labelText: 'Quantity'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: priceController,
-                decoration: InputDecoration(labelText: 'Price'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                int quantity = int.tryParse(quantityController.text) ?? 0;
-                double price = double.tryParse(priceController.text) ?? 0.0;
-                purchaseStock(selectedStock['stockId'], quantity, price,
-                    widget.selectedClient['clientId']);
-                Navigator.of(context).pop();
-              },
-              child: Text('Purchase'),
-            ),
-          ],
-        );
-      },
     );
   }
 }
