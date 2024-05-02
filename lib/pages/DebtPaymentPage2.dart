@@ -45,7 +45,7 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
     final response = await http.get(url);
     if (response.statusCode == 200) {
       setState(() {
-        balanceData = json.decode(response.body);
+        balanceData = jsonDecode(utf8.decode(response.bodyBytes));
       });
     } else {
       throw Exception('Failed to load balance data');

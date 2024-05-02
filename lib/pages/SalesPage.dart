@@ -37,7 +37,7 @@ class _SettingPageState extends State<SalesPage> {
         });
     if (response.statusCode == 200) {
       setState(() {
-        stocks = json.decode(response.body);
+        stocks = jsonDecode(utf8.decode(response.bodyBytes));
         filteredStocks = List.from(stocks);
       });
     } else {

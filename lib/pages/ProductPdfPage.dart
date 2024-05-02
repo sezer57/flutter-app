@@ -28,7 +28,7 @@ class _PdfPageState extends State<PdfPage> {
     );
     if (response.statusCode == 200) {
       setState(() {
-        clients = json.decode(response.body);
+        clients = jsonDecode(utf8.decode(response.bodyBytes));
         clients.sort((a, b) => b['stockName'].compareTo(a['stockName']));
       });
     } else {

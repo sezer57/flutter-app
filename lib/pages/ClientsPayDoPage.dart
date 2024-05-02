@@ -30,7 +30,7 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
         });
     if (response.statusCode == 200) {
       setState(() {
-        purchases = json.decode(response.body);
+        purchases = jsonDecode(utf8.decode(response.bodyBytes));
         purchases.sort((a, b) => b['expense_id'].compareTo(a['expense_id']));
       });
     } else {

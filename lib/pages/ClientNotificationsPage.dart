@@ -27,7 +27,7 @@ class _ClientNotificationsPageState extends State<ClientNotificationsPage> {
         });
 
     if (response.statusCode == 200) {
-      List<dynamic> clientInfoList = json.decode(response.body);
+      List<dynamic> clientInfoList = jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {
         _dailyMovementsOfClient = clientInfoList;
       });

@@ -22,7 +22,9 @@ class _ClientsPageState extends State<ClientsPage> {
         });
     if (response.statusCode == 200) {
       setState(() {
-        clients = json.decode(response.body);
+        final utf8Body =
+            utf8.decode(response.bodyBytes); // Decode response body as UTF-8
+        clients = jsonDecode(utf8Body);
       });
     } else {
       print("product empty");

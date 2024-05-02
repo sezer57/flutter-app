@@ -32,7 +32,7 @@ class _PurchaseListState extends State<PurchaseList> {
         });
     if (response.statusCode == 200) {
       setState(() {
-        purchases = json.decode(response.body);
+        purchases = jsonDecode(utf8.decode(response.bodyBytes));
         purchases.sort((a, b) => b['purchase_id'].compareTo(a['purchase_id']));
       });
     } else {
@@ -52,7 +52,7 @@ class _PurchaseListState extends State<PurchaseList> {
 
     // Supplier oluşturma (Varsayılan değerler kullanıldı, isteğe bağlı olarak değiştirilebilir)
     Supplier supplier = Supplier(
-      Tel:' +971 4 2266114',
+      Tel: ' +971 4 2266114',
       WhatsApp: ' +971559438444',
       POBox: 'P.O.Box 65127',
       name: 'Murshid Bazar',
@@ -60,13 +60,11 @@ class _PurchaseListState extends State<PurchaseList> {
       address: 'Shop No:1, Dubai, U.A.E',
     );
 
-
     // Customer oluşturma
     Customer customer = Customer(
-      name: purchase['clientName'],
-      address: purchase['clientAdress'],
-      number: purchase['clientPhone']
-    );
+        name: purchase['clientName'],
+        address: purchase['clientAdress'],
+        number: purchase['clientPhone']);
 
     // Item oluşturma
     InvoiceItem item = InvoiceItem(

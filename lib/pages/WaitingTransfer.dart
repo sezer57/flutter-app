@@ -36,7 +36,7 @@ class _WaitingTransferState extends State<WaitingTransfer> {
 
     if (_isMounted && response.statusCode == 200) {
       setState(() {
-        _waitingTransfers = json.decode(response.body);
+        _waitingTransfers = jsonDecode(utf8.decode(response.bodyBytes));
       });
     } else if (_isMounted) {
       throw Exception('Failed to fetch waiting transfers');
