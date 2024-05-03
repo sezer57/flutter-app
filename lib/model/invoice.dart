@@ -28,6 +28,8 @@ class InvoiceInfo {
   });
 
   get type => null;
+
+  get dueDate => null;
 }
 
 class InvoiceItem {

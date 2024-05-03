@@ -45,7 +45,7 @@ class _SalesListState extends State<SalesList> {
     InvoiceInfo info = InvoiceInfo(
       number: sale['expense_id'].toString(),
       date: DateTime.now(),
-      description: 'Invoice for ${sale['stockName']}',
+      description: 'Sales Invoice for ${sale['stockName']}',
     );
 
     // Customer oluşturma
@@ -114,7 +114,7 @@ class _SalesListState extends State<SalesList> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Stock Name: ${purchase['stockName']}'),
-                  Text('Price: \$${purchase['price']}'),
+                  Text('Price: ${purchase['price']}'),
                   Text('Date: ${purchase['date']}'),
                   Text('Client Name: ${purchase['clientName']}'),
                 ],

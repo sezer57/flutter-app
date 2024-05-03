@@ -117,7 +117,7 @@ class _PurchaseListState extends State<PurchaseList> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Stock Name: ${purchase['stockName']}'),
-                  Text('Price: \$${purchase['price']}'),
+                  Text('Price: ${purchase['price']}'),
                   Text('Client Name: ${purchase['clientName']}'),
                   Text('Date: ${purchase['date']}'),
                 ],
