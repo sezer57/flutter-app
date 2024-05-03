@@ -31,7 +31,7 @@ class _SalesListState extends State<SalesList> {
         });
     if (response.statusCode == 200) {
       setState(() {
-        purchases = json.decode(response.body);
+        purchases = jsonDecode(utf8.decode(response.bodyBytes));
         purchases.sort((a, b) => b['expense_id'].compareTo(a['expense_id']));
       });
     } else {
@@ -50,14 +50,13 @@ class _SalesListState extends State<SalesList> {
 
     // Customer oluşturma
     Customer customer = Customer(
-      name: sale['clientName'],
-      address: sale['clientAdress'],
-      number: sale['clientPhone']
-    );
+        name: sale['clientName'],
+        address: sale['clientAdress'],
+        number: sale['clientPhone']);
 
     // Supplier oluşturma (Varsayılan değerler kullanıldı, isteğe bağlı olarak değiştirilebilir)
     Supplier supplier = Supplier(
-      Tel:' +971 4 2266114',
+      Tel: ' +971 4 2266114',
       WhatsApp: ' +971559438444',
       POBox: 'P.O.Box 65127',
       name: 'Murshid Bazar',

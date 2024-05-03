@@ -30,7 +30,7 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
         });
     if (response.statusCode == 200) {
       setState(() {
-        purchases = json.decode(response.body);
+        purchases = jsonDecode(utf8.decode(response.bodyBytes));
         purchases.sort((a, b) => b['purchase_id'].compareTo(a['purchase_id']));
       });
     } else {

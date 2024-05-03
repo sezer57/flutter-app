@@ -137,15 +137,17 @@ class _SalesTestPageState extends State<SalesTestPage> {
   }
 
   final String getStocksUrl =
-      'http://104.248.42.73:8080/api/getStocksRemainigById?warehouse_id=';
+      'http://104.248.42.73:8080/api/getStocksRemainigById?stock_id=';
   String? remaning;
   Future<String?> fetchStocksRemaing() async {
+    print("object");
     final response = await http.get(
         Uri.parse('$getStocksUrl${selectedStock['stockId']}'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
     if (response.statusCode == 200) {
+      json.decode(response.body);
       return response.body;
     } else {
       throw Exception('Failed to load stocks');
@@ -263,14 +265,15 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
     if (response.statusCode == 200) {
       // Sales successful, show confirmation message
+      Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Sales successful!'),
         ),
       );
-      Navigator.pop(context);
     } else {
       // Sales failed, show error message
+      Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response.body)),
       );

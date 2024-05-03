@@ -29,7 +29,7 @@ class _ClientsPurcListPageState extends State<ClientsPurcListPage> {
         });
     if (response.statusCode == 200) {
       setState(() {
-        clients = json.decode(response.body);
+        clients = jsonDecode(utf8.decode(response.bodyBytes));
         filteredClients = List.from(clients);
       });
     } else {

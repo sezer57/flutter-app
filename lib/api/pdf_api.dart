@@ -19,39 +19,36 @@ class PdfApi {
   }) async {
     final pdf = Document();
 
-    pdf.addPage(Page(
+    pdf.addPage(MultiPage(
       build: (context) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Header(
-              level: 1,
-              child: Text('Report - $selectedDate'),
-            ),
-            SizedBox(height: 10),
-            Text('Raport',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            if (expenses != null && expenses.isNotEmpty)
-              _buildTable('Expenses', expenses),
-            if (totalExpenses != 0.00)
-              Text('Total Expenses: \$${totalExpenses.toStringAsFixed(2)}'),
-            SizedBox(height: 30),
-            if (purchases != null && purchases.isNotEmpty)
-              _buildTable('Purchases', purchases),
-            if (totalPurchases != 0.00)
-              Text('Total Purchases: \$${totalPurchases.toStringAsFixed(2)}'),
-            SizedBox(height: 30),
-            if (warehouseTransfers != null && warehouseTransfers.isNotEmpty)
-              _buildTable('Warehouse Transfers', warehouseTransfers),
-            if (totalTransfers != 0.00)
-              Text('Total Transfers: \$${totalTransfers.toStringAsFixed(2)}'),
-            if (clients != null && clients.isNotEmpty)
-              _buildTable('Clients', clients),
-            if (stocks != null && stocks.isNotEmpty)
-              _buildTable('Stocks', stocks),
-          ],
-        );
+        return [
+          Header(
+            level: 1,
+            child: Text('Report - $selectedDate'),
+          ),
+          SizedBox(height: 10),
+          Text('Report',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          SizedBox(height: 10),
+          if (expenses != null && expenses.isNotEmpty)
+            _buildTable('Expenses', expenses),
+          if (totalExpenses != 0.00)
+            Text('Total Expenses: \$${totalExpenses.toStringAsFixed(2)}'),
+          SizedBox(height: 30),
+          if (purchases != null && purchases.isNotEmpty)
+            _buildTable('Purchases', purchases),
+          if (totalPurchases != 0.00)
+            Text('Total Purchases: \$${totalPurchases.toStringAsFixed(2)}'),
+          SizedBox(height: 30),
+          if (warehouseTransfers != null && warehouseTransfers.isNotEmpty)
+            _buildTable('Warehouse Transfers', warehouseTransfers),
+          if (totalTransfers != 0.00)
+            Text('Total Transfers: \$${totalTransfers.toStringAsFixed(2)}'),
+          if (clients != null && clients.isNotEmpty)
+            _buildTable('Clients', clients),
+          if (stocks != null && stocks.isNotEmpty)
+            _buildTable('Stocks', stocks),
+        ];
       },
     ));
 

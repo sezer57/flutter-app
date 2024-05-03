@@ -37,8 +37,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         });
 
     if (response.statusCode == 200) {
-      List<dynamic> expenses = json.decode(response.body);
-      print(expenses);
+      List<dynamic> expenses = jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {
         _warehouseTransfers = expenses
             .where((expense) => expense.containsKey('warehousetransfer_id'))
@@ -91,9 +90,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
     );
 
     if (response.statusCode == 200) {
-      List<dynamic> _weeklyPurchaseInvoices = json.decode(response.body);
+      List<dynamic> _weeklyPurchaseInvoices =
+          jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {
-        print(_weeklyPurchaseInvoices);
         setState(() {
           _warehouseTransfers = _weeklyPurchaseInvoices
               .where((expense) => expense.containsKey('warehousetransfer_id'))

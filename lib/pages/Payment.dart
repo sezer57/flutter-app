@@ -38,28 +38,6 @@ class Payment extends StatelessWidget {
 
             ElevatedButton.icon(
               onPressed: () {
-                // Navigate to SalesListPage.dart
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SalesList(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.list),
-              label: Text('Sales List'),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.orange), // You can change color as desired
-                textStyle: MaterialStateProperty.all<TextStyle>(
-                  TextStyle(fontSize: 18),
-                ),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-              ),
-            ),
-            SizedBox(height: 20), // Add space between buttons
-            
-            ElevatedButton.icon(
-              onPressed: () {
                 // Navigate to PurchaseClientSelectionPage.dart
                 Navigator.push(
                   context,
@@ -79,7 +57,6 @@ class Payment extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20), // Add space between buttons
-
           ],
         ),
       ),
