@@ -41,7 +41,7 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
 
   Future<void> _fetchBalanceData() async {
     final url = Uri.parse(
-        'http://104.248.42.73:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
+        'http://192.168.1.102:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       setState(() {
@@ -72,7 +72,7 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
       if (selectedPaymentType != null &&
           paymentAmountController.text.isNotEmpty) {
         final url = Uri.parse(
-            'http://104.248.42.73:8080/api/${widget.client['clientId']}/updateBalance');
+            'http://192.168.1.102:8080/api/${widget.client['clientId']}/updateBalance');
         final response = await http.patch(
           url,
           body: {

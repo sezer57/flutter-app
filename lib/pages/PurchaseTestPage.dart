@@ -79,7 +79,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
     gsmController.clear();
   }
 
-  void _navigateTopProductSelectionPage() async {
+  Future<String?> _navigateTopProductSelectionPage() async {
     final dynamic result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -89,7 +89,8 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
     if (result != null) {
       setState(() {
         selectedStock = result;
-        stockController.text = selectedStock['stockName'] ?? '';
+        stockController.text = selectedStock['stockName'];
+        productids.add(selectedStock['stockId'].toString());
       });
     }
   }
@@ -110,7 +111,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://104.248.42.73:8080/api/getWarehouse'),
+        Uri.parse('http://192.168.1.102:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -125,6 +126,11 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
     }
   }
 
+  List<Map<String, dynamic>> productList =
+      []; // List to store product, quantity, and price data
+  List<String> productids = [];
+  List<String> productprice = [];
+  List<String> productquantity = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,23 +175,93 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                 ),
               ),
               SizedBox(height: 16),
-              TextField(
-                controller: stockController,
-                decoration: InputDecoration(labelText: 'Product'),
-                onTap: _navigateTopProductSelectionPage,
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: productList.length,
+                itemBuilder: (context, index) {
+                  if (index == productList.length - 1) {
+                    // Last item, show text fields to add more products
+                    return Column(
+                      children: [
+                        TextField(
+                          controller: stockController,
+                          decoration: InputDecoration(labelText: 'Product'),
+                          onTap: () {
+                            _navigateTopProductSelectionPage().then((result) {
+                              productList[index]['product'] =
+                                  stockController.text;
+                            });
+                          },
+                        ),
+                        TextField(
+                          controller: quantityController,
+                          onChanged: (newValue) {
+                            setState(() {
+                              priceController.text = (double.parse(newValue!) *
+                                      selectedStock['salesPrice'])
+                                  .toString();
+                              productList[index]['quantity'] = newValue;
+
+                              productList[index]['price'] =
+                                  priceController.text;
+                            });
+                          },
+                          decoration: InputDecoration(labelText: 'Quantity'),
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                        ),
+                        TextField(
+                          controller: priceController,
+                          decoration: InputDecoration(labelText: 'Price'),
+                          onChanged: (value) {
+                            productList[index]['price'] = value;
+
+                            /// sadece otomatik oluşturuluyo
+                          },
+                        ),
+                      ],
+                    );
+                  } else {
+                    // Show selected product, quantity, and price
+                    var product = productList[index];
+                    return ListTile(
+                      title: Text('Product: ${product['product']}'),
+                      subtitle: Text(
+                          'Quantity: ${product['quantity']}, Price: ${product['price']}'),
+                      trailing: IconButton(
+                        icon: Icon(Icons.remove),
+                        onPressed: () {
+                          setState(() {
+                            productList.removeAt(index);
+                            productids.removeAt(index);
+                            productquantity.removeAt(index);
+                            productprice.removeAt(index);
+                          });
+                        },
+                      ),
+                    );
+                  }
+                },
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: quantityController,
-                onChanged: (newValue) {
+              ElevatedButton(
+                onPressed: () {
                   setState(() {
-                    priceController.text = (double.parse(newValue!) *
-                            selectedStock['purchasePrice'])
-                        .toString();
+                    productList.add({});
+                    if (quantityController.text.isNotEmpty &&
+                        priceController.text.isNotEmpty) {
+                      productquantity.add(quantityController.text);
+                      productprice.add(priceController.text);
+                      stockController.clear();
+                      quantityController.clear();
+                      priceController.clear();
+                    }
+                    // Add an empty map to the list to show new fields
+                    stockController.clear();
+                    quantityController.clear();
+                    priceController.clear();
                   });
                 },
-                decoration: InputDecoration(labelText: 'Quantity'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                child: Text('Add Product'),
               ),
               SizedBox(height: 16),
               TextField(
@@ -194,19 +270,13 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                 enabled: false,
               ),
               SizedBox(height: 16),
-              TextField(
-                controller: priceController,
-                decoration: InputDecoration(labelText: 'Price'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-              ),
               SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
                   int quantity = int.tryParse(quantityController.text) ?? 0;
                   double price = double.tryParse(priceController.text) ?? 0.0;
                   print(selectedStock);
-                  purchaseStock(selectedStock['stockId'], quantity, price,
-                      selectedClient['clientId']);
+                  purchaseStock(selectedClient['clientId']);
                 },
                 child: Text('Purchase'),
               ),
@@ -217,14 +287,17 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
     );
   }
 
-  Future<void> purchaseStock(
-      int stockCode, int quantity, double price, int clientId) async {
+  Future<void> purchaseStock(int clientId) async {
+    print(productids);
+    print(productquantity);
+    print(productprice);
     final response = await http.post(
-      Uri.parse('http://104.248.42.73:8080/api/purchase'),
+      Uri.parse('http://192.168.1.102:8080/api/purchase'),
       body: json.encode({
-        "stockCode": stockCode,
-        "quantity": quantity,
-        "price": price,
+        "stockCode":
+            productids ?? 0, // Parse as int, default to 0 if parsing fails
+        "quantity": productquantity ?? 0,
+        "price": productprice ?? 0,
         "clientId": clientId,
         "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
       }),

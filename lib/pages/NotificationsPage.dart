@@ -31,7 +31,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _getDailyExpenses(String selectedDate) async {
     final response = await http.get(
         Uri.parse(
-            'http://104.248.42.73:8080/api/getDailyExpenses?date=$selectedDate'),
+            'http://192.168.1.102:8080/api/getDailyExpenses?date=$selectedDate'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -83,7 +83,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _getWeeklyPurchaseInvoices() async {
     final response = await http.get(
       Uri.parse(
-          'http://104.248.42.73:8080/api/getWeeklyPurchaseInvoices?startDate=${dateController.text}&endDate=${dateController2.text}'),
+          'http://192.168.1.102:8080/api/getWeeklyPurchaseInvoices?startDate=${dateController.text}&endDate=${dateController2.text}'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },

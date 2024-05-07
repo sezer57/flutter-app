@@ -20,14 +20,15 @@ class _ClientNotificationsPageState extends State<ClientNotificationsPage> {
   Future<void> _getDailyExpenses(String selectedDate) async {
     final response = await http.get(
         Uri.parse(
-            'http://104.248.42.73:8080/api/getDailyMovementsOfClient?date=$selectedDate'),
+            'http://192.168.1.102:8080/api/getDailyMovementsOfClient?date=$selectedDate'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
 
     if (response.statusCode == 200) {
-      List<dynamic> clientInfoList = jsonDecode(utf8.decode(response.bodyBytes));
+      List<dynamic> clientInfoList =
+          jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {
         _dailyMovementsOfClient = clientInfoList;
       });

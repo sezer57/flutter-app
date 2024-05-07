@@ -12,7 +12,8 @@ class PdfInvoiceApi {
   static Future<File> generate(Invoice invoice) async {
     final pdf = pw.Document();
 
-    final ByteData fontData = await rootBundle.load("assets/fonts/IBMPlexSansArabic-Medium.ttf");
+    final ByteData fontData =
+        await rootBundle.load("assets/fonts/IBMPlexSansArabic-Medium.ttf");
     final pw.Font arabicFont = pw.Font.ttf(fontData.buffer.asByteData());
 
     pdf.addPage(
@@ -113,19 +114,31 @@ class PdfInvoiceApi {
           children: [
             pw.Text(
               'Invoice Number:',
-              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+              style: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.blue),
             ),
             pw.Text(
               'Invoice Date:',
-              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+              style: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.blue),
             ),
             pw.Text(
               'Invoice Type:',
-              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+              style: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.blue),
             ),
             pw.Text(
               'Store:',
-              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+              style: pw.TextStyle(
+                  fontSize: 12,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.blue),
             ),
           ],
         ),
@@ -155,9 +168,12 @@ class PdfInvoiceApi {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.SizedBox(height: 1 * PdfPageFormat.mm),
-          pw.Text('Tel: ${supplier.Tel}', style: pw.TextStyle(fontSize: 12, color: PdfColors.blue)),
-          pw.Text('WhatsApp: ${supplier.WhatsApp}', style: pw.TextStyle(fontSize: 12, color: PdfColors.blue)),
-          pw.Text(supplier.POBox, style: pw.TextStyle(fontSize: 12, color: PdfColors.blue)),
+          pw.Text('Tel: ${supplier.Tel}',
+              style: pw.TextStyle(fontSize: 12, color: PdfColors.blue)),
+          pw.Text('WhatsApp: ${supplier.WhatsApp}',
+              style: pw.TextStyle(fontSize: 12, color: PdfColors.blue)),
+          pw.Text(supplier.POBox,
+              style: pw.TextStyle(fontSize: 12, color: PdfColors.blue)),
           pw.Text(
             supplier.name,
             style: pw.TextStyle(fontSize: 10, color: PdfColors.blue),
@@ -181,15 +197,24 @@ class PdfInvoiceApi {
             children: [
               pw.Text(
                 'Name:',
-                style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+                style: pw.TextStyle(
+                    fontSize: 10,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.blue),
               ),
               pw.Text(
                 'Address:',
-                style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+                style: pw.TextStyle(
+                    fontSize: 10,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.blue),
               ),
               pw.Text(
                 'Number:',
-                style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+                style: pw.TextStyle(
+                    fontSize: 10,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.blue),
               ),
             ],
           ),
@@ -220,23 +245,39 @@ class PdfInvoiceApi {
         children: [
           pw.Text(
             'CEKIR TRADING CO.( L.L.C.)',
-            style: pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 15,
+                fontWeight: pw.FontWeight.bold,
+                color: PdfColors.blue),
           ),
           pw.Text(
             'م.م.د ةيراجتلا ريكش ةكرش',
-            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, font: arabicFont, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 12,
+                fontWeight: pw.FontWeight.bold,
+                font: arabicFont,
+                color: PdfColors.blue),
           ),
           pw.Text(
             'Wholasale for Readymade Garments',
-            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 12,
+                fontWeight: pw.FontWeight.bold,
+                color: PdfColors.blue),
           ),
           pw.Text(
             'TAX INVOICE',
-            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 12,
+                fontWeight: pw.FontWeight.bold,
+                color: PdfColors.blue),
           ),
           pw.Text(
             'TRN: 100008260000003',
-            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 12,
+                fontWeight: pw.FontWeight.bold,
+                color: PdfColors.blue),
           ),
           pw.SizedBox(height: 0.8 * PdfPageFormat.cm),
           pw.SizedBox(height: 0.8 * PdfPageFormat.cm),
@@ -248,7 +289,10 @@ class PdfInvoiceApi {
         children: [
           pw.Text(
             'E-Mail  :',
-            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 12,
+                fontWeight: pw.FontWeight.bold,
+                color: PdfColors.blue),
           ),
           pw.Link(
             child: pw.Text(
@@ -282,27 +326,33 @@ class PdfInvoiceApi {
           pw.SizedBox(height: 1 * PdfPageFormat.mm),
           pw.Text(
             '٠٩٧١٤٢٢٦٦١١٤نوفلت',
-            style: pw.TextStyle(fontSize: 10, font: arabicFont, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 10, font: arabicFont, color: PdfColors.blue),
           ),
           pw.Text(
             '٤ :با ستاو',
-            style: pw.TextStyle(fontSize: 10, font: arabicFont, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 10, font: arabicFont, color: PdfColors.blue),
           ),
           pw.Text(
             '٦٥١٢٧ :ب.ص',
-            style: pw.TextStyle(fontSize: 10, font: arabicFont, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 10, font: arabicFont, color: PdfColors.blue),
           ),
           pw.Text(
             'رازاب دشرم',
-            style: pw.TextStyle(fontSize: 10, font: arabicFont, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 10, font: arabicFont, color: PdfColors.blue),
           ),
           pw.Text(
             'رايامع ديبع ءانبلا',
-            style: pw.TextStyle(fontSize: 10, font: arabicFont, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 10, font: arabicFont, color: PdfColors.blue),
           ),
           pw.Text(
             'م.ع.ا - يبد :١مقررجتم',
-            style: pw.TextStyle(fontSize: 10, font: arabicFont, color: PdfColors.blue),
+            style: pw.TextStyle(
+                fontSize: 10, font: arabicFont, color: PdfColors.blue),
           ),
         ],
       );
@@ -311,6 +361,7 @@ class PdfInvoiceApi {
     if (invoice.items.isEmpty) {
       return pw.Center(child: pw.Text('No items'));
     }
+    print(invoice.items);
 
     final headers = [
       'Description',
@@ -428,9 +479,7 @@ class PdfInvoiceApi {
           ),
           pw.Text(
             value,
-            style: unite
-                ? style.copyWith(color: PdfColors.black)
-                : style,
+            style: unite ? style.copyWith(color: PdfColors.black) : style,
           ),
         ],
       ),
@@ -440,7 +489,8 @@ class PdfInvoiceApi {
   static pw.Widget _buildTotalTables(Invoice invoice) {
     final totalAmount = invoice.items.fold<double>(
       0,
-      (previousValue, item) => previousValue + item.unitPrice * item.quantity * (1 + item.vat),
+      (previousValue, item) =>
+          previousValue + item.unitPrice * item.quantity * (1 + item.vat),
     );
 
     return pw.Container(
@@ -452,9 +502,7 @@ class PdfInvoiceApi {
             cellAlignment: pw.Alignment.centerLeft,
             headerAlignment: pw.Alignment.centerLeft,
             headers: ['Amount Dhs:'],
-            data: [
-
-            ],
+            data: [],
             border: pw.TableBorder.all(color: PdfColors.black),
             headerStyle: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
