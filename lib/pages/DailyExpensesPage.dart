@@ -70,11 +70,11 @@ class DailyExpensesPage extends StatelessWidget {
   }
 
   Widget _buildExpensesTable() {
-    if (expenses != null && expenses!.isNotEmpty) {
-      totalExpenses = expenses!
-          .map((expense) => double.parse(expense['price'].toString()))
-          .reduce((value, element) => value + element);
-    }
+    //  if (expenses != null && expenses!.isNotEmpty) {
+    //   totalExpenses = expenses!
+    //       .map((expense) => double.parse(expense['price'].toString()))
+    //        .reduce((value, element) => value + element);
+    //  }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -127,11 +127,11 @@ class DailyExpensesPage extends StatelessWidget {
   }
 
   Widget _buildPurchasesTable() {
-    if (purchases != null && purchases!.isNotEmpty) {
-      totalPurchases = purchases!
-          .map((purchase) => double.parse(purchase['price'].toString()))
-          .reduce((value, element) => value + element);
-    }
+    //  if (purchases != null && purchases!.isNotEmpty) {
+    //   totalPurchases = purchases!
+    //      .map((purchase) => double.parse(purchase['price'].toString()))
+    //       .reduce((value, element) => value + element);
+    // }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +158,7 @@ class DailyExpensesPage extends StatelessWidget {
                     DataCell(Text(purchase['stockName'].toString())),
                     DataCell(Text(purchase['quantity'].toString())),
                     DataCell(Text(purchase['authorized'].toString())),
-                    DataCell(Text('\$${purchase['price']}')),
+                    DataCell(Text('\$${purchase['price'].toString()}')),
                     DataCell(Text(purchase['purchase_id'].toString())),
                     DataCell(Text(purchase['warehouseName'].toString())),
                   ],

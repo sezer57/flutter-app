@@ -26,7 +26,7 @@ class _PurchaseListState extends State<PurchaseList> {
 
   Future<void> fetchPurchases() async {
     final response = await http.get(
-        Uri.parse('http://104.248.42.73:8080/api/getPurchases'),
+        Uri.parse('http://192.168.1.102:8080/api/getPurchases'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -67,20 +67,24 @@ class _PurchaseListState extends State<PurchaseList> {
         number: purchase['clientPhone']);
 
     // Item oluşturma
-    InvoiceItem item = InvoiceItem(
-      description: 'Product: ${purchase['stockName']}',
-      date: DateTime.now(),
-      quantity: purchase['quantity'],
-      unitPrice: purchase['price'],
-      vat: 0.05, // Örnek olarak KDV oranı %18
-    );
 
+    List<InvoiceItem> invoiceItems = [];
+    for (int i = 0; i < purchase['stockName'].length; i++) {
+      InvoiceItem item = InvoiceItem(
+        description: 'Product: ${purchase['stockName'][i]}',
+        date: DateTime.now(),
+        quantity: (purchase['quantity'][i]),
+        unitPrice: (purchase['price'][i]),
+        vat: 0.05, // Example VAT rate 5%
+      );
+      invoiceItems.add(item);
+    }
     // Invoice oluşturma
     Invoice invoice = Invoice(
         info: info,
         supplier: supplier,
         customer: customer,
-        items: [item],
+        items: invoiceItems,
         type: "sale");
 
     // Fatura oluşturma ve dosyayı kaydetme

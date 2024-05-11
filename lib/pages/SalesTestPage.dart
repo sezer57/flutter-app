@@ -41,6 +41,9 @@ class _SalesTestPageState extends State<SalesTestPage> {
     super.initState();
     fetchWarehouses();
     initializeState();
+
+    productprice.clear();
+    productquantity.clear();
     // Automatically generate registration date
     DateController.text = DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
   }
@@ -80,7 +83,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
     gsmController.clear();
   }
 
-  void _navigateTopProductSelectionPage() async {
+  Future<String?> _navigateTopProductSelectionPage() async {
     final dynamic result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -92,17 +95,19 @@ class _SalesTestPageState extends State<SalesTestPage> {
       setState(() {
         selectedStock = result;
       });
+      productids.add(selectedStock['stockId'].toString());
       await fetchAndSetRemainingStock(); // Wait for remaining stock information
     }
   }
 
-  Future<void> fetchAndSetRemainingStock() async {
+  Future<String> fetchAndSetRemainingStock() async {
     final String? remaningValue = await fetchStocksRemaing();
     setState(() {
       remaning = remaningValue;
-      stockController.text =
+      productController.text =
           selectedStock['stockName'] + " Remaing: " + (remaning ?? '');
     });
+    return selectedStock['stockName'] + " Remaing: " + (remaning ?? '');
   }
 
   void _navigateToClientSelectionPage() async {
@@ -121,7 +126,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://104.248.42.73:8080/api/getWarehouse'),
+        Uri.parse('http://192.168.1.102:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -137,10 +142,9 @@ class _SalesTestPageState extends State<SalesTestPage> {
   }
 
   final String getStocksUrl =
-      'http://104.248.42.73:8080/api/getStocksRemainigById?stock_id=';
+      'http://192.168.1.102:8080/api/getStocksRemainigById?stock_id=';
   String? remaning;
   Future<String?> fetchStocksRemaing() async {
-    print("object");
     final response = await http.get(
         Uri.parse('$getStocksUrl${selectedStock['stockId']}'),
         headers: <String, String>{
@@ -148,12 +152,20 @@ class _SalesTestPageState extends State<SalesTestPage> {
         });
     if (response.statusCode == 200) {
       json.decode(response.body);
+
       return response.body;
     } else {
       throw Exception('Failed to load stocks');
     }
   }
 
+  TextEditingController productController = TextEditingController();
+
+  List<Map<String, dynamic>> productList =
+      []; // List to store product, quantity, and price data
+  List<String> productids = [];
+  List<String> productprice = [];
+  List<String> productquantity = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -198,44 +210,109 @@ class _SalesTestPageState extends State<SalesTestPage> {
                 ),
               ),
               SizedBox(height: 16),
-              TextField(
-                controller: stockController,
-                decoration: InputDecoration(labelText: 'Product'),
-                onTap: _navigateTopProductSelectionPage,
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: productList.length,
+                itemBuilder: (context, index) {
+                  if (index == productList.length - 1) {
+                    // Last item, show text fields to add more products
+                    return Column(
+                      children: [
+                        TextField(
+                          controller: productController,
+                          decoration: InputDecoration(labelText: 'Product'),
+                          onTap: () {
+                            _navigateTopProductSelectionPage().then((result) {
+                              productList[index]['product'] =
+                                  productController.text;
+                            });
+                          },
+                        ),
+                        TextField(
+                          controller: quantityController,
+                          onChanged: (newValue) {
+                            setState(() {
+                              priceController.text = (double.parse(newValue!) *
+                                      selectedStock['salesPrice'])
+                                  .toString();
+                              productList[index]['quantity'] = newValue;
+
+                              productList[index]['price'] =
+                                  priceController.text;
+                            });
+                          },
+                          decoration: InputDecoration(labelText: 'Quantity'),
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                        ),
+                        TextField(
+                          controller: priceController,
+                          decoration: InputDecoration(labelText: 'Price'),
+                          onChanged: (value) {
+                            productList[index]['price'] = value;
+
+                            /// sadece otomatik oluşturuluyo
+                          },
+                        ),
+                      ],
+                    );
+                  } else {
+                    // Show selected product, quantity, and price
+                    var product = productList[index];
+                    return ListTile(
+                      title: Text('Product: ${product['product']}'),
+                      subtitle: Text(
+                          'Quantity: ${product['quantity']}, Price: ${product['price']}'),
+                      trailing: IconButton(
+                        icon: Icon(Icons.remove),
+                        onPressed: () {
+                          setState(() {
+                            productList.removeAt(index);
+                            productids.removeAt(index);
+                            productquantity.removeAt(index);
+                            productprice.removeAt(index);
+                          });
+                        },
+                      ),
+                    );
+                  }
+                },
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: quantityController,
-                onChanged: (newValue) {
+              ElevatedButton(
+                onPressed: () {
                   setState(() {
-                    priceController.text =
-                        (double.parse(newValue!) * selectedStock['salesPrice'])
-                            .toString();
+                    productList.add({});
+                    if (quantityController.text.isNotEmpty &&
+                        priceController.text.isNotEmpty) {
+                      productquantity.add(quantityController.text);
+                      productprice.add(priceController.text);
+                      productController.clear();
+                      quantityController.clear();
+                      priceController.clear();
+                    }
+                    // Add an empty map to the list to show new fields
+                    productController.clear();
+                    quantityController.clear();
+                    priceController.clear();
                   });
                 },
-                decoration: InputDecoration(labelText: 'Quantity'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                child: Text('Add Product'),
               ),
+              SizedBox(height: 16),
+              SizedBox(height: 16),
               SizedBox(height: 16),
               TextField(
                 controller: ownerController,
                 decoration: InputDecoration(labelText: 'Process owner'),
                 enabled: false,
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: priceController,
-                decoration: InputDecoration(labelText: 'Price'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-              ),
               SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
                   int quantity = int.tryParse(quantityController.text) ?? 0;
                   double price = double.tryParse(priceController.text) ?? 0.0;
-                  print(selectedClient);
-                  purchaseStock(selectedStock['stockId'], quantity, price,
-                      selectedClient['clientId']);
+
+                  purchaseStock(selectedClient['clientId']);
                 },
                 child: Text('Sales'),
               ),
@@ -246,14 +323,17 @@ class _SalesTestPageState extends State<SalesTestPage> {
     );
   }
 
-  Future<void> purchaseStock(
-      int stockCode, int quantity, double price, int clientId) async {
+  Future<void> purchaseStock(int clientId) async {
+    print(productids);
+    print(productquantity);
+    print(productprice);
     final response = await http.post(
-      Uri.parse('http://104.248.42.73:8080/api/Sales'),
+      Uri.parse('http://192.168.1.102:8080/api/Sales'),
       body: json.encode({
-        "stockCode": stockCode,
-        "quantity": quantity,
-        "price": price,
+        "stockCodes":
+            productids ?? 0, // Parse as int, default to 0 if parsing fails
+        "quantity": productquantity ?? 0,
+        "price": productprice ?? 0,
         "clientId": clientId,
         "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
       }),
@@ -271,12 +351,20 @@ class _SalesTestPageState extends State<SalesTestPage> {
           content: Text('Sales successful!'),
         ),
       );
+      productids.clear();
+      productList.clear();
+      productprice.clear();
+      productquantity.clear();
     } else {
       // Sales failed, show error message
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response.body)),
       );
+      productids.clear();
+      productList.clear();
+      productprice.clear();
+      productquantity.clear();
     }
   }
 }

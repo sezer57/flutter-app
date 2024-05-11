@@ -67,19 +67,53 @@ class PdfApi {
       rows.add(row);
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        SizedBox(height: 10),
-        Table.fromTextArray(
-          headers: headers,
-          data: rows,
-        ),
-        SizedBox(height: 20),
-      ],
-    );
+    if (rows.length > 10) {
+      List<Widget> tables = [];
+      int i = 0;
+      int r = 1;
+      while (i < rows.length) {
+        List<List<String>> currentRows =
+            rows.sublist(i, i + 10 < rows.length ? i + 10 : rows.length);
+        tables.add(
+          ListView(
+            padding: EdgeInsets.all(10),
+            children: [
+              Text(
+                '$title ($r / ${((rows.length + (rows.length / 10)) / 10).ceil()})',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Table.fromTextArray(
+                headers: headers,
+                data: currentRows,
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
+        );
+        i += 10;
+        r++;
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: tables,
+      );
+    } else {
+      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        ListView(padding: EdgeInsets.all(10), children: [
+          Text(
+            '$title (1 / 1)',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          Table.fromTextArray(
+            headers: headers,
+            data: rows,
+          ),
+          SizedBox(height: 20),
+        ])
+      ]);
+    }
   }
 
   static Future<File> saveDocument({

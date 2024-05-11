@@ -24,7 +24,7 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
   Future<void> fetchSaless() async {
     final response = await http.get(
         Uri.parse(
-            'http://104.248.42.73:8080/api/getSalesInvoiceClient?client_id=${widget.selectedClient['clientId']}'),
+            'http://192.168.1.102:8080/api/getSalesInvoiceClient?client_id=${widget.selectedClient['clientId']}'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });

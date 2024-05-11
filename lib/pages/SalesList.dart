@@ -25,7 +25,7 @@ class _SalesListState extends State<SalesList> {
 
   Future<void> fetchSales() async {
     final response = await http.get(
-        Uri.parse('http://104.248.42.73:8080/api/getSales'),
+        Uri.parse('http://192.168.1.102:8080/api/getSales'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -63,22 +63,27 @@ class _SalesListState extends State<SalesList> {
       name2: 'Obaid Omayar Bldg',
       address: 'Shop No:1, Dubai, U.A.E',
     );
+    print(sale['stockName'].length);
 
-    // Item oluşturma
-    InvoiceItem item = InvoiceItem(
-      description: 'Product: ${sale['stockName']}',
-      date: DateTime.now(),
-      quantity: sale['quantity'],
-      unitPrice: sale['price'],
-      vat: 0.05, // Örnek olarak KDV oranı %18
-    );
+    List<InvoiceItem> invoiceItems = [];
 
+    for (int i = 0; i < sale['stockName'].length; i++) {
+      InvoiceItem item = InvoiceItem(
+        description: 'Product: ${sale['stockName'][i]}',
+        date: DateTime.now(),
+        quantity: int.parse(sale['quantity'][i]),
+        unitPrice: double.parse(sale['price'][i]),
+        vat: 0.05, // Example VAT rate 5%
+      );
+      invoiceItems.add(item);
+    }
+    print(invoiceItems);
     // Invoice oluşturma
     Invoice invoice = Invoice(
         info: info,
         supplier: supplier,
         customer: customer,
-        items: [item],
+        items: invoiceItems,
         type: "sale");
 
     // Fatura oluşturma ve dosyayı kaydetme
@@ -114,8 +119,8 @@ class _SalesListState extends State<SalesList> {
                 children: [
                   Text('Stock Name: ${purchase['stockName']}'),
                   Text('Price: ${purchase['price']}'),
-                  Text('Date: ${purchase['date']}'),
                   Text('Client Name: ${purchase['clientName']}'),
+                  Text('Date: ${purchase['date']}'),
                 ],
               ),
               onTap: () {
