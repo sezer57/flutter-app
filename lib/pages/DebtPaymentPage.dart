@@ -38,7 +38,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
 
   Future<void> _fetchBalanceData() async {
     final url = Uri.parse(
-        'http://192.168.1.102:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
+        'http://192.168.1.122:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
     final response = await http.get(url, headers: <String, String>{
       'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
     });
@@ -71,7 +71,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
       if (selectedPaymentType != null &&
           paymentAmountController.text.isNotEmpty) {
         final url = Uri.parse(
-            'http://192.168.1.102:8080/api/${widget.client['clientId']}/updateBalance');
+            'http://192.168.1.122:8080/api/${widget.client['clientId']}/updateBalance');
         final response = await http.patch(url, body: {
           'paymentType': selectedPaymentType!,
           'value': paymentAmountController.text,
@@ -118,7 +118,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Debt Payment'),
+        title: Text('Debt Payment Purchase'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -136,6 +136,17 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
                   '${entry.key}: ${entry.value}',
                   style: TextStyle(fontSize: 16),
                 ),
+              SizedBox(height: 20),
+              if (balanceData!['Balance'] > 0)
+                Text(
+                  'The amount we need to pay',
+                  style: TextStyle(fontSize: 16, color: Colors.red),
+                )
+              else
+                Text(
+                  'The amount that needs to be paid',
+                  style: TextStyle(fontSize: 16, color: Colors.green),
+                )
             ],
             SizedBox(height: 20),
             DropdownButtonFormField<String>(

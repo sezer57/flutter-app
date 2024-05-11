@@ -31,9 +31,9 @@ class PdfApi {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
           if (expenses != null && expenses.isNotEmpty)
-            _buildTable('Expenses', expenses),
+            _buildTable('Sales', expenses),
           if (totalExpenses != 0.00)
-            Text('Total Expenses: \$${totalExpenses.toStringAsFixed(2)}'),
+            Text('Total Sales: \$${totalExpenses.toStringAsFixed(2)}'),
           SizedBox(height: 30),
           if (purchases != null && purchases.isNotEmpty)
             _buildTable('Purchases', purchases),

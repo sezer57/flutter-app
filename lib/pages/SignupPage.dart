@@ -21,7 +21,7 @@ class _SignupPageState extends State<SignupPage> {
     String email = emailController.text;
 
     var response = await http.post(
-      Uri.parse('http://192.168.1.102:8080/api/addNewUser'),
+      Uri.parse('http://192.168.1.122:8080/api/addNewUser'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

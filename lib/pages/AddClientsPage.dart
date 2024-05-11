@@ -33,7 +33,7 @@ class _AddClientsPageState extends State<AddClientsPage> {
 
   Future<void> _fetchClientCode() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.102:8080/api/getClientCode'),
+        Uri.parse('http://192.168.1.122:8080/api/getClientCode'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -49,7 +49,7 @@ class _AddClientsPageState extends State<AddClientsPage> {
   }
 
   final String url =
-      'http://192.168.1.102:8080/api/clients'; // Replace with your actual API endpoint
+      'http://192.168.1.122:8080/api/clients'; // Replace with your actual API endpoint
 
   Future<void> _postData() async {
     if (_validateInputs()) {

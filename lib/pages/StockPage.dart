@@ -46,7 +46,7 @@ class _StockPageState extends State<StockPage> {
 
   Future<void> _fetchStocks() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.102:8080/api/getWarehouseStock'),
+        Uri.parse('http://192.168.1.122:8080/api/getWarehouseStock'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -183,14 +183,6 @@ class _StockPageState extends State<StockPage> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Quantity In: ${stock['quantityIn']}',
-                          style: TextStyle(color: Colors.green),
-                        ),
-                        Text(
-                          'Quantity Out: ${stock['quantityOut']}',
-                          style: TextStyle(color: Colors.red),
-                        ),
                         Text(
                           'Quantity Remaining: ${stock['quantityRemaining']}',
                           style: TextStyle(color: Colors.orange),

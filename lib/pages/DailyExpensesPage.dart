@@ -70,15 +70,29 @@ class DailyExpensesPage extends StatelessWidget {
   }
 
   Widget _buildExpensesTable() {
-    //  if (expenses != null && expenses!.isNotEmpty) {
-    //   totalExpenses = expenses!
-    //       .map((expense) => double.parse(expense['price'].toString()))
-    //        .reduce((value, element) => value + element);
-    //  }
+    if (expenses != null && expenses!.isNotEmpty) {
+      //   totalExpenses = expenses!
+      //       .map((expense) => double.parse(expense['price'].toString()))
+      //        .reduce((value, element) => value + element);
+
+      for (var i = 0; i < expenses!.length; i++) {
+        // Extracting the string value from the map
+        String expensespriceString = expenses![i]['price']!.toString();
+        // Splitting the string by commas and selecting the first part
+        List<String> expensespriceParts = expensespriceString.split(',');
+        // Parsing the first part of the split string as a double
+        for (var x = 0; x < expensespriceParts!.length; x++) {
+          double price = double.parse(
+              expensespriceParts[x].replaceAll('[', '').replaceAll(']', ''));
+          // Adding the price to totalPurchases
+          totalExpenses += price;
+        }
+      }
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Expenses:', style: TextStyle(fontWeight: FontWeight.bold)),
+        Text('Sales:', style: TextStyle(fontWeight: FontWeight.bold)),
         SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -87,6 +101,7 @@ class DailyExpensesPage extends StatelessWidget {
               DataColumn(label: Text('Date')),
               DataColumn(label: Text('Stock Name')),
               DataColumn(label: Text('Quantity')),
+              DataColumn(label: Text('Authorized')),
               DataColumn(label: Text('Client Name')),
               DataColumn(label: Text('Price')),
               DataColumn(label: Text('Expense ID')),
@@ -99,6 +114,7 @@ class DailyExpensesPage extends StatelessWidget {
                     DataCell(Text(expense['date'].toString())),
                     DataCell(Text(expense['stockName'].toString())),
                     DataCell(Text(expense['quantity'].toString())),
+                    DataCell(Text(expense['autherized'].toString())),
                     DataCell(Text(expense['clientName'].toString())),
                     DataCell(Text('\$${expense['price']}')),
                     DataCell(Text(expense['expense_id'].toString())),
@@ -110,6 +126,7 @@ class DailyExpensesPage extends StatelessWidget {
                 cells: [
                   DataCell(Text('Total',
                       style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataCell(Text('')),
                   DataCell(Text('')),
                   DataCell(Text('')),
                   DataCell(Text('')),
@@ -127,11 +144,21 @@ class DailyExpensesPage extends StatelessWidget {
   }
 
   Widget _buildPurchasesTable() {
-    //  if (purchases != null && purchases!.isNotEmpty) {
-    //   totalPurchases = purchases!
-    //      .map((purchase) => double.parse(purchase['price'].toString()))
-    //       .reduce((value, element) => value + element);
-    // }
+    if (purchases != null && purchases!.isNotEmpty) {
+      for (var i = 0; i < purchases!.length; i++) {
+        // Extracting the string value from the map
+        String priceString = purchases![i]['price']!.toString();
+        // Splitting the string by commas and selecting the first part
+        List<String> priceParts = priceString.split(',');
+        // Parsing the first part of the split string as a double
+        for (var x = 0; x < priceParts!.length; x++) {
+          double price = double.parse(
+              priceParts[x].replaceAll('[', '').replaceAll(']', ''));
+          // Adding the price to totalPurchases
+          totalPurchases += price;
+        }
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,6 +173,7 @@ class DailyExpensesPage extends StatelessWidget {
               DataColumn(label: Text('Stock Name')),
               DataColumn(label: Text('Quantity')),
               DataColumn(label: Text('Authorized')),
+              DataColumn(label: Text('Client Name')),
               DataColumn(label: Text('Price')),
               DataColumn(label: Text('Purchase ID')),
               DataColumn(label: Text('Warehouse Name')),
@@ -157,7 +185,8 @@ class DailyExpensesPage extends StatelessWidget {
                     DataCell(Text(purchase['date'].toString())),
                     DataCell(Text(purchase['stockName'].toString())),
                     DataCell(Text(purchase['quantity'].toString())),
-                    DataCell(Text(purchase['authorized'].toString())),
+                    DataCell(Text(purchase['autherized'].toString())),
+                    DataCell(Text(purchase['clientName'].toString())),
                     DataCell(Text('\$${purchase['price'].toString()}')),
                     DataCell(Text(purchase['purchase_id'].toString())),
                     DataCell(Text(purchase['warehouseName'].toString())),
@@ -168,6 +197,7 @@ class DailyExpensesPage extends StatelessWidget {
                 cells: [
                   DataCell(Text('Total',
                       style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataCell(Text('')),
                   DataCell(Text('')),
                   DataCell(Text('')),
                   DataCell(Text('')),

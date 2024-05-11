@@ -15,7 +15,7 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-  final String getStocksUrl = 'http://192.168.1.102:8080/api/getStocks';
+  final String getStocksUrl = 'http://192.168.1.122:8080/api/getStocks';
   @override
   void initState() {
     super.initState();

@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_application_1/pages/DebtPaymentPage.dart';
+
+import 'package:flutter_application_1/pages/DebtPaymentPage2.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
@@ -24,7 +25,7 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
   Future<void> fetchSaless() async {
     final response = await http.get(
         Uri.parse(
-            'http://192.168.1.102:8080/api/getSalesInvoiceClient?client_id=${widget.selectedClient['clientId']}'),
+            'http://192.168.1.122:8080/api/getSalesInvoiceClient?client_id=${widget.selectedClient['clientId']}'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -63,7 +64,7 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DebtPaymentPage(
+                  builder: (context) => DebtPaymentPage2(
                     client: widget.selectedClient,
                   ),
                 ),

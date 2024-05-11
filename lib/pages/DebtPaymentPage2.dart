@@ -3,21 +3,18 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
+
 class DebtPaymentPage2 extends StatefulWidget {
   final dynamic client;
-  final String initialPaymentAmount;
 
-  const DebtPaymentPage2({
-    Key? key,
-    required this.client,
-    required this.initialPaymentAmount, // Yeni parametre eklendi
-  }) : super(key: key);
+  const DebtPaymentPage2({Key? key, required this.client}) : super(key: key);
 
   @override
-  _DebtPaymentPage2State createState() => _DebtPaymentPage2State();
+  _DebtPaymentPageState createState() => _DebtPaymentPageState();
 }
 
-class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
+class _DebtPaymentPageState extends State<DebtPaymentPage2> {
   TextEditingController debtAmountController = TextEditingController();
   TextEditingController paymentAmountController = TextEditingController();
 
@@ -41,11 +38,15 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
 
   Future<void> _fetchBalanceData() async {
     final url = Uri.parse(
-        'http://192.168.1.102:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
-    final response = await http.get(url);
+        'http://192.168.1.122:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
+    final response = await http.get(url, headers: <String, String>{
+      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+    });
     if (response.statusCode == 200) {
       setState(() {
-        balanceData = jsonDecode(utf8.decode(response.bodyBytes));
+        balanceData = {
+          'Balance': json.decode(response.body)['balance'],
+        };
       });
     } else {
       throw Exception('Failed to load balance data');
@@ -55,8 +56,6 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
   @override
   void initState() {
     super.initState();
-    paymentAmountController.text =
-        widget.initialPaymentAmount; // initialPaymentAmount değeri atanıyor
     _fetchBalanceData();
   }
 
@@ -72,14 +71,13 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
       if (selectedPaymentType != null &&
           paymentAmountController.text.isNotEmpty) {
         final url = Uri.parse(
-            'http://192.168.1.102:8080/api/${widget.client['clientId']}/updateBalance');
-        final response = await http.patch(
-          url,
-          body: {
-            'paymentType': selectedPaymentType!,
-            'value': paymentAmountController.text,
-          },
-        );
+            'http://192.168.1.122:8080/api/${widget.client['clientId']}/updateBalance2');
+        final response = await http.patch(url, body: {
+          'paymentType': selectedPaymentType!,
+          'value': paymentAmountController.text,
+        }, headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
         if (response.statusCode == 200) {
           // If successful, update balance data
           await _fetchBalanceData();
@@ -120,7 +118,7 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Debt Payment'),
+        title: Text('Debt Payment Sales'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -138,6 +136,17 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
                   '${entry.key}: ${entry.value}',
                   style: TextStyle(fontSize: 16),
                 ),
+              SizedBox(height: 20),
+              if (balanceData!['Balance'] > 0)
+                Text(
+                  'The amount we need to pay',
+                  style: TextStyle(fontSize: 16, color: Colors.red),
+                )
+              else
+                Text(
+                  'The amount that needs to be paid',
+                  style: TextStyle(fontSize: 16, color: Colors.green),
+                )
             ],
             SizedBox(height: 20),
             DropdownButtonFormField<String>(
@@ -151,28 +160,16 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
               decoration: InputDecoration(labelText: 'Payment Type'),
               items: [
                 DropdownMenuItem(
-                  value: 'turnoverDebit',
-                  child: Text('Turnover Debit'),
+                  value: 'Debit',
+                  child: Text('Debit'),
                 ),
                 DropdownMenuItem(
-                  value: 'turnoverCredit',
-                  child: Text('Turnover Credit'),
+                  value: 'Credit',
+                  child: Text('Credit'),
                 ),
                 DropdownMenuItem(
-                  value: 'turnoverBalance',
-                  child: Text('Turnover Balance'),
-                ),
-                DropdownMenuItem(
-                  value: 'transactionalDebit',
-                  child: Text('Transactional Debit'),
-                ),
-                DropdownMenuItem(
-                  value: 'transactionalCredit',
-                  child: Text('Transactional Credit'),
-                ),
-                DropdownMenuItem(
-                  value: 'transactionalBalance',
-                  child: Text('Transactional Balance'),
+                  value: 'Cash',
+                  child: Text('Cash'),
                 ),
               ],
             ),
@@ -192,7 +189,6 @@ class _DebtPaymentPage2State extends State<DebtPaymentPage2> {
                     controller: paymentAmountController,
                     decoration: InputDecoration(labelText: 'Payment Amount'),
                     keyboardType: TextInputType.number,
-                    enabled: false, // Disable editing
                   ),
                 ),
                 IconButton(
