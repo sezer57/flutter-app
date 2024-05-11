@@ -86,9 +86,19 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
           builder: (context) =>
               PurchasePage(selectedSourceWarehouse: selectedSourceWarehouse)),
     );
+    selectedStock = result;
+    for (int i = 0; i < productids.length; i++) {
+      if (productids[i] == selectedStock['stockId'].toString()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('same selected product please change quantity'),
+          ),
+        );
+        return null; // If you want to exit the loop after finding a match
+      }
+    }
     if (result != null) {
       setState(() {
-        selectedStock = result;
         stockController.text = selectedStock['stockName'];
         productids.add(selectedStock['stockId'].toString());
       });

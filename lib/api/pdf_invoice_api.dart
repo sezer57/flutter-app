@@ -437,7 +437,7 @@ class PdfInvoiceApi {
                 ),
                 pw.Divider(),
                 _buildText(
-                  title: 'Total Dhs',
+                  title: 'Total ',
                   titleStyle: pw.TextStyle(
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,

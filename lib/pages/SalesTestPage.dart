@@ -90,7 +90,17 @@ class _SalesTestPageState extends State<SalesTestPage> {
           builder: (context) =>
               SalesPage(selectedSourceWarehouse: selectedSourceWarehouse)),
     );
-
+    selectedStock = result;
+    for (int i = 0; i < productids.length; i++) {
+      if (productids[i] == selectedStock['stockId'].toString()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('same selected product please change quantity'),
+          ),
+        );
+        return null; // If you want to exit the loop after finding a match
+      }
+    }
     if (result != null) {
       setState(() {
         selectedStock = result;
@@ -335,7 +345,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
         "stockCodes":
             productids ?? 0, // Parse as int, default to 0 if parsing fails
         "quantity": productquantity ?? 0,
-        "autherized":ownerController.text,
+        "autherized": ownerController.text,
         "price": productprice ?? 0,
         "clientId": clientId,
         "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
