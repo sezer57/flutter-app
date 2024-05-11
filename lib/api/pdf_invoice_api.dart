@@ -378,7 +378,7 @@ class PdfInvoiceApi {
         item.description,
         Utils.formatDate(item.date),
         '${item.quantity}',
-        '${item.vat} %',
+        '${item.vat*100} %',
         '\ ${item.unitPrice}',
         '\ ${total.toStringAsFixed(2)}',
       ];

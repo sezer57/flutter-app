@@ -8,39 +8,58 @@ import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:flutter_application_1/pages/ProductPdfPage.dart'; // Import PdfViewPage.dart
 
 TextEditingController searchController = TextEditingController();
-
 class ProductPage extends StatefulWidget {
   @override
   _ProductPageState createState() => _ProductPageState();
 }
 
 class _ProductPageState extends State<ProductPage> {
+
   final String getStocksUrl = 'http://192.168.1.102:8080/api/getStocks';
+
+  int page = 0;
+
+
   @override
   void initState() {
     super.initState();
     // Load stocks initially
-    _fetchStocks().then((stocks) {
+    _fetchStocksByPage(page).then((stocks) {
       setState(() {
         _stocks = stocks;
-        filteredStocks =
-            stocks; // Initially, filteredStocks will be same as _stocks
+        filteredStocks = stocks; // Initially, filteredStocks will be same as _stocks
       });
     });
   }
 
-  Future<List<dynamic>> _fetchStocks() async {
-    final response = await http.get(Uri.parse(getStocksUrl),
-        headers: <String, String>{
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        });
+  Future<List<dynamic>> _fetchStocksByPage(int page) async {
+    final url = 'http://104.248.42.73:8080/api/getStocksByPage?page=$page';
+    final response = await http.get(Uri.parse(url), headers: <String, String>{
+      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+    });
     if (response.statusCode == 200) {
-      final utf8Body =
-          utf8.decode(response.bodyBytes); // Decode response body as UTF-8
+      final utf8Body = utf8.decode(response.bodyBytes);
       return jsonDecode(utf8Body);
     } else {
-      return List.empty();
       print('Failed to load stocks');
+      throw Exception('Failed to load stocks');
+    }
+  }
+
+  int _currentPage = 0; // Başlangıç sayfa numarası
+
+  Future<void> _loadNextPage() async {
+    try {
+      final List<dynamic> nextPageStocks =
+          await _fetchStocksByPage(_currentPage);
+      setState(() {
+        _stocks.addAll(nextPageStocks); // _stocks listesine yeni sayfa ürünlerini ekler
+        filteredStocks = _stocks; // Filtrelenmiş listeyi günceller
+        _currentPage++; // Sayfa numarasını artırır
+      });
+    } catch (e) {
+      print('Error loading next page: $e');
+      // Hata durumunda uygun bir işlem yapılabilir
     }
   }
 
@@ -53,21 +72,71 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  void searchStocks(String query) {
-    setState(() {
-      // Filter the list of stocks based on the query
-      // Assuming you want to filter by stockName
-      filteredStocks = _stocks
-          .where((stock) =>
-              stock['stockName'].toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
+void searchStocks(String query) async {
+  // Fetch all stocks from all pages
+  List<dynamic> allStocks = await _fetchAllStocks();
+  setState(() {
+    // Filter the list of all stocks based on the query
+    // Assuming you want to filter by stockName
+    filteredStocks = allStocks
+        .where((stock) =>
+            stock['stockName'].toLowerCase().contains(query.toLowerCase()))
+        .toList();
+  });
+}
+
+Future<List<dynamic>> _fetchAllStocks() async {
+  List<dynamic> allStocks = [];
+  int currentPage = 0;
+  try {
+    while (true) {
+      final nextPageStocks = await _fetchStocksByPage(currentPage);
+      if (nextPageStocks.isEmpty) break;
+      allStocks.addAll(nextPageStocks);
+      currentPage++;
+    }
+  } catch (e) {
+    print('Error fetching all stocks: $e');
   }
+  return allStocks;
+}
+
 
   List<dynamic> _stocks =
       []; // Add this variable to hold the original list of stocks
   List<dynamic> filteredStocks =
       []; // Add this variable to hold the filtered list of stocks
+
+  void _goToPreviousPage() {
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        page = _currentPage; // Update page variable for _fetchStocksByPage function
+      });
+      _fetchStocksByPage(_currentPage).then((stocks) {
+        setState(() {
+          _stocks = stocks;
+          filteredStocks = stocks;
+        });
+      });
+    }
+  }
+
+void _goToNextPage() {
+  // Check if there are more stocks in the next page
+  if (filteredStocks.length >= 10) {
+    setState(() {
+      _currentPage++;
+      page = _currentPage; // Update page variable for _fetchStocksByPage function
+    });
+    _fetchStocksByPage(_currentPage).then((stocks) {
+      setState(() {
+        _stocks = stocks;
+        filteredStocks = stocks;
+      });
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -92,15 +161,13 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                     );
                     if (result == true) {
-                      // Refresh the stock list if a new stock was added
                       setState(() {
-                        _fetchStocks();
+                        _fetchStocksByPage(page);
                       });
                     }
                   },
                   child: Text('Add Products'),
                 ),
-                SizedBox(width: 10),
               ],
             ),
           ),
@@ -124,7 +191,7 @@ class _ProductPageState extends State<ProductPage> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: _fetchStocks(),
+              future: _fetchStocksByPage(page),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -132,29 +199,49 @@ class _ProductPageState extends State<ProductPage> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
                   // List<dynamic> stocks = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: filteredStocks.length,
-                    itemBuilder: (context, index) {
-                      var stock = filteredStocks[index];
-                      var warehouseName = stock['warehouse']['name'];
-                      var salesPrice = stock['salesPrice'];
-                      return Card(
-                        child: ListTile(
-                          title: Text(stock['stockName']),
-                          subtitle: Text("Code: " +
-                              stock['stockCode'] +
-                              " Price: " +
-                              salesPrice.toString() +
-                              " Warehouse: " +
-                              warehouseName +
-                              " Date: " +
-                              stock['registrationDate']),
-                          onTap: () {
-                            _navigateToUpdateStockPage(stock);
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: filteredStocks.length,
+                          itemBuilder: (context, index) {
+                            var stock = filteredStocks[index];
+                            var warehouseName = stock['warehouse']['name'];
+                            var salesPrice = stock['salesPrice'];
+                            return Card(
+                              child: ListTile(
+                                title: Text(stock['stockName']),
+                                subtitle: Text("Code: " +
+                                    stock['stockCode'] +
+                                    " Price: " +
+                                    salesPrice.toString() +
+                                    " Warehouse: " +
+                                    warehouseName +
+                                    " Date: " +
+                                    stock['registrationDate']),
+                                onTap: () {
+                                  _navigateToUpdateStockPage(stock);
+                                },
+                              ),
+                            );
                           },
                         ),
-                      );
-                    },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: _goToPreviousPage,
+                            icon: Icon(Icons.arrow_back),
+                          ),
+                          Text('Page ${_currentPage + 1}'),
+                          IconButton(
+                            onPressed: _goToNextPage,
+                            icon: Icon(Icons.arrow_forward),
+                          ),
+                        ],
+                      ),
+                    ],
                   );
                 }
               },
