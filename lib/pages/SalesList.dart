@@ -15,29 +15,62 @@ class SalesList extends StatefulWidget {
 }
 
 class _SalesListState extends State<SalesList> {
-  List<dynamic> purchases = [];
+  List<dynamic> sales = [];
+  List<dynamic> filteredSales = [];
+  int page = 0;
 
   @override
   void initState() {
     super.initState();
-    fetchSales();
+    fetchSalesByPage(page);
   }
 
-  Future<void> fetchSales() async {
+  Future<void> fetchSalesByPage(int page) async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.122:8080/api/getSales'),
-        headers: <String, String>{
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        });
+      Uri.parse('http://192.168.1.122:8080/api/getSalesByPage?page=$page'),
+      headers: <String, String>{
+        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+      },
+    );
     if (response.statusCode == 200) {
       setState(() {
-        purchases = jsonDecode(utf8.decode(response.bodyBytes));
-        purchases.sort((a, b) => b['expense_id'].compareTo(a['expense_id']));
+        sales = jsonDecode(utf8.decode(response.bodyBytes));
+        sales.sort((a, b) => b['expense_id'].compareTo(a['expense_id']));
+        filteredSales = sales; // Initially, filteredSales will be same as sales
       });
     } else {
       // Handle errors
       print('Failed to fetch sales: ${response.statusCode}');
     }
+  }
+
+  void goToPreviousPage() {
+    if (page > 0) {
+      setState(() {
+        page--;
+      });
+      fetchSalesByPage(page);
+    }
+  }
+
+  void goToNextPage() {
+    if (filteredSales.length >= 10) {
+      setState(() {
+        page++;
+      });
+      fetchSalesByPage(page);
+    }
+  }
+
+  void searchSales(String query) {
+    setState(() {
+      // Filter the list of all sales based on the query
+      // Assuming you want to filter by clientName
+      filteredSales = sales
+          .where((sale) =>
+              sale['clientName'].toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   Future<void> createInvoice(dynamic sale) async {
@@ -50,11 +83,12 @@ class _SalesListState extends State<SalesList> {
 
     // Customer oluşturma
     Customer customer = Customer(
-        name: sale['clientName'],
-        address: sale['clientAdress'],
-        number: sale['clientPhone']);
+      name: sale['clientName'],
+      address: sale['clientAdress'],
+      number: sale['clientPhone'],
+    );
 
-    // Supplier oluşturma (Varsayılan değerler kullanıldı, isteğe bağlı olarak değiştirilebilir)
+    // Supplier oluşturma
     Supplier supplier = Supplier(
       Tel: ' +971 4 2266114',
       WhatsApp: ' +971559438444',
@@ -63,7 +97,6 @@ class _SalesListState extends State<SalesList> {
       name2: 'Obaid Omayar Bldg',
       address: 'Shop No:1, Dubai, U.A.E',
     );
-    print(sale['stockName'].length);
 
     List<InvoiceItem> invoiceItems = [];
 
@@ -77,24 +110,19 @@ class _SalesListState extends State<SalesList> {
       );
       invoiceItems.add(item);
     }
-    print(invoiceItems);
+
     // Invoice oluşturma
     Invoice invoice = Invoice(
-        info: info,
-        supplier: supplier,
-        customer: customer,
-        items: invoiceItems,
-        type: "sale");
+      info: info,
+      supplier: supplier,
+      customer: customer,
+      items: invoiceItems,
+      type: "sale",
+    );
 
     // Fatura oluşturma ve dosyayı kaydetme
     final pdfFile = await PdfInvoiceApi.generate(invoice);
     PdfApi.openFile(pdfFile);
-    // Fatura dosyasını görüntüleme (Opsiyonel)
-    // Android için: PDFViewer.openFile(pdfFile.path);
-    // iOS için: PDFViewer.openFile(pdfFile.path);
-
-    // Fatura dosyasını paylaşma (Opsiyonel)
-    // shareFile(pdfFile);
   }
 
   @override
@@ -103,32 +131,60 @@ class _SalesListState extends State<SalesList> {
       appBar: AppBar(
         title: Text('Sales List'),
       ),
-      body: ListView.builder(
-        itemCount: purchases.length,
-        itemBuilder: (BuildContext context, int index) {
-          final purchase = purchases[index];
-          return Card(
-            elevation: 3, // Opsiyonel: Kartın gölge derecesini belirler
-            margin: EdgeInsets.symmetric(
-                vertical: 8,
-                horizontal: 16), // Opsiyonel: Kartın kenar boşluklarını ayarlar
-            child: ListTile(
-              title: Text('Invoice Id: ${purchase['expense_id']}'),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Stock Name: ${purchase['stockName']}'),
-                  Text('Price: ${purchase['price']}'),
-                  Text('Client Name: ${purchase['clientName']}'),
-                  Text('Date: ${purchase['date']}'),
-                ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search by client name...',
+                prefixIcon: Icon(Icons.search),
               ),
-              onTap: () {
-                createInvoice(purchase);
+              onChanged: searchSales,
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredSales.length,
+              itemBuilder: (BuildContext context, int index) {
+                final sale = filteredSales[index];
+                return Card(
+                  elevation: 3,
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: ListTile(
+                    title: Text('Invoice Id: ${sale['expense_id']}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Stock Name: ${sale['stockName']}'),
+                        Text('Price: ${sale['price']}'),
+                        Text('Client Name: ${sale['clientName']}'),
+                        Text('Date: ${sale['date']}'),
+                      ],
+                    ),
+                    onTap: () {
+                      createInvoice(sale);
+                    },
+                  ),
+                );
               },
             ),
-          );
-        },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: goToPreviousPage,
+                icon: Icon(Icons.arrow_back),
+              ),
+              Text('Page ${page + 1}'),
+              IconButton(
+                onPressed: goToNextPage,
+                icon: Icon(Icons.arrow_forward),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
