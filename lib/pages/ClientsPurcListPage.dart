@@ -108,7 +108,8 @@ class _ClientsPurcListPageState extends State<ClientsPurcListPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ClientsPurcDoPage(selectedClient: selectedClient),
+                          builder: (context) =>
+                              ClientsPurcDoPage(selectedClient: selectedClient),
                         ),
                       );
                     },

@@ -50,16 +50,13 @@ class _SettingPageState extends State<PurchasePage> {
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
-
     if (response.statusCode == 200) {
       setState(() {
-        stocks = json.decode(utf8.decode(response.bodyBytes));
-        filteredStocks =
-            stocks; // Initialize filteredStocks with all stocks initially
-        //  _applyWarehouseFilter();
+        stocks = jsonDecode(utf8.decode(response.bodyBytes));
+        filteredStocks = List.from(stocks);
       });
     } else {
-      throw Exception('Failed to fetch stocks');
+      print('Failed to load stocks');
     }
   }
 

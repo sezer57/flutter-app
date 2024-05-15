@@ -208,7 +208,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                           onChanged: (newValue) {
                             setState(() {
                               priceController.text = (double.parse(newValue!) *
-                                      selectedStock['salesPrice'])
+                                      selectedStock['purchasePrice'])
                                   .toString();
                               productList[index]['quantity'] = newValue;
 

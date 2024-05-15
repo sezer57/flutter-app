@@ -108,7 +108,8 @@ class _ClientsPayListPageState extends State<ClientsPayListPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ClientsPayDoPage(selectedClient: selectedClient),
+                          builder: (context) =>
+                              ClientsPayDoPage(selectedClient: selectedClient),
                         ),
                       );
                     },

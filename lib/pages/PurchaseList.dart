@@ -35,7 +35,8 @@ class _PurchaseListState extends State<PurchaseList> {
       setState(() {
         purchases = jsonDecode(utf8.decode(response.bodyBytes));
         purchases.sort((a, b) => b['purchase_id'].compareTo(a['purchase_id']));
-        filteredPurchases = purchases; // Initially, filteredPurchases will be same as purchases
+        filteredPurchases =
+            purchases; // Initially, filteredPurchases will be same as purchases
       });
     } else {
       // Handle errors
@@ -66,10 +67,9 @@ class _PurchaseListState extends State<PurchaseList> {
       // Filter the list of all purchases based on the query
       // Assuming you want to filter by clientName
       filteredPurchases = purchases
-          .where((purchase) =>
-              purchase['clientName']
-                  .toLowerCase()
-                  .contains(query.toLowerCase()))
+          .where((purchase) => purchase['clientName']
+              .toLowerCase()
+              .contains(query.toLowerCase()))
           .toList();
     });
   }
