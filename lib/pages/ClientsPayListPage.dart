@@ -24,7 +24,7 @@ class _ClientsPayListPageState extends State<ClientsPayListPage> {
 
   Future<void> fetchClientsByPage(int page) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.122:8080/api/getClientsByPage?page=$page'),
+      Uri.parse('http://192.168.1.130:8080/api/getClientsByPage?page=$page'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },

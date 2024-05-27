@@ -26,7 +26,8 @@ class _ReceiptPageState extends State<ReceiptPage> {
 
   Future<void> fetchPurchasesByPage(int page) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.122:8080/api/getBalanceTransferByPage?page=$page'),
+      Uri.parse(
+          'http://192.168.1.130:8080/api/getBalanceTransferByPage?page=$page'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -34,7 +35,8 @@ class _ReceiptPageState extends State<ReceiptPage> {
     if (response.statusCode == 200) {
       setState(() {
         receipts = jsonDecode(utf8.decode(response.bodyBytes));
-        receipts.sort((a, b) => b['balance_transfer_ID'].compareTo(a['balance_transfer_ID']));
+        receipts.sort((a, b) =>
+            b['balance_transfer_ID'].compareTo(a['balance_transfer_ID']));
         filteredReceipt = receipts;
       });
     } else {
@@ -69,7 +71,6 @@ class _ReceiptPageState extends State<ReceiptPage> {
           .toList();
     });
   }
-  
 
   Future<void> createReceipt(dynamic purchase) async {
     Customer customer = Customer(
@@ -136,7 +137,8 @@ class _ReceiptPageState extends State<ReceiptPage> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Client Name: ${purchase['clientName'] ?? ''} ${purchase['clientSurname'] ?? ''}'),
+                        Text(
+                            'Client Name: ${purchase['clientName'] ?? ''} ${purchase['clientSurname'] ?? ''}'),
                         Text('Amount: ${purchase['amount']}'),
                         Text('Payment Type: ${purchase['paymentType']}'),
                         Text('Date: ${purchase['date']}'),

@@ -12,7 +12,7 @@ class ClientsPage extends StatefulWidget {
 }
 
 class _ClientsPageState extends State<ClientsPage> {
-  final String getClientsUrl = 'http://192.168.1.122:8080/api/getClients';
+  final String getClientsUrl = 'http://192.168.1.130:8080/api/getClients';
   List<dynamic> clients = [];
 
   Future<void> _fetchClients() async {

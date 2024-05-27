@@ -123,7 +123,7 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.122:8080/api/warehouseStockUpdate'),
+        Uri.parse('http://192.168.1.130:8080/api/warehouseStockUpdate'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
@@ -160,7 +160,7 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
   Future<void> _deleteStock() async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.122:8080/api/warehouseStockDelete'),
+        Uri.parse('http://192.168.1.130:8080/api/warehouseStockDelete'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'

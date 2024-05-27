@@ -27,7 +27,7 @@ class _SalesListState extends State<SalesList> {
 
   Future<void> fetchSalesByPage(int page) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.122:8080/api/getSalesByPage?page=$page'),
+      Uri.parse('http://192.168.1.130:8080/api/getSalesByPage?page=$page'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -106,7 +106,7 @@ class _SalesListState extends State<SalesList> {
         date: DateTime.now(),
         quantity: int.parse(sale['quantity'][i]),
         unitPrice: double.parse(sale['price'][i]),
-        vat: 0.05, // Example VAT rate 5%
+        vat: double.parse(sale['vat'][i]) / 100, // 0.05, // Example VAT rate 5%
       );
       invoiceItems.add(item);
     }

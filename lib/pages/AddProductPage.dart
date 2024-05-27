@@ -38,7 +38,7 @@ class _AddStockPageState extends State<AddStockPage> {
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.122:8080/api/getWarehouse'),
+        Uri.parse('http://192.168.1.130:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -55,7 +55,7 @@ class _AddStockPageState extends State<AddStockPage> {
 
   Future<void> fetchStockCode() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.122:8080/api/getStockCode'),
+        Uri.parse('http://192.168.1.130:8080/api/getStockCode'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -192,7 +192,7 @@ class _AddStockPageState extends State<AddStockPage> {
   }
 
   Future<void> _addStock(BuildContext context) async {
-    final String apiUrl = 'http://192.168.1.122:8080/api/stocks';
+    final String apiUrl = 'http://192.168.1.130:8080/api/stocks';
 
     final Map<String, dynamic> postData = {
       "registrationDate": registrationDateController.text,

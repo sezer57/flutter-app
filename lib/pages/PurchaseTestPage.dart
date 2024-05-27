@@ -26,6 +26,7 @@ String? selectedStockId;
 class _PurchaseTestPageState extends State<PurchaseTestPage> {
   final TextEditingController clientCodeController = TextEditingController();
   final TextEditingController DateController = TextEditingController();
+  final TextEditingController VatController = TextEditingController();
   final TextEditingController commercialTitleController =
       TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -121,7 +122,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.122:8080/api/getWarehouse'),
+        Uri.parse('http://192.168.1.130:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -282,6 +283,11 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                 enabled: false,
               ),
               SizedBox(height: 16),
+              TextField(
+                controller: VatController,
+                decoration: InputDecoration(labelText: 'Vat'),
+                keyboardType: TextInputType.datetime,
+              ),
               SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
@@ -304,12 +310,13 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
     print(productquantity);
     print(productprice);
     final response = await http.post(
-      Uri.parse('http://192.168.1.122:8080/api/purchase'),
+      Uri.parse('http://192.168.1.130:8080/api/purchase'),
       body: json.encode({
         "stockCode":
             productids ?? 0, // Parse as int, default to 0 if parsing fails
         "quantity": productquantity ?? 0,
         "price": productprice ?? 0,
+        "vat": VatController.text ?? 0,
         "autherized": ownerController.text,
         "clientId": clientId,
         "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
