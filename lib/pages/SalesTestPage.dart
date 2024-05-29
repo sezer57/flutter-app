@@ -27,6 +27,7 @@ String? selectedStockId;
 class _SalesTestPageState extends State<SalesTestPage> {
   final TextEditingController clientCodeController = TextEditingController();
   final TextEditingController DateController = TextEditingController();
+  final TextEditingController VatController = TextEditingController();
   final TextEditingController commercialTitleController =
       TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -136,7 +137,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.122:8080/api/getWarehouse'),
+        Uri.parse('http://192.168.1.130:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -152,7 +153,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
   }
 
   final String getStocksUrl =
-      'http://192.168.1.122:8080/api/getStocksRemainigById?stock_id=';
+      'http://192.168.1.130:8080/api/getStocksRemainigById?stock_id=';
   String? remaning;
   Future<String?> fetchStocksRemaing() async {
     final response = await http.get(
@@ -175,6 +176,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
       []; // List to store product, quantity, and price data
   List<String> productids = [];
   List<String> productprice = [];
+  late String productvat;
   List<String> productquantity = [];
   @override
   Widget build(BuildContext context) {
@@ -318,6 +320,11 @@ class _SalesTestPageState extends State<SalesTestPage> {
                 decoration: InputDecoration(labelText: 'Process owner'),
                 enabled: false,
               ),
+              TextField(
+                controller: VatController,
+                decoration: InputDecoration(labelText: 'Vat'),
+                keyboardType: TextInputType.datetime,
+              ),
               SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
@@ -340,13 +347,14 @@ class _SalesTestPageState extends State<SalesTestPage> {
     print(productquantity);
     print(productprice);
     final response = await http.post(
-      Uri.parse('http://192.168.1.122:8080/api/Sales'),
+      Uri.parse('http://192.168.1.130:8080/api/Sales'),
       body: json.encode({
         "stockCodes":
             productids ?? 0, // Parse as int, default to 0 if parsing fails
         "quantity": productquantity ?? 0,
         "autherized": ownerController.text,
         "price": productprice ?? 0,
+        "vat": VatController.text ?? 0,
         "clientId": clientId,
         "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
       }),

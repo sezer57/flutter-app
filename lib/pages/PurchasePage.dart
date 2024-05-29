@@ -30,7 +30,7 @@ class _SettingPageState extends State<PurchasePage> {
     print(selectedSourceWarehouse);
     final response = await http.get(
         Uri.parse(
-            'http://192.168.1.122:8080/api/getStockWithIdProduct?warehouse_id=${widget.selectedSourceWarehouse}'),
+            'http://192.168.1.130:8080/api/getStockWithIdProduct?warehouse_id=${widget.selectedSourceWarehouse}'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -46,7 +46,7 @@ class _SettingPageState extends State<PurchasePage> {
 
   Future<void> _fetchStocks() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.122:8080/api/getWarehouseStock'),
+        Uri.parse('http://192.168.1.130:8080/api/getWarehouseStock'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });

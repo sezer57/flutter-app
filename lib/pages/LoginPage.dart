@@ -18,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
     String username = usernameController.text;
     String password = passwordController.text;
 
-    var url = Uri.parse('http://192.168.1.122:8080/api/login');
+    var url = Uri.parse('http://192.168.1.130:8080/api/login');
     var response = await http.post(
       url,
       headers: <String, String>{

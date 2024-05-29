@@ -1,21 +1,21 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/model/supplier.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
-import 'package:flutter_application_1/api/pdf_invoice_api.dart';
+import 'package:flutter_application_1/api/pdf_receipt_api.dart';
 import 'package:flutter_application_1/api/pdf_api.dart';
 import 'package:flutter_application_1/model/customer.dart';
-import 'package:flutter_application_1/model/invoice.dart';
-import 'package:flutter_application_1/model/supplier.dart';
+import 'package:flutter_application_1/model/receipt.dart'; // Ensure you have this file
 
-class PurchaseList extends StatefulWidget {
+class ReceiptPage extends StatefulWidget {
   @override
-  _PurchaseListState createState() => _PurchaseListState();
+  _ReceiptPageState createState() => _ReceiptPageState();
 }
 
-class _PurchaseListState extends State<PurchaseList> {
-  List<dynamic> purchases = [];
-  List<dynamic> filteredPurchases = [];
+class _ReceiptPageState extends State<ReceiptPage> {
+  List<dynamic> receipts = [];
+  List<dynamic> filteredReceipt = [];
   int page = 0;
 
   @override
@@ -26,20 +26,20 @@ class _PurchaseListState extends State<PurchaseList> {
 
   Future<void> fetchPurchasesByPage(int page) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.130:8080/api/getPurchasesByPage?page=$page'),
+      Uri.parse(
+          'http://192.168.1.130:8080/api/getBalanceTransferByPage?page=$page'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
     );
     if (response.statusCode == 200) {
       setState(() {
-        purchases = jsonDecode(utf8.decode(response.bodyBytes));
-        purchases.sort((a, b) => b['purchase_id'].compareTo(a['purchase_id']));
-        filteredPurchases =
-            purchases; // Initially, filteredPurchases will be same as purchases
+        receipts = jsonDecode(utf8.decode(response.bodyBytes));
+        receipts.sort((a, b) =>
+            b['balance_transfer_ID'].compareTo(a['balance_transfer_ID']));
+        filteredReceipt = receipts;
       });
     } else {
-      // Handle errors
       print('Failed to fetch purchases: ${response.statusCode}');
     }
   }
@@ -54,7 +54,7 @@ class _PurchaseListState extends State<PurchaseList> {
   }
 
   void goToNextPage() {
-    if (filteredPurchases.length >= 10) {
+    if (filteredReceipt.length >= 10) {
       setState(() {
         page++;
       });
@@ -64,9 +64,7 @@ class _PurchaseListState extends State<PurchaseList> {
 
   void searchPurchases(String query) {
     setState(() {
-      // Filter the list of all purchases based on the query
-      // Assuming you want to filter by clientName
-      filteredPurchases = purchases
+      filteredReceipt = receipts
           .where((purchase) => purchase['clientName']
               .toLowerCase()
               .contains(query.toLowerCase()))
@@ -74,16 +72,13 @@ class _PurchaseListState extends State<PurchaseList> {
     });
   }
 
-  Future<void> createInvoice(dynamic purchase) async {
-    // InvoiceInfo oluşturma
-    // Örnek olarak, her satın alma için aynı fatura bilgilerini kullanıyoruz
-    InvoiceInfo info = InvoiceInfo(
-      number: purchase['purchase_id'].toString(),
-      date: DateTime.now(),
-      description: 'Purchase Invoice for ${purchase['stockName']}',
+  Future<void> createReceipt(dynamic purchase) async {
+    Customer customer = Customer(
+      name: purchase['clientName'],
+      address: purchase['clientSurname'],
+      number: purchase['commericalTitle'],
     );
 
-    // Supplier oluşturma (Varsayılan değerler kullanıldı, isteğe bağlı olarak değiştirilebilir)
     Supplier supplier = Supplier(
       Tel: ' +971 4 2266114',
       WhatsApp: ' +971559438444',
@@ -93,43 +88,22 @@ class _PurchaseListState extends State<PurchaseList> {
       address: 'Shop No:1, Dubai, U.A.E',
     );
 
-    // Customer oluşturma
-    Customer customer = Customer(
-        name: purchase['clientName'],
-        address: purchase['clientAdress'],
-        number: purchase['clientPhone']);
-
-    // Item oluşturma
-
-    List<InvoiceItem> invoiceItems = [];
-    for (int i = 0; i < purchase['stockName'].length; i++) {
-      InvoiceItem item = InvoiceItem(
-        description: 'Product: ${purchase['stockName'][i]}',
-        date: DateTime.now(),
-        quantity: (purchase['quantity'][i]),
-        unitPrice: (purchase['price'][i]),
-        vat: (purchase['vat'][i] / 100), //  // Example VAT rate  %
-      );
-      invoiceItems.add(item);
-    }
-    // Invoice oluşturma
-    Invoice invoice = Invoice(
-      info: info,
-      supplier: supplier,
-      customer: customer,
-      items: invoiceItems,
-      type: "sale",
+    ReceiptItem receiptItem = ReceiptItem(
+      description: purchase['paymentType'],
+      date: DateTime.now(),
+      balance: purchase['balance'],
+      amount: purchase['amount'],
     );
 
-    // Fatura oluşturma ve dosyayı kaydetme
-    final pdfFile = await PdfInvoiceApi.generate(invoice);
-    PdfApi.openFile(pdfFile);
-    // Fatura dosyasını görüntüleme (Opsiyonel)
-    // Android için: PDFViewer.openFile(pdfFile.path);
-    // iOS için: PDFViewer.openFile(pdfFile.path);
+    Receipt receipt = Receipt(
+      items: [receiptItem],
+      type: "${purchase['comment']}",
+      customer: customer,
+      supplier: supplier,
+    );
 
-    // Fatura dosyasını paylaşma (Opsiyonel)
-    // shareFile(pdfFile);
+    final pdfFile = await PdfReceiptApi.generate(receipt);
+    PdfApi.openFile(pdfFile);
   }
 
   @override
@@ -152,25 +126,26 @@ class _PurchaseListState extends State<PurchaseList> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredPurchases.length,
+              itemCount: filteredReceipt.length,
               itemBuilder: (BuildContext context, int index) {
-                final purchase = filteredPurchases[index];
+                final purchase = filteredReceipt[index];
                 return Card(
                   elevation: 3,
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   child: ListTile(
-                    title: Text('Invoice Id: ${purchase['purchase_id']}'),
+                    title: Text('Process Type: ${purchase['comment']}'),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Stock Name: ${purchase['stockName']}'),
-                        Text('Price: ${purchase['price']}'),
-                        Text('Client Name: ${purchase['clientName']}'),
+                        Text(
+                            'Client Name: ${purchase['clientName'] ?? ''} ${purchase['clientSurname'] ?? ''}'),
+                        Text('Amount: ${purchase['amount']}'),
+                        Text('Payment Type: ${purchase['paymentType']}'),
                         Text('Date: ${purchase['date']}'),
                       ],
                     ),
                     onTap: () {
-                      createInvoice(purchase);
+                      createReceipt(purchase);
                     },
                   ),
                 );

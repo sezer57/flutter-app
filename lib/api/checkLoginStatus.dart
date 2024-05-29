@@ -24,7 +24,7 @@ Future<String?> getTokenFromLocalStorage() async {
 // Function to check if token is expired
 Future<bool> isTokenExpired(String token) async {
   var response = await http.get(
-    Uri.parse('http://192.168.1.122:8080/api/getExpired'),
+    Uri.parse('http://192.168.1.130:8080/api/getExpired'),
     headers: <String, String>{
       'Authorization': 'Bearer $token',
     },

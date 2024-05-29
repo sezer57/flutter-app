@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/PurchaseClientSelectionPage.dart';
 import 'package:flutter_application_1/pages/PurchaseList.dart'; // Import PurchaseList.dart
+import 'package:flutter_application_1/pages/Receipt.dart';
 import 'package:flutter_application_1/pages/SalesClientSelectionPage.dart';
 import 'package:flutter_application_1/pages/SalesList.dart'; // Import SalesList.dart
 
@@ -58,7 +59,31 @@ class InvoicePage extends StatelessWidget {
                 ),
                 foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
               ),
+            ),
+
+            SizedBox(height: 40), // Spacer
+            ElevatedButton.icon(
+              onPressed: () {
+                // Navigate to PurchaseList.dart
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReceiptPage(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.list),
+              label: Text('Receipt List'),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                textStyle: MaterialStateProperty.all<TextStyle>(
+                  TextStyle(fontSize: 18),
+                ),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
             )
+
+            
           ],
         ),
       ),

@@ -31,7 +31,7 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Future<List<dynamic>> _fetchStocksByPage(int page) async {
-    final url = 'http://192.168.1.122:8080/api/getStocksByPage?page=$page';
+    final url = 'http://192.168.1.130:8080/api/getStocksByPage?page=$page';
     final response = await http.get(Uri.parse(url), headers: <String, String>{
       'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
     });
