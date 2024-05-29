@@ -145,7 +145,8 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
               else if (balanceData!['Balance'] == 0)
                 Text(
                   'Clear',
-                  style: TextStyle(fontSize: 16, color: Colors.red),
+                  style: TextStyle(
+                      fontSize: 16, color: Color.fromARGB(255, 44, 51, 252)),
                 )
               else
                 Text(
