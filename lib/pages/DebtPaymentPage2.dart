@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/ClientsPayDoPage.dart';
+import 'package:flutter_application_1/pages/ClientsPayListPage.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -38,7 +40,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage2> {
 
   Future<void> _fetchBalanceData() async {
     final url = Uri.parse(
-        'http://192.168.1.130:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
+        'http://192.168.1.54:8080/api/getBalanceWithClientID?ClientID=${widget.client['clientId']}');
     final response = await http.get(url, headers: <String, String>{
       'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
     });
@@ -71,7 +73,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage2> {
       if (selectedPaymentType != null &&
           paymentAmountController.text.isNotEmpty) {
         final url = Uri.parse(
-            'http://192.168.1.130:8080/api/${widget.client['clientId']}/updateBalance2');
+            'http://192.168.1.54:8080/api/${widget.client['clientId']}/updateBalance2');
         final response = await http.patch(url, body: {
           'paymentType': selectedPaymentType!,
           'value': paymentAmountController.text,
@@ -114,6 +116,19 @@ class _DebtPaymentPageState extends State<DebtPaymentPage2> {
     }
   }
 
+  void _navigateToPurchaseListPage() async {
+    final dynamic result1 = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ClientsPayDoPage(
+                selectedClient: widget.client,
+              )),
+    );
+    if (result1 != null) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,9 +140,22 @@ class _DebtPaymentPageState extends State<DebtPaymentPage2> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Client: ${widget.client['name']} ${widget.client['surname']}',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Client: ${widget.client['name']} ${widget.client['surname']}',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                SizedBox(
+                    width:
+                        10), // Adds some space between the text and the button
+                ElevatedButton(
+                  onPressed: _navigateToPurchaseListPage,
+                  child: Text('Open Records'),
+                ),
+              ],
             ),
             SizedBox(height: 20),
             if (balanceData != null) ...[
@@ -205,10 +233,12 @@ class _DebtPaymentPageState extends State<DebtPaymentPage2> {
               ],
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _makePayment,
-              child: Text('Make Payment'),
-            ),
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+              ElevatedButton(
+                onPressed: _makePayment,
+                child: Text('Make Payment'),
+              ),
+            ])
           ],
         ),
       ),

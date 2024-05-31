@@ -378,8 +378,8 @@ class PdfInvoiceApi {
         item.description,
         Utils.formatDate(item.date),
         '${item.quantity}',
-        '${item.vat * 100} %',
-        '\ ${item.unitPrice}',
+        '${(item.vat * 100).toStringAsFixed(2)} %',
+        '\ ${item.unitPrice.toStringAsFixed(2)}',
         '\ ${total.toStringAsFixed(2)}',
       ];
     }).toList();
@@ -431,7 +431,7 @@ class PdfInvoiceApi {
                   unite: true,
                 ),
                 _buildText(
-                  title: 'Vat ${vatPercent * 100} %',
+                  title: 'Vat ${(vatPercent * 100).toStringAsFixed(2)} %',
                   value: Utils.formatPrice(vat),
                   unite: true,
                 ),

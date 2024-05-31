@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_1/pages/ClientsPurcDoPage.dart';
+import 'package:flutter_application_1/pages/DebtPaymentPage.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class ClientsPurcListPage extends StatefulWidget {
@@ -109,7 +109,7 @@ class _ClientsPurcListPageState extends State<ClientsPurcListPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              ClientsPurcDoPage(selectedClient: selectedClient),
+                              DebtPaymentPage(client: selectedClient),
                         ),
                       );
                     },

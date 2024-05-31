@@ -103,16 +103,16 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
                       Text('Date: ${purchase['date']}'),
                     ],
                   ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DebtPaymentPage(
-                          client: widget.selectedClient,
-                        ),
-                      ),
-                    );
-                  },
+                  // onTap: () {
+                  //   Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => DebtPaymentPage(
+                  //         client: widget.selectedClient,
+                  //       ),
+                  //     ),
+                  //   );
+                  // },
                 );
               },
             ),

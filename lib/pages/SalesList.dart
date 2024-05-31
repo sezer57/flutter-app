@@ -105,8 +105,9 @@ class _SalesListState extends State<SalesList> {
         description: 'Product: ${sale['stockName'][i]}',
         date: DateTime.now(),
         quantity: int.parse(sale['quantity'][i]),
-        unitPrice: double.parse(sale['price'][i]),
-        vat: double.parse(sale['vat'][i]) / 100, // 0.05, // Example VAT rate 5%
+        unitPrice:
+            double.parse(sale['price'][i]) / (1 + (sale['vat'][i]) / 100),
+        vat: (sale['vat'][i]) / 100, // 0.05, // Example VAT rate 5%
       );
       invoiceItems.add(item);
     }
