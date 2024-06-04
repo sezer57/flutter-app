@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/pdf_api.dart';
 import 'package:flutter_application_1/model/client.dart';
 import 'package:flutter_application_1/widget/buttonwidget.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class PdfPage extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _PdfPageState extends State<PdfPage> {
 
   Future<void> fetchclnts() async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.130:8080/api/getStocks'),
+      Uri.parse('http://${await loadIP()}:8080/api/getStocks'),
     );
     if (response.statusCode == 200) {
       setState(() {
@@ -33,7 +34,6 @@ class _PdfPageState extends State<PdfPage> {
       });
     } else {
       // Handle errors
-      print('Failed to fetch clnts: ${response.statusCode}');
     }
   }
 

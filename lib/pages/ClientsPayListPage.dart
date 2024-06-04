@@ -24,7 +24,8 @@ class _ClientsPayListPageState extends State<ClientsPayListPage> {
 
   Future<void> fetchClientsByPage(int page) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.130:8080/api/getClientsByPage?page=$page'),
+      Uri.parse(
+          'http://${await loadIP()}:8080/api/getClientsByPage?page=$page'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -34,9 +35,7 @@ class _ClientsPayListPageState extends State<ClientsPayListPage> {
         clients = jsonDecode(utf8.decode(response.bodyBytes));
         filteredClients = List.from(clients);
       });
-    } else {
-      print("Failed to fetch clients");
-    }
+    } else {}
   }
 
   void goToPreviousPage() {

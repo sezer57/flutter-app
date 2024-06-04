@@ -25,7 +25,7 @@ class _PurchaseClientSelectionPageState
 
   Future<void> fetchClients() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.130:8080/api/getClients'),
+        Uri.parse('http://${await loadIP()}:8080/api/getClients'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -33,11 +33,8 @@ class _PurchaseClientSelectionPageState
       setState(() {
         clients = jsonDecode(utf8.decode(response.bodyBytes));
         filteredClients = List.from(clients);
-        print(clients);
       });
-    } else {
-      print("_PurchaseClientSelectionPageState empty");
-    }
+    } else {}
   }
 
   void searchClients(String query) {

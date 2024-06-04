@@ -27,7 +27,7 @@ class _SettingPageState extends State<SalesPage> {
   Future<void> fetchStocksByPage(int page) async {
     final response = await http.get(
       Uri.parse(
-          'http://192.168.1.130:8080/api/getStockWithIdProductByPage?page=$page&warehouse_id=${widget.selectedSourceWarehouse}'),
+          'http://${await loadIP()}:8080/api/getStockWithIdProductByPage?page=$page&warehouse_id=${widget.selectedSourceWarehouse}'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -37,9 +37,7 @@ class _SettingPageState extends State<SalesPage> {
         stocks = jsonDecode(utf8.decode(response.bodyBytes));
         filteredStocks = List.from(stocks);
       });
-    } else {
-      print('Failed to load stocks');
-    }
+    } else {}
   }
 
   void goToPreviousPage() {

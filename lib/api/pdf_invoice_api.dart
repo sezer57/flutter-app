@@ -361,7 +361,6 @@ class PdfInvoiceApi {
     if (invoice.items.isEmpty) {
       return pw.Center(child: pw.Text('No items'));
     }
-    print(invoice.items);
 
     final headers = [
       'Description',

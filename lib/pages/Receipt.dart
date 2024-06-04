@@ -27,7 +27,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
   Future<void> fetchPurchasesByPage(int page) async {
     final response = await http.get(
       Uri.parse(
-          'http://192.168.1.130:8080/api/getBalanceTransferByPage?page=$page'),
+          'http://${await loadIP()}:8080/api/getBalanceTransferByPage?page=$page'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -39,9 +39,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
             b['balance_transfer_ID'].compareTo(a['balance_transfer_ID']));
         filteredReceipt = receipts;
       });
-    } else {
-      print('Failed to fetch purchases: ${response.statusCode}');
-    }
+    } else {}
   }
 
   void goToPreviousPage() {

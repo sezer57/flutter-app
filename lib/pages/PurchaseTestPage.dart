@@ -122,7 +122,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.130:8080/api/getWarehouse'),
+        Uri.parse('http://${await loadIP()}:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -133,7 +133,6 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
       });
     } else {
       // Handle API error
-      print('Failed to fetch warehouses');
     }
   }
 
@@ -293,7 +292,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                 onPressed: () {
                   int quantity = int.tryParse(quantityController.text) ?? 0;
                   double price = double.tryParse(priceController.text) ?? 0.0;
-                  print(selectedStock);
+                  //print(selectedStock);
                   purchaseStock(selectedClient['clientId']);
                 },
                 child: Text('Purchase'),
@@ -306,11 +305,8 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
   }
 
   Future<void> purchaseStock(int clientId) async {
-    print(productids);
-    print(productquantity);
-    print(productprice);
     final response = await http.post(
-      Uri.parse('http://192.168.1.130:8080/api/purchase'),
+      Uri.parse('http://${await loadIP()}:8080/api/purchase'),
       body: json.encode({
         "stockCode":
             productids ?? 0, // Parse as int, default to 0 if parsing fails

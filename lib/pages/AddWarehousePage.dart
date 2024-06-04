@@ -8,8 +8,17 @@ class AddWareHousePage extends StatefulWidget {
   _AddWareHousePageState createState() => _AddWareHousePageState();
 }
 
+String? _ip;
+@override
+void initState() {
+  _initialize();
+}
+
+void _initialize() async {
+  _ip = await loadIP();
+}
+
 class _AddWareHousePageState extends State<AddWareHousePage> {
-  final String url = 'http://192.168.1.130:8080/api/warehouse';
   TextEditingController nameController = TextEditingController();
   TextEditingController authorizedController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -27,7 +36,7 @@ class _AddWareHousePageState extends State<AddWareHousePage> {
       };
 
       final response = await http.post(
-        Uri.parse(url),
+        Uri.parse('http://${await loadIP()}:8080/api/warehouse'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'

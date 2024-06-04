@@ -27,10 +27,9 @@ class _SettingPageState extends State<PurchasePage> {
   }
 
   Future<void> fetchStocks() async {
-    print(selectedSourceWarehouse);
     final response = await http.get(
         Uri.parse(
-            'http://192.168.1.130:8080/api/getStockWithIdProduct?warehouse_id=${widget.selectedSourceWarehouse}'),
+            'http://${await loadIP()}:8080/api/getStockWithIdProduct?warehouse_id=${widget.selectedSourceWarehouse}'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -46,7 +45,7 @@ class _SettingPageState extends State<PurchasePage> {
 
   Future<void> _fetchStocks() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.130:8080/api/getWarehouseStock'),
+        Uri.parse('http://${await loadIP()}:8080/api/getWarehouseStock'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -55,9 +54,7 @@ class _SettingPageState extends State<PurchasePage> {
         stocks = jsonDecode(utf8.decode(response.bodyBytes));
         filteredStocks = List.from(stocks);
       });
-    } else {
-      print('Failed to load stocks');
-    }
+    } else {}
   }
 
   void searchStocks(String query) {

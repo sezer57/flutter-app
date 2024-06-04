@@ -14,48 +14,61 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  bool _validateInputs() {
+    return nameController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty &&
+        emailController.text.isNotEmpty;
+  }
 
   Future<void> signup() async {
-    String name = nameController.text;
-    String password = passwordController.text;
-    String email = emailController.text;
-
-    var response = await http.post(
-      Uri.parse('http://192.168.1.130:8080/api/addNewUser'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'name': name,
-        'password': password,
-        'email': email,
-        'roles': 'User', // You can adjust roles as needed
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      // Signup successful, show success message
+    if (!_validateInputs()) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('User added successfully '),
+          content: Text(' Please fill all fields'),
         ),
       );
-      print('User added successfully');
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-      // Show success dialog or message
     } else {
-      // Signup failed, show error message
-      print('Signup failed: ${response.statusCode}');
-      // Show error dialog or message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Signup failed. Error: ${response.statusCode} ${response.body}'),
-        ),
+      String name = nameController.text;
+      String password = passwordController.text;
+      String email = emailController.text;
+
+      var response = await http.post(
+        Uri.parse('http://${await loadIP()}:8080/api/addNewUser'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'name': name,
+          'password': password,
+          'email': email,
+          'roles': 'User', // You can adjust roles as needed
+        }),
       );
+
+      if (response.statusCode == 200) {
+        // Signup successful, show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('User added successfully '),
+          ),
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+        // Show success dialog or message
+      } else {
+        // Signup failed, show error message
+
+        // Show error dialog or message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Signup failed. Error: ${response.statusCode} ${response.body}'),
+          ),
+        );
+      }
     }
   }
 

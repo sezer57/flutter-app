@@ -12,10 +12,9 @@ class WareHousePage extends StatefulWidget {
 }
 
 class _WareHousePageState extends State<WareHousePage> {
-  final String getWarehouseUrl = 'http://192.168.1.130:8080/api/getWarehouse';
-
   Future<List<dynamic>> _fetchWarehouses() async {
-    final response = await http.get(Uri.parse(getWarehouseUrl),
+    final response = await http.get(
+        Uri.parse('http://${await loadIP()}:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -25,7 +24,6 @@ class _WareHousePageState extends State<WareHousePage> {
       return jsonDecode(utf8Body);
     } else {
       return List.empty();
-      print('Failed to load Warehouses');
     }
   }
 

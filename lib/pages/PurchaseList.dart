@@ -26,7 +26,8 @@ class _PurchaseListState extends State<PurchaseList> {
 
   Future<void> fetchPurchasesByPage(int page) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.130:8080/api/getPurchasesByPage?page=$page'),
+      Uri.parse(
+          'http://${await loadIP()}:8080/api/getPurchasesByPage?page=$page'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -40,7 +41,6 @@ class _PurchaseListState extends State<PurchaseList> {
       });
     } else {
       // Handle errors
-      print('Failed to fetch purchases: ${response.statusCode}');
     }
   }
 

@@ -26,7 +26,7 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
   Future<void> fetchPurchasesByPage(int page) async {
     final response = await http.get(
       Uri.parse(
-          'http://192.168.1.130:8080/api/getPurchaseInvoiceClientByPage?page=$page&client_id=${widget.selectedClient['clientId']}'),
+          'http://${await loadIP()}:8080/api/getPurchaseInvoiceClientByPage?page=$page&client_id=${widget.selectedClient['clientId']}'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -38,7 +38,6 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
       });
     } else {
       // Handle errors
-      print('Failed to fetch purchases: ${response.statusCode}');
     }
   }
 

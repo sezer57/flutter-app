@@ -11,10 +11,6 @@ class WarehouseTransferPage extends StatefulWidget {
 }
 
 class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
-  final String transferUrl =
-      'http://192.168.1.130:8080/api/warehouseStock/transfer';
-  final String getStocksUrl =
-      'http://192.168.1.130:8080/api/getStocksById?warehouse_id=';
   TextEditingController quantityController = TextEditingController();
   List<dynamic> warehouses = [];
   List<dynamic> sourceWarehouseStocks = [];
@@ -34,7 +30,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.130:8080/api/getWarehouse'),
+        Uri.parse('http://${await loadIP()}:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -50,7 +46,9 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   }
 
   Future<void> fetchStocks(String warehouseId) async {
-    final response = await http.get(Uri.parse('$getStocksUrl$warehouseId'),
+    final response = await http.get(
+        Uri.parse(
+            'http://${await loadIP()}:8080/api/getStocksById?warehouse_id=$warehouseId'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -58,7 +56,6 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
     if (response.statusCode == 200) {
       setState(() {
         sourceWarehouseStocks = jsonDecode(utf8.decode(response.bodyBytes));
-        print(sourceWarehouseStocks);
       });
     } else {
       // Handle API error
@@ -178,7 +175,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
       };
 
       final response = await http.post(
-        Uri.parse(transferUrl),
+        Uri.parse('http://${await loadIP()}:8080/api/warehouseStock/transfer'),
         body: jsonEncode(transferData),
         headers: {
           'Content-Type': 'application/json',

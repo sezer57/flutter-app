@@ -26,7 +26,7 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
   Future<void> fetchSalesByPage(int page) async {
     final response = await http.get(
       Uri.parse(
-          'http://192.168.1.130:8080/api/getSalesInvoiceClientByPage?page=$page&client_id=${widget.selectedClient['clientId']}'),
+          'http://${await loadIP()}:8080/api/getSalesInvoiceClientByPage?page=$page&client_id=${widget.selectedClient['clientId']}'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -38,7 +38,6 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
       });
     } else {
       // Handle errors
-      print('Failed to fetch sales: ${response.statusCode}');
     }
   }
 

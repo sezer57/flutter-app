@@ -22,34 +22,36 @@ class _AddClientsPageState extends State<AddClientsPage> {
   final TextEditingController cityController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController gsmController = TextEditingController();
+  String? _ip;
   @override
   void initState() {
     super.initState();
     _fetchClientCode();
-    // Automatically generate registration date
+    _initialize();
+    //  Uri.parse(
+    //'http://${await loadIP()}:8080/api/getDailyMovementsOfClient?date=$selectedDate'),
+
     registrationDateController.text =
         DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
   }
 
+  void _initialize() async {
+    _ip = await loadIP();
+  }
+
   Future<void> _fetchClientCode() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.130:8080/api/getClientCode'),
+        Uri.parse('http://${_ip}:8080/api/getClientCode'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
 
     if (response.statusCode == 200) {
       setState(() {
-        print(response.body);
         clientCodeController.text = "C" + response.body;
       });
-    } else {
-      print("_fetchClientCode");
-    }
+    } else {}
   }
-
-  final String url =
-      'http://192.168.1.130:8080/api/clients'; // Replace with your actual API endpoint
 
   Future<void> _postData() async {
     if (_validateInputs()) {
@@ -67,7 +69,7 @@ class _AddClientsPageState extends State<AddClientsPage> {
       };
 
       final response = await http.post(
-        Uri.parse(url),
+        Uri.parse('http://${_ip}:8080/api/clients'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'

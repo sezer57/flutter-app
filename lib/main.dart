@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'E-STOCK & FINANCE',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -153,15 +153,4 @@ class MyApp extends StatelessWidget {
 }
 
 // Entegre edilecek kod buradan başlıyor
-
-class PdfPage extends StatelessWidget {
-  static final String title = 'Invoice';
-
-  @override
-  Widget build(BuildContext context) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: title,
-        theme: ThemeData(primarySwatch: Colors.deepOrange),
-        home: PdfPage(),
-      );
-}
+ 

@@ -12,11 +12,11 @@ class ClientsPage extends StatefulWidget {
 }
 
 class _ClientsPageState extends State<ClientsPage> {
-  final String getClientsUrl = 'http://192.168.1.130:8080/api/getClients';
   List<dynamic> clients = [];
 
   Future<void> _fetchClients() async {
-    final response = await http.get(Uri.parse(getClientsUrl),
+    final response = await http.get(
+        Uri.parse('http://${await loadIP()}:8080/api/getClients'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -26,9 +26,7 @@ class _ClientsPageState extends State<ClientsPage> {
             utf8.decode(response.bodyBytes); // Decode response body as UTF-8
         clients = jsonDecode(utf8Body);
       });
-    } else {
-      print("product empty");
-    }
+    } else {}
   }
 
   @override

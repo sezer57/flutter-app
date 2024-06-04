@@ -21,10 +21,17 @@ Future<String?> getTokenFromLocalStorage() async {
   return prefs.getString('token');
 }
 
+String? _ip;
+
+Future<String?> loadIP() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('ip');
+}
+
 // Function to check if token is expired
 Future<bool> isTokenExpired(String token) async {
   var response = await http.get(
-    Uri.parse('http://192.168.1.130:8080/api/getExpired'),
+    Uri.parse('http://${await loadIP()}:8080/api/getExpired'),
     headers: <String, String>{
       'Authorization': 'Bearer $token',
     },
@@ -32,15 +39,15 @@ Future<bool> isTokenExpired(String token) async {
 
   if (response.statusCode == 200) {
     // Token is not expired
-    print("Token is not expired");
+
     return false;
   } else if (response.statusCode == 403) {
     // Token is expired
-    print("Token is not expired403");
+
     return true;
   } else {
     // Failed to determine token expiration status
-    print("Token is not statusstatus");
+
     return true;
   }
 }

@@ -59,16 +59,19 @@ class _SalesTestPageState extends State<SalesTestPage> {
   }
 
   bool _validateInputs() {
-    return clientCodeController.text.isNotEmpty &&
-        DateController.text.isNotEmpty &&
+    return //lientCodeController.text.isNotEmpty &&
+        //DateController.text.isNotEmpty &&
         commercialTitleController.text.isNotEmpty &&
-        nameController.text.isNotEmpty &&
-        stockController.text.isNotEmpty &&
-        quantityController.text.isNotEmpty &&
-        ownerController.text.isNotEmpty &&
-        priceController.text.isNotEmpty &&
-        phoneController.text.isNotEmpty &&
-        gsmController.text.isNotEmpty;
+            // nameController.text.isNotEmpty &&
+            //     stockController.text.isNotEmpty &&
+            productids.isNotEmpty &&
+            productprice.isNotEmpty &&
+            //  quantityController.text.isNotEmpty &&
+            //  ownerController.text.isNotEmpty &&
+            // priceController.text.isNotEmpty &&
+            // phoneController.text.isNotEmpty &&
+            VatController.text.isNotEmpty;
+    //gsmController.text.isNotEmpty;
   }
 
   void _clearTextFields() {
@@ -137,7 +140,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.130:8080/api/getWarehouse'),
+        Uri.parse('http://${await loadIP()}:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -148,16 +151,14 @@ class _SalesTestPageState extends State<SalesTestPage> {
       });
     } else {
       // Handle API error
-      print('Failed to fetch warehouses');
     }
   }
 
-  final String getStocksUrl =
-      'http://192.168.1.130:8080/api/getStocksRemainigById?stock_id=';
   String? remaning;
   Future<String?> fetchStocksRemaing() async {
     final response = await http.get(
-        Uri.parse('$getStocksUrl${selectedStock['stockId']}'),
+        Uri.parse(
+            'http://${await loadIP()}:8080/api/getStocksRemainigById?stock_id=${selectedStock['stockId']}'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -343,49 +344,54 @@ class _SalesTestPageState extends State<SalesTestPage> {
   }
 
   Future<void> purchaseStock(int clientId) async {
-    print(productids);
-    print(productquantity);
-    print(productprice);
-    final response = await http.post(
-      Uri.parse('http://192.168.1.130:8080/api/Sales'),
-      body: json.encode({
-        "stockCodes":
-            productids ?? 0, // Parse as int, default to 0 if parsing fails
-        "quantity": productquantity ?? 0,
-        "autherized": ownerController.text,
-        "price": productprice ?? 0,
-        "vat": VatController.text ?? 0,
-        "clientId": clientId,
-        "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-      },
-    );
+    if (_validateInputs()) {
+      final response = await http.post(
+        Uri.parse('http://${await loadIP()}:8080/api/Sales'),
+        body: json.encode({
+          "stockCodes":
+              productids ?? 0, // Parse as int, default to 0 if parsing fails
+          "quantity": productquantity ?? 0,
+          "autherized": ownerController.text,
+          "price": productprice ?? 0,
+          "vat": VatController.text ?? 0,
+          "clientId": clientId,
+          "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        },
+      );
 
-    if (response.statusCode == 200) {
-      // Sales successful, show confirmation message
-      Navigator.of(context).pop();
+      if (response.statusCode == 200) {
+        // Sales successful, show confirmation message
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sales successful!'),
+          ),
+        );
+        productids.clear();
+        productList.clear();
+        productprice.clear();
+        productquantity.clear();
+      } else {
+        // Sales failed, show error message
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response.body)),
+        );
+        productids.clear();
+        productList.clear();
+        productprice.clear();
+        productquantity.clear();
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Sales successful!'),
+          content: Text('Please fill fields'),
         ),
       );
-      productids.clear();
-      productList.clear();
-      productprice.clear();
-      productquantity.clear();
-    } else {
-      // Sales failed, show error message
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.body)),
-      );
-      productids.clear();
-      productList.clear();
-      productprice.clear();
-      productquantity.clear();
     }
   }
 }

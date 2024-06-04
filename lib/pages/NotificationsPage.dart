@@ -31,7 +31,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _getDailyExpenses(String selectedDate) async {
     final response = await http.get(
         Uri.parse(
-            'http://192.168.1.130:8080/api/getDailyExpenses?date=$selectedDate'),
+            'http://${await loadIP()}:8080/api/getDailyExpenses?date=$selectedDate'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -83,7 +83,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _getWeeklyPurchaseInvoices() async {
     final response = await http.get(
       Uri.parse(
-          'http://192.168.1.130:8080/api/getWeeklyPurchaseInvoices?startDate=${dateController.text}&endDate=${dateController2.text}'),
+          'http://${await loadIP()}:8080/api/getWeeklyPurchaseInvoices?startDate=${dateController.text}&endDate=${dateController2.text}'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -175,17 +175,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   lastDate: DateTime(2101));
 
               if (pickedDate != null) {
-                print(pickedDate);
                 formattedDate =
                     "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-                print(formattedDate);
 
                 setState(() {
                   dateController.text = formattedDate;
                 });
-              } else {
-                print("Date is not selected");
-              }
+              } else {}
             },
           ),
           TextField(
@@ -201,17 +197,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   lastDate: DateTime(2101));
 
               if (pickedDate2 != null) {
-                print(pickedDate2);
                 formattedDate2 =
                     "${pickedDate2.year}-${pickedDate2.month.toString().padLeft(2, '0')}-${pickedDate2.day.toString().padLeft(2, '0')}";
-                print(formattedDate2);
 
                 setState(() {
                   dateController2.text = formattedDate2;
                 });
-              } else {
-                print("Date is not selected");
-              }
+              } else {}
             },
           ),
           SizedBox(height: 20),

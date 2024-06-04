@@ -25,20 +25,25 @@ class _AddStockPageState extends State<AddStockPage> {
   List<dynamic> warehouses = [];
   List<String> selectedWarehouseIds =
       []; // Add this variable to hold the selected warehouse IDs
-
+  String? _ip;
   @override
   void initState() {
     super.initState();
     fetchWarehouses();
     fetchStockCode();
+    _initialize();
     // Automatically generate registration date
     registrationDateController.text =
         DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
   }
 
+  void _initialize() async {
+    _ip = await loadIP();
+  }
+
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.130:8080/api/getWarehouse'),
+        Uri.parse('http://${_ip}:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -49,13 +54,12 @@ class _AddStockPageState extends State<AddStockPage> {
       });
     } else {
       // Handle API error
-      print('Failed to fetch warehouses');
     }
   }
 
   Future<void> fetchStockCode() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.130:8080/api/getStockCode'),
+        Uri.parse('http://${_ip}:8080/api/getStockCode'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -66,7 +70,6 @@ class _AddStockPageState extends State<AddStockPage> {
       });
     } else {
       // Handle API error
-      print('Failed to fetch stockcode');
     }
   }
 
@@ -192,7 +195,7 @@ class _AddStockPageState extends State<AddStockPage> {
   }
 
   Future<void> _addStock(BuildContext context) async {
-    final String apiUrl = 'http://192.168.1.130:8080/api/stocks';
+    final String apiUrl = 'http://${_ip}:8080/api/stocks';
 
     final Map<String, dynamic> postData = {
       "registrationDate": registrationDateController.text,

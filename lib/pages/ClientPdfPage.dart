@@ -23,7 +23,7 @@ class _PdfPageState extends State<PdfPage> {
 
   Future<void> fetchclnts() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.130:8080/api/getClients'),
+        Uri.parse('http://${await loadIP()}:8080/api/getClients'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -34,7 +34,6 @@ class _PdfPageState extends State<PdfPage> {
       });
     } else {
       // Handle errors
-      print('Failed to fetch clnts: ${response.statusCode}');
     }
   }
 
@@ -55,7 +54,7 @@ class _PdfPageState extends State<PdfPage> {
 
     for (var clnt in clients) {
       final url = Uri.parse(
-          "http://192.168.1.130:8080/api/getBalanceWithClientID?ClientID=${clnt['clientId']}");
+          "http://${await loadIP()}:8080/api/getBalanceWithClientID?ClientID=${clnt['clientId']}");
       final response = await http.get(url, headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       });

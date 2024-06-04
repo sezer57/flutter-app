@@ -80,12 +80,24 @@ class DailyExpensesPage extends StatelessWidget {
         String expensespriceString = expenses![i]['price']!.toString();
         // Splitting the string by commas and selecting the first part
         List<String> expensespriceParts = expensespriceString.split(',');
-        // Parsing the first part of the split string as a double
-        for (var x = 0; x < expensespriceParts!.length; x++) {
-          double price = double.parse(
-              expensespriceParts[x].replaceAll('[', '').replaceAll(']', ''));
-          // Adding the price to totalPurchases
-          totalExpenses += price;
+        // Printing the parts for debugging
+
+        for (var x = 0; x < expensespriceParts.length; x++) {
+          // Removing unwanted characters
+          String cleanString = expensespriceParts[x]
+              .replaceAll('[', '')
+              .replaceAll(']', '')
+              .trim();
+          // Checking if the cleaned string is not empty
+          if (cleanString.isNotEmpty) {
+            try {
+              double price = double.parse(cleanString);
+              // Adding the price to totalExpenses
+              totalExpenses += price;
+            } catch (e) {
+              // Handling the case where the string cannot be parsed to a double
+            }
+          }
         }
       }
     }

@@ -31,15 +31,16 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Future<List<dynamic>> _fetchStocksByPage(int page) async {
-    final url = 'http://192.168.1.130:8080/api/getStocksByPage?page=$page';
-    final response = await http.get(Uri.parse(url), headers: <String, String>{
-      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-    });
+    final response = await http.get(
+        Uri.parse(
+            'http://${await loadIP()}:8080/api/getStocksByPage?page=$page'),
+        headers: <String, String>{
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        });
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
       return jsonDecode(utf8Body);
     } else {
-      print('Failed to load stocks');
       throw Exception('Failed to load stocks');
     }
   }
@@ -57,7 +58,6 @@ class _ProductPageState extends State<ProductPage> {
         _currentPage++; // Sayfa numarasını artırır
       });
     } catch (e) {
-      print('Error loading next page: $e');
       // Hata durumunda uygun bir işlem yapılabilir
     }
   }
@@ -94,9 +94,7 @@ class _ProductPageState extends State<ProductPage> {
         allStocks.addAll(nextPageStocks);
         currentPage++;
       }
-    } catch (e) {
-      print('Error fetching all stocks: $e');
-    }
+    } catch (e) {}
     return allStocks;
   }
 
