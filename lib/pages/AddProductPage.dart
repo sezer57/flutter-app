@@ -31,19 +31,17 @@ class _AddStockPageState extends State<AddStockPage> {
     super.initState();
     fetchWarehouses();
     fetchStockCode();
-    _initialize();
+    
     // Automatically generate registration date
     registrationDateController.text =
         DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
   }
 
-  void _initialize() async {
-    _ip = await loadIP();
-  }
+ 
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(
-        Uri.parse('http://${_ip}:8080/api/getWarehouse'),
+        Uri.parse('http://${await loadIP()}:8080/api/getWarehouse'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -59,7 +57,7 @@ class _AddStockPageState extends State<AddStockPage> {
 
   Future<void> fetchStockCode() async {
     final response = await http.get(
-        Uri.parse('http://${_ip}:8080/api/getStockCode'),
+        Uri.parse('http://${await loadIP()}:8080/api/getStockCode'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -195,7 +193,7 @@ class _AddStockPageState extends State<AddStockPage> {
   }
 
   Future<void> _addStock(BuildContext context) async {
-    final String apiUrl = 'http://${_ip}:8080/api/stocks';
+    final String apiUrl = 'http://${await loadIP()}:8080/api/stocks';
 
     final Map<String, dynamic> postData = {
       "registrationDate": registrationDateController.text,

@@ -27,7 +27,7 @@ class _AddClientsPageState extends State<AddClientsPage> {
   void initState() {
     super.initState();
     _fetchClientCode();
-    _initialize();
+  
     //  Uri.parse(
     //'http://${await loadIP()}:8080/api/getDailyMovementsOfClient?date=$selectedDate'),
 
@@ -35,13 +35,11 @@ class _AddClientsPageState extends State<AddClientsPage> {
         DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
   }
 
-  void _initialize() async {
-    _ip = await loadIP();
-  }
+  
 
   Future<void> _fetchClientCode() async {
     final response = await http.get(
-        Uri.parse('http://${_ip}:8080/api/getClientCode'),
+        Uri.parse('http://${await loadIP()}:8080/api/getClientCode'),
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
@@ -69,7 +67,7 @@ class _AddClientsPageState extends State<AddClientsPage> {
       };
 
       final response = await http.post(
-        Uri.parse('http://${_ip}:8080/api/clients'),
+        Uri.parse('http://${await loadIP()}:8080/api/clients'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
