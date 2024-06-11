@@ -126,7 +126,8 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     "KeyaCode Software Services",
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontSize: 27,
+                      fontFamily: 'BrushScriptMT',
                     ),
                   ),
                 ],

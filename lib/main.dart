@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
                     pages: <Widget>[
                       HomePage(
                         menuItems: [
-                          MenuData('Productss', Icons.inventory),
+                          MenuData('Products', Icons.inventory),
                           MenuData('Warehouses', Icons.store),
                           MenuData('Clients', Icons.people),
                           MenuData('Stocks', Icons.cases_outlined),
