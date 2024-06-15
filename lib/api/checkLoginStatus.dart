@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 // Function to check login status
 Future<bool> checkLoginStatus() async {
@@ -25,7 +26,7 @@ String? _ip;
 
 Future<String?> loadIP() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('ip');
+  return prefs.getString('ip') ?? '104.248.42.73';
 }
 
 // Function to check if token is expired

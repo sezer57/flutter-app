@@ -1,4 +1,4 @@
-package com.keyacode.e_stockandfinance
+package com.keyacode.estockandfinance
 
 import io.flutter.embedding.android.FlutterActivity
 

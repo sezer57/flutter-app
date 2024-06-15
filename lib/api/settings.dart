@@ -17,13 +17,11 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   _loadIP() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _savedIP = await loadIP();
     setState(() {
-      _savedIP = prefs.getString('ip') ?? '';
       _ipController.text = _savedIP!;
     });
   }
-
   _saveIP() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('ip', _ipController.text);
