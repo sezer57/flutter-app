@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
           content: Text('Login success'),
         ),
       );
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyApp()),
       );
@@ -126,7 +126,6 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     "KeyaCode Software Services",
                     style: TextStyle(
-                     
                       fontFamily: 'BrushScriptMT',
                     ),
                   ),
