@@ -15,20 +15,23 @@ class HomePage extends StatelessWidget {
           SliverAppBar(
             backgroundColor: Colors.white,
             expandedHeight: 70,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                alignment: Alignment.bottomLeft,
-                child: Image.asset(
-                  'images/e-stock.jpeg',
-                  height: 100,
-                ),
-              ),
+            flexibleSpace: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                return FlexibleSpaceBar(
+                  background: Container(
+                    alignment: Alignment.bottomLeft,
+                    child: Image.asset(
+                      'images/e-stock.jpeg',
+                      height: constraints.maxHeight *
+                          0.7, // Set image height based on available height
+                    ),
+                  ),
+                );
+              },
             ),
             actions: [
               Row(
-                // Change from Column to Row
                 children: [
-                  // Display the user's name retrieved from SharedPreferences
                   FutureBuilder<String>(
                     future: getUserNameFromSharedPreferences(),
                     builder: (context, snapshot) {
@@ -45,7 +48,6 @@ class HomePage extends StatelessWidget {
                       }
                     },
                   ),
-                  SizedBox(height: 10),
                   IconButton(
                     icon: Icon(Icons.logout),
                     onPressed: () async {
@@ -65,16 +67,21 @@ class HomePage extends StatelessWidget {
             ],
           ),
           SliverPadding(
-            padding: EdgeInsets.only(top: 2.0, left: 16.0, right: 16.0),
-            sliver: SliverGrid.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20,
-              childAspectRatio:
-                  1.2, // Adjust the aspect ratio to decrease card height
-              children: menuItems.map((menu) {
-                return _buildMenuCard(context, menu.title, menu.icon);
-              }).toList(),
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200.0, // Maximum card width
+                mainAxisSpacing: 20.0,
+                crossAxisSpacing: 20.0,
+                childAspectRatio: 1.2, // Aspect ratio of cards
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return _buildMenuCard(
+                      context, menuItems[index].title, menuItems[index].icon);
+                },
+                childCount: menuItems.length,
+              ),
             ),
           ),
         ],

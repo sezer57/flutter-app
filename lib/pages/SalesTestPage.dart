@@ -167,7 +167,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
       return response.body;
     } else {
-      throw Exception('Failed to load stocks');
+      //    throw Exception('Failed to load stocks');
     }
   }
 

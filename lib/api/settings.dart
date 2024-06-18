@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -22,6 +23,7 @@ class _SettingsPageState extends State<SettingsPage> {
       _ipController.text = _savedIP!;
     });
   }
+
   _saveIP() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('ip', _ipController.text);

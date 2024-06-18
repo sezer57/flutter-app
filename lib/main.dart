@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/ClientsPage.dart';
 import 'package:flutter_application_1/pages/HomePage.dart';
@@ -10,14 +9,10 @@ import 'package:flutter_application_1/pages/PurchaseTestPage.dart';
 import 'package:flutter_application_1/pages/WareHousePage.dart';
 import 'package:flutter_application_1/pages/ProductPage.dart';
 import 'package:flutter_application_1/pages/Payment.dart';
-import 'package:flutter_application_1/pages/Stocks.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
-import 'package:flutter_application_1/pages/ClientPdfPage.dart';
 import 'package:flutter_application_1/pages/StockPage.dart';
-import 'package:flutter_application_1/pages/PurchaseTestPage.dart';
 import 'package:flutter_application_1/pages/SalesTestPage.dart';
+import 'package:flutter_application_1/pages/SettingsPageProfile.dart';
 
 void main() {
   runApp(MyApp());
@@ -136,7 +131,7 @@ class MyApp extends StatelessWidget {
                       ProductPage(),
                       ClientsPage(),
                       StockPage(),
-                      NotificationsPage(),
+                      SettingsPageProfile(),
                     ],
                   ),
                 );
