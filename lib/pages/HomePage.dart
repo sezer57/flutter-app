@@ -54,7 +54,7 @@ class HomePage extends StatelessWidget {
                       SharedPreferences prefs =
                           await SharedPreferences.getInstance();
                       await prefs.remove('token');
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => LoginPage(),

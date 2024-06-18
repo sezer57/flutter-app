@@ -172,12 +172,13 @@ class _SettingsPageProfileState extends State<SettingsPageProfile> {
             content: Text('Account deleted successfully'),
           ),
         );
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => LoginPage(),
           ),
         );
+
         print('Account deleted successfully');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
