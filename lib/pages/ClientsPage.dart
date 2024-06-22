@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/ClientEditPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddClientsPage.dart';
 import 'package:flutter_application_1/pages/FilterClientsPage.dart';
@@ -99,15 +100,42 @@ class _ClientsPageState extends State<ClientsPage> {
               itemCount: clients.length,
               itemBuilder: (context, index) {
                 var client = clients[index];
-                return ListTile(
-                  title: Text(client['name'] + ' ' + client['surname']),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                return Card(
+                  color: index % 2 == 0 ? Colors.grey[200] : Colors.white,
+                  child: Row(
                     children: [
-                      Text('Commercial Title: ${client['commercialTitle']}'),
-                      Text('Phone: ${client['phone']}'),
-                      Text(
-                          'Address: ${client['address']}, ${client['city']}, ${client['country']}'),
+                      Expanded(
+                        child: ListTile(
+                          title: Text(client['name'] + ' ' + client['surname']),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Commercial Title: ${client['commercialTitle']}'),
+                              Text('Phone: ${client['phone']}'),
+                              Text(
+                                'Address: ${client['address']}, ${client['city']}, ${client['country']}',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ClientEditPage(client: client)),
+                          );
+                          if (result == true) {
+                            setState(() {
+                              _fetchClients();
+                            });
+                          }
+                        },
+                      ),
                     ],
                   ),
                 );

@@ -173,6 +173,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
   TextEditingController productController = TextEditingController();
 
+  TextEditingController product0Controller = TextEditingController();
   List<Map<String, dynamic>> productList =
       []; // List to store product, quantity, and price data
   List<String> productids = [];
@@ -223,52 +224,99 @@ class _SalesTestPageState extends State<SalesTestPage> {
                 ),
               ),
               SizedBox(height: 16),
+              if (productController.text.isEmpty)
+                TextField(
+                  controller: productController,
+                  decoration: InputDecoration(labelText: 'Choose Product'),
+                  onTap: () {
+                    _navigateTopProductSelectionPage().then((result) {
+                      setState(() {
+                        product0Controller.text = productController.text;
+                        if (productList.isEmpty) {
+                          setState(() {
+                            productList.add({});
+                          });
+                        }
+                      });
+                    });
+                  },
+                ),
+              SizedBox(height: 16),
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: productList.length,
                 itemBuilder: (context, index) {
                   if (index == productList.length - 1) {
                     // Last item, show text fields to add more products
-                    return Column(
-                      children: [
-                        TextField(
-                          controller: productController,
-                          decoration: InputDecoration(labelText: 'Product'),
-                          onTap: () {
-                            _navigateTopProductSelectionPage().then((result) {
-                              productList[index]['product'] =
-                                  productController.text;
-                            });
-                          },
-                        ),
-                        TextField(
-                          controller: quantityController,
-                          onChanged: (newValue) {
-                            setState(() {
-                              priceController.text = (double.parse(newValue!) *
-                                      selectedStock['salesPrice'])
-                                  .toString();
-                              productList[index]['quantity'] = newValue;
+                    if (product0Controller.text.isNotEmpty)
+                      return Column(
+                        children: [
+                          TextField(
+                            controller: productController,
+                            enabled: false,
+                            decoration: InputDecoration(labelText: 'Product'),
+                            // onTap: () {
+                            //   _navigateTopProductSelectionPage().then((result) {
+                            //     productList[index]['product'] =
+                            //         productController.text;
+                            //   });
+                            // },
+                          ),
+                          TextField(
+                            controller: quantityController,
+                            onChanged: (newValue) {
+                              setState(() {
+                                priceController.text =
+                                    (double.parse(newValue!) *
+                                            selectedStock['salesPrice'])
+                                        .toString();
+                                productList[index]['quantity'] = newValue;
 
-                              productList[index]['price'] =
-                                  priceController.text;
-                            });
-                          },
-                          decoration: InputDecoration(labelText: 'Quantity'),
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
-                        ),
-                        TextField(
-                          controller: priceController,
-                          decoration: InputDecoration(labelText: 'Price'),
-                          onChanged: (value) {
-                            productList[index]['price'] = value;
+                                productList[index]['price'] =
+                                    priceController.text;
+                                productList[index]['product'] =
+                                    productController.text;
+                              });
+                            },
+                            decoration: InputDecoration(labelText: 'Quantity'),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                          ),
+                          TextField(
+                            controller: priceController,
+                            decoration: InputDecoration(labelText: 'Price'),
+                            onChanged: (value) {
+                              productList[index]['price'] = value;
 
-                            /// sadece otomatik oluşturuluyo
-                          },
-                        ),
-                      ],
-                    );
+                              /// sadece otomatik oluşturuluyo
+                            },
+                          ),
+                          SizedBox(height: 5),
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                productList.add({});
+                                if (quantityController.text.isNotEmpty &&
+                                    priceController.text.isNotEmpty) {
+                                  productquantity.add(quantityController.text);
+                                  productprice.add(priceController.text);
+                                  productController.clear();
+                                  quantityController.clear();
+                                  priceController.clear();
+                                }
+                                // Add an empty map to the list to show new fields
+                                productController.clear();
+                                product0Controller.clear();
+                                quantityController.clear();
+                                priceController.clear();
+                              });
+                            },
+                            child: Text(quantityController.text.isEmpty
+                                ? 'Add Product'
+                                : 'Add Cart'),
+                          ),
+                        ],
+                      );
                   } else {
                     // Show selected product, quantity, and price
                     var product = productList[index];
@@ -291,31 +339,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                   }
                 },
               ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    productList.add({});
-                    if (quantityController.text.isNotEmpty &&
-                        priceController.text.isNotEmpty) {
-                      productquantity.add(quantityController.text);
-                      productprice.add(priceController.text);
-                      productController.clear();
-                      quantityController.clear();
-                      priceController.clear();
-                    }
-                    // Add an empty map to the list to show new fields
-                    productController.clear();
-                    quantityController.clear();
-                    priceController.clear();
-                  });
-                },
-                child: Text(quantityController.text.isEmpty
-                    ? 'Add Product'
-                    : 'Add Cart'),
-              ),
-              SizedBox(height: 16),
-              SizedBox(height: 16),
-              SizedBox(height: 16),
+              SizedBox(height: 8),
               TextField(
                 controller: ownerController,
                 decoration: InputDecoration(labelText: 'Process owner'),

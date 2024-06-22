@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/StockDetailesPage.dart';
+import 'package:flutter_application_1/pages/StockPage.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -83,19 +85,19 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
             child: Text('Update'),
           ),
           SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: () {
-              _deleteStock();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  const Color.fromARGB(255, 210, 27, 14), // Button color
-            ),
-            child: Text(
-              'Delete',
-              style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
-            ),
-          ),
+          // ElevatedButton(
+          //   onPressed: () {
+          //     _deleteStock();
+          //   },
+          //   style: ElevatedButton.styleFrom(
+          //     backgroundColor:
+          //         const Color.fromARGB(255, 210, 27, 14), // Button color
+          //   ),
+          //   child: Text(
+          //     'Delete',
+          //     style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+          //   ),
+          // ),
         ]),
       ),
     );
@@ -138,7 +140,12 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
             duration: Duration(seconds: 4),
           ),
         );
-        Navigator.pop(context, true);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StockPage(),
+          ),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -157,42 +164,43 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
     }
   }
 
-  Future<void> _deleteStock() async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://${await loadIP()}:8080/api/warehouseStockDelete'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        },
-        body: jsonEncode(<String, dynamic>{
-          'id': widget.stock['stock']['stockId'], // Pass the stock id to delete
-        }),
-      );
+  // Future<void> _deleteStock() async {
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('http://${await loadIP()}:8080/api/warehouseStockDelete'),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+  //       },
+  //       body: jsonEncode(<String, dynamic>{
+  //         'id': widget.stock['stock']['stockId'], // Pass the stock id to delete
+  //       }),
+  //     );
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Stock deleted successfully'),
-            duration: Duration(seconds: 4),
-          ),
-        );
-        Navigator.pop(context, true); // Navigate back to previous screen
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to delete stock'),
-            duration: Duration(seconds: 4),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       Navigator.pop(context, true);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Stock deleted successfully'),
+  //           duration: Duration(seconds: 4),
+  //         ),
+  //       );
+  //       Navigator.pop(context, true); // Navigate back to previous screen
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Failed to delete stock'),
+  //           duration: Duration(seconds: 4),
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Error: $e'),
+  //         duration: Duration(seconds: 2),
+  //       ),
+  //     );
+  //   }
+  // }
 }

@@ -21,19 +21,13 @@ class _BottomNavBarLayoutState extends State<BottomNavBarLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: widget.pages,
-      ),
+      body: widget.pages[_currentIndex], // Seçilen sayfanın widget'ını gösterir
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.blue, // Change the color of selected label
+        selectedItemColor: Colors.blue,
         showUnselectedLabels: true,
-
-        unselectedItemColor:
-            Colors.grey, // Change the color of unselected label
-
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/WareHousePage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -193,6 +194,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
         selectedTargetWarehouse = null;
         quantityController.clear();
         selectedStockId = null;
+        Navigator.pop(context, WareHousePage());
       } else {
         // Handle transfer failure, for example showing an error message
         ScaffoldMessenger.of(context).showSnackBar(

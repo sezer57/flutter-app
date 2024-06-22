@@ -117,7 +117,15 @@ class _SettingsPageProfileState extends State<SettingsPageProfile> {
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Profile updated successfully'),
+          content: Text('"' +
+              username +
+              '" Profile updated successfully , You need to Again Login'),
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
         ),
       );
       print('Profile updated successfully');

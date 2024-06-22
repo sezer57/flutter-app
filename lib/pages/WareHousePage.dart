@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/WaitingTransfer.dart';
+import 'package:flutter_application_1/pages/WarehouseEditPage.dart';
 import 'package:flutter_application_1/pages/WarehouseTransferPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/AddWarehousePage.dart';
@@ -102,20 +103,37 @@ class _WareHousePageState extends State<WareHousePage> {
                       var warehouse = warehouses[index];
 
                       return Card(
-                        child: ListTile(
-                          title: Text(warehouse['name']),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Authorized: ${warehouse['authorized']}'),
-                              Text('Phone: ${warehouse['phone']}'),
-                              Text('Address: ${warehouse['address']}'),
-                            ],
+                        child: Row(children: [
+                          Expanded(
+                              child: ListTile(
+                                  title: Text(warehouse['name']),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          'Authorized: ${warehouse['authorized']}'),
+                                      Text('Phone: ${warehouse['phone']}'),
+                                      Text('Address: ${warehouse['address']}'),
+                                    ],
+                                  ))),
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WarehouseEditPage(
+                                        warehouse: warehouse)),
+                              );
+                              if (result == true) {
+                                setState(() {
+                                  _fetchWarehouses();
+                                });
+                              }
+                            },
                           ),
-                          onTap: () {
-                            // Handle tapping on a warehouse item
-                          },
-                        ),
+                        ]),
                       );
                     },
                   );

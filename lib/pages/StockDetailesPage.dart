@@ -168,7 +168,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
     );
 
     if (response.statusCode == 200) {
-      // Show a success message if the deletion was successful
+      Navigator.pop(context, true);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stock deleted successfully')),
       );

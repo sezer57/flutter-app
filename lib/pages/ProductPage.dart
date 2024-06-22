@@ -70,6 +70,17 @@ class _ProductPageState extends State<ProductPage> {
         builder: (context) => StockDetailsPage(stock),
       ),
     );
+    if (result == true) {
+      setState(() {
+        _fetchStocksByPage(page).then((stocks) {
+          setState(() {
+            _stocks = stocks;
+            filteredStocks =
+                stocks; // Initially, filteredStocks will be same as _stocks
+          });
+        });
+      });
+    }
   }
 
   void searchStocks(String query) async {
@@ -161,7 +172,13 @@ class _ProductPageState extends State<ProductPage> {
                     );
                     if (result == true) {
                       setState(() {
-                        _fetchStocksByPage(page);
+                        _fetchStocksByPage(page).then((stocks) {
+                          setState(() {
+                            _stocks = stocks;
+                            filteredStocks =
+                                stocks; // Initially, filteredStocks will be same as _stocks
+                          });
+                        });
                       });
                     }
                   },
@@ -208,19 +225,28 @@ class _ProductPageState extends State<ProductPage> {
                             var warehouseName = stock['warehouse']['name'];
                             var salesPrice = stock['salesPrice'];
                             return Card(
-                              child: ListTile(
-                                title: Text(stock['stockName']),
-                                subtitle: Text("Code: " +
-                                    stock['stockCode'] +
-                                    " Price: " +
-                                    salesPrice.toString() +
-                                    " Warehouse: " +
-                                    warehouseName +
-                                    " Date: " +
-                                    stock['registrationDate']),
-                                onTap: () {
-                                  _navigateToUpdateStockPage(stock);
-                                },
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: ListTile(
+                                      title: Text(stock['stockName']),
+                                      subtitle: Text("Code: " +
+                                          stock['stockCode'] +
+                                          " Price: " +
+                                          salesPrice.toString() +
+                                          " Warehouse: " +
+                                          warehouseName +
+                                          " Date: " +
+                                          stock['registrationDate']),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.edit),
+                                    onPressed: () async {
+                                      _navigateToUpdateStockPage(stock);
+                                    },
+                                  ),
+                                ],
                               ),
                             );
                           },

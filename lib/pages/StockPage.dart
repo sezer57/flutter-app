@@ -170,39 +170,45 @@ class _StockPageState extends State<StockPage> {
               itemBuilder: (context, index) {
                 final stock = filteredStocks[index];
                 return Card(
-                  color: index % 2 == 0 ? Colors.grey[200] : Colors.white,
-                  child: ListTile(
-                    title: Text(
-                      stock['stock']['stockName'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.blue,
+                    color: index % 2 == 0 ? Colors.grey[200] : Colors.white,
+                    child: Row(children: [
+                      Expanded(
+                        child: ListTile(
+                          title: Text(
+                            stock['stock']['stockName'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Quantity Remaining: ${stock['quantityRemaining']}',
+                                style: TextStyle(color: Colors.orange),
+                              ),
+                              Text(
+                                'Quantity Transfer: ${stock['quantityTransfer']}',
+                                style: TextStyle(
+                                    color: Color.fromARGB(255, 136, 112, 245)),
+                              ),
+                              Text(
+                                'Warehouse: ${stock['warehouse']['name']}',
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Quantity Remaining: ${stock['quantityRemaining']}',
-                          style: TextStyle(color: Colors.orange),
-                        ),
-                        Text(
-                          'Quantity Transfer: ${stock['quantityTransfer']}',
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 136, 112, 245)),
-                        ),
-                        Text(
-                          'Warehouse: ${stock['warehouse']['name']}',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      _navigateToUpdateStockPage(stock);
-                    },
-                  ),
-                );
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () async {
+                          _navigateToUpdateStockPage(stock);
+                        },
+                      ),
+                    ]));
               },
             ),
           ),
