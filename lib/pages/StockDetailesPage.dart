@@ -51,7 +51,6 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
             TextFormField(
               controller: stockNameController,
               decoration: InputDecoration(labelText: 'Stock Name'),
-              enabled: false,
             ),
             TextFormField(
               controller: stockCodeController,
