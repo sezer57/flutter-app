@@ -13,6 +13,7 @@ import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:flutter_application_1/pages/StockPage.dart';
 import 'package:flutter_application_1/pages/SalesTestPage.dart';
 import 'package:flutter_application_1/pages/SettingsPageProfile.dart';
+import 'package:flutter_application_1/pages/Search.dart';
 
 void main() {
   runApp(MyApp());

@@ -229,7 +229,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                   controller: productController,
                   decoration: InputDecoration(labelText: 'Choose Product'),
                   onTap: () {
-                    _navigateTopProductSelectionPage().then((result) {
+                    _navigateTopProductSelectionPage().then((result) async {
                       setState(() {
                         product0Controller.text = productController.text;
                         if (productList.isEmpty) {

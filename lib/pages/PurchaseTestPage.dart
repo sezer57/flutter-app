@@ -197,7 +197,8 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                           controller: stockController,
                           decoration: InputDecoration(labelText: 'Product'),
                           onTap: () {
-                            _navigateTopProductSelectionPage().then((result) {
+                            _navigateTopProductSelectionPage()
+                                .then((result) async {
                               productList[index]['product'] =
                                   stockController.text;
                             });

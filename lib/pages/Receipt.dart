@@ -15,59 +15,79 @@ class ReceiptPage extends StatefulWidget {
 
 class _ReceiptPageState extends State<ReceiptPage> {
   List<dynamic> receipts = [];
-  List<dynamic> filteredReceipt = [];
+
   int page = 0;
+  int _currentPage = 0;
+  bool isLoading = false;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchPurchasesByPage(page);
+    fetchPurchasesByPage(page).then((value) async => setState(() {
+          receipts = value;
+        }));
   }
 
-  Future<void> fetchPurchasesByPage(int page) async {
+  final int pageSize = 6;
+  late int totalPages;
+  Future<List<dynamic>> fetchPurchasesByPage(int page) async {
     final response = await http.get(
       Uri.parse(
-          'http://${await loadIP()}:8080/api/getBalanceTransferByPage?page=$page'),
+          'http://${await loadIP()}:8080/api/getBalanceTransferByPage?page=$page&size=$pageSize&keyword=${searchController.text}'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
     );
     if (response.statusCode == 200) {
-      setState(() {
-        receipts = jsonDecode(utf8.decode(response.bodyBytes));
-        receipts.sort((a, b) =>
-            b['balance_transfer_ID'].compareTo(a['balance_transfer_ID']));
-        filteredReceipt = receipts;
-      });
-    } else {}
-  }
-
-  void goToPreviousPage() {
-    if (page > 0) {
-      setState(() {
-        page--;
-      });
-      fetchPurchasesByPage(page);
+      final utf8Body = utf8.decode(response.bodyBytes);
+      totalPages = jsonDecode(utf8Body)['totalPages'];
+      return jsonDecode(utf8Body)['content'];
+    } else {
+      return List.empty();
     }
   }
 
-  void goToNextPage() {
-    if (filteredReceipt.length >= 10) {
-      setState(() {
-        page++;
-      });
-      fetchPurchasesByPage(page);
-    }
-  }
-
-  void searchPurchases(String query) {
+  void searchReceipt(String query) {
     setState(() {
-      filteredReceipt = receipts
-          .where((purchase) => purchase['clientName']
-              .toLowerCase()
-              .contains(query.toLowerCase()))
-          .toList();
+      _currentPage = 0;
+      fetchPurchasesByPage(_currentPage).then((stocks) async {
+        setState(() {
+          receipts = stocks;
+        });
+      });
     });
+  }
+
+  void _goToPreviousPage() async {
+    try {
+      if (_currentPage > 0) {
+        final nextPageStocks = await fetchPurchasesByPage(_currentPage - 1);
+        setState(() {
+          _currentPage--;
+          receipts = nextPageStocks;
+          //    filteredStocks = stocks;
+        });
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  void _goToNextPage() async {
+    try {
+      if (_currentPage + 1 < totalPages) {
+        final nextPageStocks = await fetchPurchasesByPage(_currentPage + 1);
+        setState(() {
+          //  _stocks.addAll(nextPageStocks);
+          //filteredStocks = _stocks;
+          receipts = nextPageStocks;
+          _currentPage++;
+        });
+      } else {}
+    } catch (e) {
+      // Handle error
+    }
   }
 
   Future<void> createReceipt(dynamic purchase) async {
@@ -108,25 +128,26 @@ class _ReceiptPageState extends State<ReceiptPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Purchase List'),
+        title: Text('Receipt List'),
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: searchController,
               decoration: InputDecoration(
                 hintText: 'Search by client name...',
                 prefixIcon: Icon(Icons.search),
               ),
-              onChanged: searchPurchases,
+              onChanged: searchReceipt,
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredReceipt.length,
+              itemCount: receipts.length,
               itemBuilder: (BuildContext context, int index) {
-                final purchase = filteredReceipt[index];
+                final purchase = receipts[index];
                 return Card(
                   elevation: 3,
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -154,12 +175,12 @@ class _ReceiptPageState extends State<ReceiptPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                onPressed: goToPreviousPage,
+                onPressed: _goToPreviousPage,
                 icon: Icon(Icons.arrow_back),
               ),
-              Text('Page ${page + 1}'),
+              Text('Page ${_currentPage + 1}'),
               IconButton(
-                onPressed: goToNextPage,
+                onPressed: _goToNextPage,
                 icon: Icon(Icons.arrow_forward),
               ),
             ],

@@ -16,50 +16,40 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   int page = 0;
+  int _currentPage = 0;
+  bool isLoading = false;
+  List<dynamic> _stocks = [];
+
+  final int pageSize = 6; // Sayfa başına gösterilecek stok sayısı
 
   @override
   void initState() {
     super.initState();
     // Load stocks initially
-    _fetchStocksByPage(page).then((stocks) {
+    searchController.clear();
+    _fetchStocks(page).then((stocks) async {
       setState(() {
         _stocks = stocks;
-        filteredStocks =
-            stocks; // Initially, filteredStocks will be same as _stocks
       });
     });
   }
 
-  Future<List<dynamic>> _fetchStocksByPage(int page) async {
-    final response = await http.get(
-        Uri.parse(
-            'http://${await loadIP()}:8080/api/getStocksByPage?page=$page'),
-        headers: <String, String>{
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        });
+  late int totalPages;
+  Future<List<dynamic>> _fetchStocks(int page) async {
+    final url = searchController.text.isEmpty
+        ? 'http://${await loadIP()}:8080/api/getStocksByPage?page=$page&size=$pageSize'
+        : 'http://${await loadIP()}:8080/api/getStocksBySearch?keyword=${searchController.text}&page=$page&size=$pageSize';
+
+    final response = await http.get(Uri.parse(url), headers: <String, String>{
+      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+    });
+
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
-      return jsonDecode(utf8Body);
+      totalPages = jsonDecode(utf8Body)['totalPages'];
+      return jsonDecode(utf8Body)['content'];
     } else {
       return List.empty();
-      //throw Exception('Failed to load stocks');
-    }
-  }
-
-  int _currentPage = 0; // Başlangıç sayfa numarası
-
-  Future<void> _loadNextPage() async {
-    try {
-      final List<dynamic> nextPageStocks =
-          await _fetchStocksByPage(_currentPage);
-      setState(() {
-        _stocks.addAll(
-            nextPageStocks); // _stocks listesine yeni sayfa ürünlerini ekler
-        filteredStocks = _stocks; // Filtrelenmiş listeyi günceller
-        _currentPage++; // Sayfa numarasını artırır
-      });
-    } catch (e) {
-      // Hata durumunda uygun bir işlem yapılabilir
     }
   }
 
@@ -72,79 +62,54 @@ class _ProductPageState extends State<ProductPage> {
     );
     if (result == true) {
       setState(() {
-        _fetchStocksByPage(page).then((stocks) {
+        _fetchStocks(page).then((stocks) async {
           setState(() {
             _stocks = stocks;
-            filteredStocks =
-                stocks; // Initially, filteredStocks will be same as _stocks
           });
         });
       });
     }
   }
 
-  void searchStocks(String query) async {
-    // Fetch all stocks from all pages
-    List<dynamic> allStocks = await _fetchAllStocks();
+  void searchStocks(String query) {
     setState(() {
-      // Filter the list of all stocks based on the query
-      // Assuming you want to filter by stockName
-      filteredStocks = allStocks
-          .where((stock) =>
-              stock['stockName'].toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      _currentPage = 0;
+      _fetchStocks(_currentPage).then((stocks) async {
+        setState(() {
+          _stocks = stocks;
+        });
+      });
     });
   }
 
-  Future<List<dynamic>> _fetchAllStocks() async {
-    List<dynamic> allStocks = [];
-    int currentPage = 0;
+  void _goToPreviousPage() async {
     try {
-      while (true) {
-        final nextPageStocks = await _fetchStocksByPage(currentPage);
-        if (nextPageStocks.isEmpty) break;
-        allStocks.addAll(nextPageStocks);
-        currentPage++;
-      }
-    } catch (e) {}
-    return allStocks;
-  }
-
-  List<dynamic> _stocks =
-      []; // Add this variable to hold the original list of stocks
-  List<dynamic> filteredStocks =
-      []; // Add this variable to hold the filtered list of stocks
-
-  void _goToPreviousPage() {
-    if (_currentPage > 0) {
-      setState(() {
-        _currentPage--;
-        page =
-            _currentPage; // Update page variable for _fetchStocksByPage function
-      });
-      _fetchStocksByPage(_currentPage).then((stocks) {
+      if (_currentPage > 0) {
+        final nextPageStocks = await _fetchStocks(_currentPage - 1);
         setState(() {
-          _stocks = stocks;
-          filteredStocks = stocks;
+          _currentPage--;
+          _stocks = nextPageStocks;
+          //    filteredStocks = stocks;
         });
-      });
+      }
+    } catch (e) {
+      // Handle error
     }
   }
 
-  void _goToNextPage() {
-    // Check if there are more stocks in the next page
-    if (filteredStocks.length >= 10) {
-      setState(() {
-        _currentPage++;
-        page =
-            _currentPage; // Update page variable for _fetchStocksByPage function
-      });
-      _fetchStocksByPage(_currentPage).then((stocks) {
+  void _goToNextPage() async {
+    try {
+      if (_currentPage + 1 < totalPages) {
+        final nextPageStocks = await _fetchStocks(_currentPage + 1);
         setState(() {
-          _stocks = stocks;
-          filteredStocks = stocks;
+          //  _stocks.addAll(nextPageStocks);
+          //filteredStocks = _stocks;
+          _stocks = nextPageStocks;
+          _currentPage++;
         });
-      });
+      } else {}
+    } catch (e) {
+      // Handle error
     }
   }
 
@@ -172,11 +137,9 @@ class _ProductPageState extends State<ProductPage> {
                     );
                     if (result == true) {
                       setState(() {
-                        _fetchStocksByPage(page).then((stocks) {
+                        _fetchStocks(page).then((stocks) async {
                           setState(() {
                             _stocks = stocks;
-                            filteredStocks =
-                                stocks; // Initially, filteredStocks will be same as _stocks
                           });
                         });
                       });
@@ -207,21 +170,20 @@ class _ProductPageState extends State<ProductPage> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: _fetchStocksByPage(page),
+              future: _fetchStocks(page),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  // List<dynamic> stocks = snapshot.data!;
                   return Column(
                     children: [
                       Expanded(
                         child: ListView.builder(
-                          itemCount: filteredStocks.length,
+                          itemCount: _stocks.length,
                           itemBuilder: (context, index) {
-                            var stock = filteredStocks[index];
+                            var stock = _stocks[index];
                             var warehouseName = stock['warehouse']['name'];
                             var salesPrice = stock['salesPrice'];
                             return Card(

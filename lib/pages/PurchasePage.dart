@@ -14,70 +14,90 @@ class PurchasePage extends StatefulWidget {
 String? selectedSourceWarehouse;
 
 class _SettingPageState extends State<PurchasePage> {
-  List<dynamic> stocks = [];
-  List<dynamic> filteredStocks = [];
+  int page = 0;
+  int _currentPage = 0;
+  bool isLoading = false;
+  List<dynamic> _stocks = [];
+  final int pageSize = 6;
   dynamic selectedStock;
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
-    fetchStocks();
+    _fetchStocks(page).then((stocks) async {
+      setState(() {
+        _stocks = stocks;
+      });
+    });
   }
 
-  Future<void> fetchStocks() async {
-    final response = await http.get(
-        Uri.parse(
-            'http://${await loadIP()}:8080/api/getStockWithIdProduct?warehouse_id=${widget.selectedSourceWarehouse}'),
-        headers: <String, String>{
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        });
+  late int totalPages;
+  Future<List<dynamic>> _fetchStocks(int page) async {
+    final url = searchController.text.isEmpty
+        ? 'http://${await loadIP()}:8080/api/getStockWithIdProductByPage?page=$page&warehouse_id=${widget.selectedSourceWarehouse}&size=$pageSize'
+        : 'http://${await loadIP()}:8080/api/getStockWithIdProductByPageSearch?keyword=${searchController.text}&warehouse_id=${widget.selectedSourceWarehouse}&page=$page&size=$pageSize';
+
+    final response = await http.get(Uri.parse(url), headers: <String, String>{
+      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+    });
+
     if (response.statusCode == 200) {
-      setState(() {
-        stocks = jsonDecode(utf8.decode(response.bodyBytes));
-        filteredStocks = List.from(stocks);
-      });
+      final utf8Body = utf8.decode(response.bodyBytes);
+      totalPages = jsonDecode(utf8Body)['totalPages'];
+      return jsonDecode(utf8Body)['content'];
     } else {
-      throw Exception('Failed to load stocks');
+      return List.empty();
     }
-  }
-
-  Future<void> _fetchStocks() async {
-    final response = await http.get(
-        Uri.parse('http://${await loadIP()}:8080/api/getWarehouseStock'),
-        headers: <String, String>{
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        });
-    if (response.statusCode == 200) {
-      setState(() {
-        stocks = jsonDecode(utf8.decode(response.bodyBytes));
-        filteredStocks = List.from(stocks);
-      });
-    } else {}
   }
 
   void searchStocks(String query) {
     setState(() {
-      filteredStocks = stocks.where((stock) {
-        final stockId = stock['stockName'].toString().toLowerCase();
-        return stockId.contains(query.toLowerCase());
-      }).toList();
+      _currentPage = 0;
+      _fetchStocks(_currentPage).then((stocks) async {
+        setState(() {
+          _stocks = stocks;
+        });
+      });
     });
+  }
+
+  void _goToPreviousPage() async {
+    try {
+      if (_currentPage > 0) {
+        final nextPageStocks = await _fetchStocks(_currentPage - 1);
+        setState(() {
+          _currentPage--;
+          _stocks = nextPageStocks;
+          //    filteredStocks = stocks;
+        });
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  void _goToNextPage() async {
+    try {
+      if (_currentPage + 1 < totalPages) {
+        final nextPageStocks = await _fetchStocks(_currentPage + 1);
+        setState(() {
+          //  _stocks.addAll(nextPageStocks);
+          //filteredStocks = _stocks;
+          _stocks = nextPageStocks;
+          _currentPage++;
+        });
+      } else {}
+    } catch (e) {
+      // Handle error
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: searchController,
-          decoration: InputDecoration(
-            hintText: 'Search stocks...',
-            border: InputBorder.none,
-          ),
-          onChanged: searchStocks,
-        ),
+        title: Text('Search stocks...'),
       ),
       body: Column(
         children: [
@@ -110,22 +130,56 @@ class _SettingPageState extends State<PurchasePage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: filteredStocks.length,
-              itemBuilder: (BuildContext context, int index) {
-                final stock = filteredStocks[index];
-                return Card(
-                    child: ListTile(
-                  title: Text('Stock Name: ${stock['stockName']}'),
-                  subtitle: Text('Sales Price: \$${stock['salesPrice']}' +
-                      " Warehouse: ${stock['warehouse']['name']}"),
-                  onTap: () {
-                    setState(() {
-                      selectedStock = stock;
-                    });
-                    Navigator.pop(context, selectedStock);
-                  },
-                ));
+            child: FutureBuilder<List<dynamic>>(
+              future: _fetchStocks(page),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _stocks.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final stock = _stocks[index];
+                            return Card(
+                              child: ListTile(
+                                title:
+                                    Text('Stock Name: ${stock['stockName']}'),
+                                subtitle: Text(
+                                    'Sales Price: \$${stock['salesPrice']}' +
+                                        " Warehouse: ${stock['warehouse']['name']}"),
+                                onTap: () {
+                                  setState(() {
+                                    selectedStock = stock;
+                                  });
+                                  Navigator.pop(context, selectedStock);
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: _goToPreviousPage,
+                            icon: Icon(Icons.arrow_back),
+                          ),
+                          Text('Page ${page + 1}'),
+                          IconButton(
+                            onPressed: _goToNextPage,
+                            icon: Icon(Icons.arrow_forward),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
               },
             ),
           ),

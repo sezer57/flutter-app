@@ -89,7 +89,7 @@ class _AddWareHousePageState extends State<AddWareHousePage> {
           children: [
             TextField(
               controller: nameController,
-              decoration: InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(labelText: 'Warehouse Name'),
             ),
             TextField(
               controller: authorizedController,

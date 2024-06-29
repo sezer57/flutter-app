@@ -15,63 +15,79 @@ class PurchaseList extends StatefulWidget {
 
 class _PurchaseListState extends State<PurchaseList> {
   List<dynamic> purchases = [];
-  List<dynamic> filteredPurchases = [];
+
   int page = 0;
+  int _currentPage = 0;
+  bool isLoading = false;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchPurchasesByPage(page);
+    fetchPurchasesByPage(page).then((value) async => setState(() {
+          purchases = value;
+        }));
   }
 
-  Future<void> fetchPurchasesByPage(int page) async {
+  final int pageSize = 6;
+  late int totalPages;
+  Future<List<dynamic>> fetchPurchasesByPage(int page) async {
     final response = await http.get(
       Uri.parse(
-          'http://${await loadIP()}:8080/api/getPurchasesByPage?page=$page'),
+          'http://${await loadIP()}:8080/api/getPurchasesByPage?page=$page&size=$pageSize&keyword=${searchController.text}'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
     );
     if (response.statusCode == 200) {
-      setState(() {
-        purchases = jsonDecode(utf8.decode(response.bodyBytes));
-        purchases.sort((a, b) => b['purchase_id'].compareTo(a['purchase_id']));
-        filteredPurchases =
-            purchases; // Initially, filteredPurchases will be same as purchases
-      });
+      final utf8Body = utf8.decode(response.bodyBytes);
+      totalPages = jsonDecode(utf8Body)['totalPages'];
+      return jsonDecode(utf8Body)['content'];
     } else {
-      // Handle errors
-    }
-  }
-
-  void goToPreviousPage() {
-    if (page > 0) {
-      setState(() {
-        page--;
-      });
-      fetchPurchasesByPage(page);
-    }
-  }
-
-  void goToNextPage() {
-    if (filteredPurchases.length >= 10) {
-      setState(() {
-        page++;
-      });
-      fetchPurchasesByPage(page);
+      return List.empty();
     }
   }
 
   void searchPurchases(String query) {
     setState(() {
-      // Filter the list of all purchases based on the query
-      // Assuming you want to filter by clientName
-      filteredPurchases = purchases
-          .where((purchase) => purchase['clientName']
-              .toLowerCase()
-              .contains(query.toLowerCase()))
-          .toList();
+      _currentPage = 0;
+      fetchPurchasesByPage(_currentPage).then((stocks) async {
+        setState(() {
+          purchases = stocks;
+        });
+      });
     });
+  }
+
+  void _goToPreviousPage() async {
+    try {
+      if (_currentPage > 0) {
+        final nextPageStocks = await fetchPurchasesByPage(_currentPage - 1);
+        setState(() {
+          _currentPage--;
+          purchases = nextPageStocks;
+          //    filteredStocks = stocks;
+        });
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  void _goToNextPage() async {
+    try {
+      if (_currentPage + 1 < totalPages) {
+        final nextPageStocks = await fetchPurchasesByPage(_currentPage + 1);
+        setState(() {
+          //  _stocks.addAll(nextPageStocks);
+          //filteredStocks = _stocks;
+          purchases = nextPageStocks;
+          _currentPage++;
+        });
+      } else {}
+    } catch (e) {
+      // Handle error
+    }
   }
 
   Future<void> createInvoice(dynamic purchase) async {
@@ -143,6 +159,7 @@ class _PurchaseListState extends State<PurchaseList> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: searchController,
               decoration: InputDecoration(
                 hintText: 'Search by client name...',
                 prefixIcon: Icon(Icons.search),
@@ -152,9 +169,9 @@ class _PurchaseListState extends State<PurchaseList> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredPurchases.length,
+              itemCount: purchases.length,
               itemBuilder: (BuildContext context, int index) {
-                final purchase = filteredPurchases[index];
+                final purchase = purchases[index];
                 return Card(
                   elevation: 3,
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -181,12 +198,12 @@ class _PurchaseListState extends State<PurchaseList> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                onPressed: goToPreviousPage,
+                onPressed: _goToPreviousPage,
                 icon: Icon(Icons.arrow_back),
               ),
-              Text('Page ${page + 1}'),
+              Text('Page ${_currentPage + 1}'),
               IconButton(
-                onPressed: goToNextPage,
+                onPressed: _goToNextPage,
                 icon: Icon(Icons.arrow_forward),
               ),
             ],
