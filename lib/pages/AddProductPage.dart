@@ -31,13 +31,11 @@ class _AddStockPageState extends State<AddStockPage> {
     super.initState();
     fetchWarehouses();
     fetchStockCode();
-    
+
     // Automatically generate registration date
     registrationDateController.text =
-        DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
+        DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now());
   }
-
- 
 
   Future<void> fetchWarehouses() async {
     final response = await http.get(

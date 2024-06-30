@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:intl/intl.dart';
 // Import your DailyExpensesPage.dart and other necessary files
 import 'package:flutter_application_1/pages/DailyExpensesPage.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -154,12 +154,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
           return isSameDay(_selectedDay, day);
         },
         onDaySelected: (selectedDay, focusedDay) async {
+          print(selectedDay);
           setState(() {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
           });
           String formattedDate =
-              "${selectedDay.year}-${selectedDay.month.toString().padLeft(2, '0')}-${selectedDay.day.toString().padLeft(2, '0')}";
+              DateFormat('yyyy-MM-ddTHH:mm:ss').format(selectedDay);
+
+          // String formattedDate =
+          //     "${selectedDay.year}-${selectedDay.month.toString().padLeft(2, '0')}-${selectedDay.day.toString().padLeft(2, '0')}";
           await _getDailyExpenses(formattedDate);
           _navigateToDailyExpensesPage(formattedDate);
         },
@@ -212,10 +216,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           mode: CupertinoDatePickerMode.date,
                           initialDateTime: DateTime.now(),
                           onDateTimeChanged: (DateTime newDateTime) {
+                            formattedDate = DateFormat('yyyy-MM-ddTHH:mm:ss')
+                                .format(newDateTime);
+
                             setState(() {
-                              _selectedDate1 = newDateTime;
-                              dateController.text =
-                                  "${newDateTime.year}-${newDateTime.month.toString().padLeft(2, '0')}-${newDateTime.day.toString().padLeft(2, '0')}";
+                              dateController.text = formattedDate;
                             });
                           },
                         ),
@@ -223,20 +228,20 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     },
                   );
                 } else {
-                  pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2101),
-                  );
-                }
+                  DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101));
 
-                if (pickedDate != null) {
-                  setState(() {
-                    String formattedDate1 = _selectedDate1 != null
-                        ? "${_selectedDate1!.year}-${_selectedDate1!.month.toString().padLeft(2, '0')}-${_selectedDate1!.day.toString().padLeft(2, '0')}"
-                        : ''; // Example of handling nullable DateTime
-                  });
+                  if (pickedDate != null) {
+                    formattedDate =
+                        DateFormat('yyyy-MM-ddTHH:mm:ss').format(pickedDate);
+
+                    setState(() {
+                      dateController.text = formattedDate;
+                    });
+                  }
                 }
               },
             ),
@@ -259,10 +264,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           mode: CupertinoDatePickerMode.date,
                           initialDateTime: DateTime.now(),
                           onDateTimeChanged: (DateTime newDateTime) {
+                            formattedDate2 = DateFormat('yyyy-MM-ddTHH:mm:ss')
+                                .format(newDateTime);
                             setState(() {
-                              _selectedDate2 = newDateTime;
-                              dateController2.text =
-                                  "${newDateTime.year}-${newDateTime.month.toString().padLeft(2, '0')}-${newDateTime.day.toString().padLeft(2, '0')}";
+                              dateController2.text = formattedDate2;
                             });
                           },
                         ),
@@ -270,20 +275,19 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     },
                   );
                 } else {
-                  pickedDate2 = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2101),
-                  );
-                }
+                  DateTime? pickedDate2 = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101));
 
-                if (pickedDate2 != null) {
-                  setState(() {
-                    String formattedDate2 = _selectedDate2 != null
-                        ? "${_selectedDate2!.year}-${_selectedDate2!.month.toString().padLeft(2, '0')}-${_selectedDate2!.day.toString().padLeft(2, '0')}"
-                        : ''; // Example of handling nullable DateTime
-                  });
+                  if (pickedDate2 != null) {
+                    formattedDate2 =
+                        DateFormat('yyyy-MM-ddTHH:mm:ss').format(pickedDate2);
+                    setState(() {
+                      dateController2.text = formattedDate2;
+                    });
+                  }
                 }
               },
             ),
@@ -292,11 +296,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
               onPressed: () async {
                 // You can use _selectedDate1 and _selectedDate2 directly here
                 // or format them into strings if needed
-                String formattedDate1 =
-                    "${_selectedDate1.year}-${_selectedDate1.month.toString().padLeft(2, '0')}-${_selectedDate1.day.toString().padLeft(2, '0')}";
-                String formattedDate2 =
-                    "${_selectedDate2.year}-${_selectedDate2.month.toString().padLeft(2, '0')}-${_selectedDate2.day.toString().padLeft(2, '0')}";
 
+                String formattedDate1 =
+                    DateFormat('yyyy-MM-ddTHH:mm:ss').format(_selectedDate1);
+                String formattedDate2 =
+                    DateFormat('yyyy-MM-ddTHH:mm:ss').format(_selectedDate2);
                 await _getWeeklyPurchaseInvoices();
                 _navigateToDailyExpensesPage("$formattedDate1|$formattedDate2");
               },

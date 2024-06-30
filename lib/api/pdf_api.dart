@@ -70,16 +70,17 @@ class PdfApi {
     if (rows.length > 10) {
       List<Widget> tables = [];
       int i = 0;
-      int r = 1;
+      int pageNumber = 1;
+
       while (i < rows.length) {
         List<List<String>> currentRows =
             rows.sublist(i, i + 10 < rows.length ? i + 10 : rows.length);
         tables.add(
-          ListView(
-            padding: EdgeInsets.all(10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$title ($r / ${((rows.length + (rows.length / 10)) / 10).ceil()})',
+                '$title (Page $pageNumber)',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
@@ -92,17 +93,19 @@ class PdfApi {
           ),
         );
         i += 10;
-        r++;
+        pageNumber++;
       }
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: tables,
       );
     } else {
-      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        ListView(padding: EdgeInsets.all(10), children: [
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            '$title (1 / 1)',
+            '$title (Page 1)',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
@@ -111,8 +114,8 @@ class PdfApi {
             data: rows,
           ),
           SizedBox(height: 20),
-        ])
-      ]);
+        ],
+      );
     }
   }
 

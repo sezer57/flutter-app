@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_1/pages/DebtPaymentPage2.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 class PurchaseClientSelectionPage extends StatefulWidget {
@@ -12,21 +11,19 @@ class PurchaseClientSelectionPage extends StatefulWidget {
 
 class _PurchaseClientSelectionPageState
     extends State<PurchaseClientSelectionPage> {
+  late Future<List<dynamic>> _clientsFuture;
   List<dynamic> _clients = [];
   dynamic selectedClient;
-  int page = 0;
   int _currentPage = 0;
-  bool isLoading = false;
   late int totalPages;
-  final int pageSize = 15; // Sayfa başına gösterilecek stok sayısı
+  final int pageSize = 15;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchClientsByPage(page).then((client) async => _clients = client);
+    _clientsFuture = fetchClientsByPage(_currentPage);
   }
-
-  TextEditingController searchController = TextEditingController();
 
   Future<List<dynamic>> fetchClientsByPage(int page) async {
     final url = searchController.text.isEmpty
@@ -38,52 +35,36 @@ class _PurchaseClientSelectionPageState
     });
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
-      totalPages = jsonDecode(utf8Body)['totalPages'];
-      return jsonDecode(utf8Body)['content'];
+      final decodedBody = jsonDecode(utf8Body);
+      totalPages = decodedBody['totalPages'];
+      return decodedBody['content'];
     } else {
       return List.empty();
     }
   }
 
-  void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await fetchClientsByPage(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          _clients = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+  void _goToPreviousPage() {
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _clientsFuture = fetchClientsByPage(_currentPage);
+      });
     }
   }
 
-  void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await fetchClientsByPage(_currentPage + 1);
-        setState(() {
-          //  _clients.addAll(nextPageStocks);
-          //filteredStocks = _clients;
-          _clients = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+  void _goToNextPage() {
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _clientsFuture = fetchClientsByPage(_currentPage);
+      });
     }
   }
 
   void searchClients(String query) {
     setState(() {
       _currentPage = 0;
-      fetchClientsByPage(_currentPage).then((stocks) async {
-        setState(() {
-          _clients = stocks;
-        });
-      });
+      _clientsFuture = fetchClientsByPage(_currentPage);
     });
   }
 
@@ -108,58 +89,61 @@ class _PurchaseClientSelectionPageState
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: fetchClientsByPage(page),
+              future: _clientsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No clients found'));
                 } else {
-                  return Column(children: [
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: _clients.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final client = _clients[index];
-                          return Card(
-                            child: ListTile(
-                              title: Text(client['name'] +
-                                  ' ' +
-                                  client[
-                                      'surname']), // Display client name and surname
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                      'Commercial Title: ${client['commercialTitle']}'),
-                                ],
+                  _clients = snapshot.data!;
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _clients.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final client = _clients[index];
+                            return Card(
+                              child: ListTile(
+                                title: Text(
+                                    client['name'] + ' ' + client['surname']),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        'Commercial Title: ${client['commercialTitle']}'),
+                                  ],
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    selectedClient = client;
+                                  });
+                                  Navigator.pop(context, selectedClient);
+                                },
                               ),
-                              onTap: () {
-                                setState(() {
-                                  selectedClient = client;
-                                });
-                                Navigator.pop(context, selectedClient);
-                              },
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: _goToPreviousPage,
-                          icon: Icon(Icons.arrow_back),
-                        ),
-                        Text('Page ${_currentPage + 1}'),
-                        IconButton(
-                          onPressed: _goToNextPage,
-                          icon: Icon(Icons.arrow_forward),
-                        ),
-                      ],
-                    )
-                  ]);
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: _goToPreviousPage,
+                            icon: Icon(Icons.arrow_back),
+                          ),
+                          Text('Page ${_currentPage + 1}'),
+                          IconButton(
+                            onPressed: _goToNextPage,
+                            icon: Icon(Icons.arrow_forward),
+                          ),
+                        ],
+                      )
+                    ],
+                  );
                 }
               },
             ),

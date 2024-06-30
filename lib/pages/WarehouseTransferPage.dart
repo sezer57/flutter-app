@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_1/pages/SalesPage.dart';
 
 class WarehouseTransferPage extends StatefulWidget {
   @override
@@ -26,7 +27,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
 
     quantityRemaing = "0";
     fetchWarehouses();
-    DateController = DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
+    DateController = DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now());
   }
 
   Future<void> fetchWarehouses() async {
@@ -46,21 +47,50 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
     }
   }
 
-  Future<void> fetchStocks(String warehouseId) async {
-    final response = await http.get(
-        Uri.parse(
-            'http://${await loadIP()}:8080/api/getStocksById?warehouse_id=$warehouseId'),
-        headers: <String, String>{
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        });
+  // Future<void> fetchStocks(String warehouseId) async {
+  //   final response = await http.get(
+  //       Uri.parse(
+  //           'http://${await loadIP()}:8080/api/getStocksById?warehouse_id=$warehouseId'),
+  //       headers: <String, String>{
+  //         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+  //       });
 
-    if (response.statusCode == 200) {
-      setState(() {
-        sourceWarehouseStocks = jsonDecode(utf8.decode(response.bodyBytes));
-      });
+  //   if (response.statusCode == 200) {
+  //     setState(() {
+  //       sourceWarehouseStocks = jsonDecode(utf8.decode(response.bodyBytes));
+  //     });
+  //   } else {
+  //     // Handle API error
+  //     print('Failed to fetch stocks for warehouse $warehouseId');
+  //   }
+  // }
+
+  TextEditingController productController = TextEditingController();
+  Future<String?> _navigateTopProductSelectionPage() async {
+    if (selectedSourceWarehouse == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please fill selectedSourceWarehouse'),
+        ),
+      );
     } else {
-      // Handle API error
-      print('Failed to fetch stocks for warehouse $warehouseId');
+      final dynamic result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                SalesPage(selectedSourceWarehouse: selectedSourceWarehouse)),
+      );
+
+      if (result != null) {
+        setState(() {
+          selectedStockId = result['stockId'].toString();
+          productController.text = result['stockName'] +
+              " Remaing: " +
+              result['quantity'].toString();
+
+          // await fetchAndSetRemainingStock(); // Wait for remaining stock information
+        });
+      }
     }
   }
 
@@ -81,7 +111,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
                 setState(() {
                   selectedSourceWarehouse = newValue;
                   selectedStockId = null;
-                  fetchStocks(newValue!);
+                  // fetchStocks(newValue!);
                 });
               },
               items: warehouses.map((warehouse) {
@@ -95,25 +125,21 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
               ),
             ),
             SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              value: selectedStockId,
-              onChanged: (newValue) {
-                setState(() {
-                  selectedStockId = newValue;
-                });
-              },
-              items: sourceWarehouseStocks.map((stock) {
-                return DropdownMenuItem<String>(
-                  value: stock['stockId'].toString(),
-                  child: Text(stock['stockName'] +
-                      " Remaining : " +
-                      stock['quantity']
-                          .toString()), // Adjust this according to your stock data structure
-                );
-              }).toList(),
+            TextField(
+              controller: productController,
+              readOnly: true, // TextField'in değiştirilemez olmasını sağlar
               decoration: InputDecoration(
-                labelText: 'Stock',
+                labelText: 'Choose Product',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.arrow_forward),
+                  onPressed: () {
+                    _navigateTopProductSelectionPage();
+                  },
+                ),
               ),
+              onTap: () {
+                _navigateTopProductSelectionPage(); // TextField'e tıklanınca da navigasyon yapılacaksa buraya ekleyebilirsiniz
+              },
             ),
             SizedBox(height: 10),
             DropdownButtonFormField<String>(

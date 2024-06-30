@@ -21,15 +21,11 @@ class _SettingPageState extends State<PurchasePage> {
   final int pageSize = 6;
   dynamic selectedStock;
   TextEditingController searchController = TextEditingController();
-
+  late Future<List<dynamic>> _stocksFuture;
   @override
   void initState() {
     super.initState();
-    _fetchStocks(page).then((stocks) async {
-      setState(() {
-        _stocks = stocks;
-      });
-    });
+    _stocksFuture = _fetchStocks(page);
   }
 
   late int totalPages;
@@ -51,46 +47,30 @@ class _SettingPageState extends State<PurchasePage> {
     }
   }
 
-  void searchStocks(String query) {
-    setState(() {
-      _currentPage = 0;
-      _fetchStocks(_currentPage).then((stocks) async {
-        setState(() {
-          _stocks = stocks;
-        });
-      });
-    });
-  }
-
   void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await _fetchStocks(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          _stocks = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
     }
   }
 
   void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await _fetchStocks(_currentPage + 1);
-        setState(() {
-          //  _stocks.addAll(nextPageStocks);
-          //filteredStocks = _stocks;
-          _stocks = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
     }
+  }
+
+  void searchStocks(String query) {
+    setState(() {
+      _currentPage = 0;
+
+      _stocksFuture = _fetchStocks(_currentPage);
+    });
   }
 
   @override
@@ -131,13 +111,16 @@ class _SettingPageState extends State<PurchasePage> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: _fetchStocks(page),
+              future: _stocksFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No stocks found'));
                 } else {
+                  _stocks = snapshot.data!;
                   return Column(
                     children: [
                       Expanded(

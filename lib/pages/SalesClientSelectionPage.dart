@@ -11,6 +11,7 @@ class SalesClientSelectionPage extends StatefulWidget {
 }
 
 class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
+  late Future<List<dynamic>> _clientsFuture;
   List<dynamic> _clients = [];
   dynamic selectedClient;
   int page = 0;
@@ -22,7 +23,7 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
   @override
   void initState() {
     super.initState();
-    fetchClientsByPage(page).then((client) async => _clients = client);
+    _clientsFuture = fetchClientsByPage(page);
   }
 
   TextEditingController searchController = TextEditingController();
@@ -38,6 +39,7 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
       totalPages = jsonDecode(utf8Body)['totalPages'];
+
       return jsonDecode(utf8Body)['content'];
     } else {
       return List.empty();
@@ -45,44 +47,28 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
   }
 
   void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await fetchClientsByPage(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          _clients = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _clientsFuture = fetchClientsByPage(_currentPage);
+      });
     }
   }
 
   void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await fetchClientsByPage(_currentPage + 1);
-        setState(() {
-          //  _clients.addAll(nextPageStocks);
-          //filteredStocks = _clients;
-          _clients = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _clientsFuture = fetchClientsByPage(_currentPage);
+      });
     }
   }
 
   void searchClients(String query) {
     setState(() {
       _currentPage = 0;
-      fetchClientsByPage(_currentPage).then((stocks) async {
-        setState(() {
-          _clients = stocks;
-        });
-      });
+
+      _clientsFuture = fetchClientsByPage(_currentPage);
     });
   }
 
@@ -107,13 +93,16 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: fetchClientsByPage(page),
+              future: _clientsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No clients found'));
                 } else {
+                  _clients = snapshot.data!;
                   return Column(children: [
                     Expanded(
                       child: ListView.builder(

@@ -15,6 +15,7 @@ class ClientsPage extends StatefulWidget {
 }
 
 class _ClientsPageState extends State<ClientsPage> {
+  late Future<List<dynamic>> _clientsFuture;
   List<dynamic> _clients = [];
   int page = 0;
   int _currentPage = 0;
@@ -27,11 +28,7 @@ class _ClientsPageState extends State<ClientsPage> {
     super.initState();
     // Load stocks initially
     searchController.clear();
-    _fetchClients(page).then((clients) async {
-      setState(() {
-        _clients = clients;
-      });
-    });
+    _clientsFuture = _fetchClients(page);
   }
 
   Future<List<dynamic>> _fetchClients(int page) async {
@@ -51,46 +48,30 @@ class _ClientsPageState extends State<ClientsPage> {
     }
   }
 
-  void searchClients(String query) {
-    setState(() {
-      _currentPage = 0;
-      _fetchClients(_currentPage).then((stocks) async {
-        setState(() {
-          _clients = stocks;
-        });
-      });
-    });
-  }
-
   void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await _fetchClients(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          _clients = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _clientsFuture = _fetchClients(_currentPage);
+      });
     }
   }
 
   void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await _fetchClients(_currentPage + 1);
-        setState(() {
-          //  _clients.addAll(nextPageStocks);
-          //filteredStocks = _clients;
-          _clients = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _clientsFuture = _fetchClients(_currentPage);
+      });
     }
+  }
+
+  void searchClients(String query) {
+    setState(() {
+      _currentPage = 0;
+
+      _clientsFuture = _fetchClients(_currentPage);
+    });
   }
 
   void _navigateToPdfPage() {
@@ -118,10 +99,8 @@ class _ClientsPageState extends State<ClientsPage> {
                     MaterialPageRoute(builder: (context) => AddClientsPage()),
                   );
                   if (result == true) {
-                    _fetchClients(page).then((clients) async {
-                      setState(() {
-                        clients = clients;
-                      });
+                    setState(() {
+                      _clientsFuture = _fetchClients(page);
                     });
                   }
                 },
@@ -155,13 +134,16 @@ class _ClientsPageState extends State<ClientsPage> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: _fetchClients(page),
+              future: _clientsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No clients found'));
                 } else {
+                  _clients = snapshot.data!;
                   return Column(
                     children: [
                       Expanded(
@@ -205,7 +187,7 @@ class _ClientsPageState extends State<ClientsPage> {
                                       );
                                       if (result == true) {
                                         setState(() {
-                                          _fetchClients(page);
+                                          _clientsFuture = _fetchClients(page);
                                         });
                                       }
                                     },

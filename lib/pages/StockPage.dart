@@ -12,43 +12,33 @@ class StockPage extends StatefulWidget {
 }
 
 class _StockPageState extends State<StockPage> {
+  late Future<List<dynamic>> _stocksFuture;
   List<dynamic> _stocks = [];
   final int pageSize = 6; // Sayfa başına gösterilecek stok sayısı
 
   int page = 0;
   int _currentPage = 0;
   bool isLoading = false;
-  List<String> warehouseNames = ['All']; // Warehouse isimleri buraya eklenecek.
+  List<dynamic> warehouseNames = []; // Warehouse isimleri buraya eklenecek.
 
   TextEditingController searchController = TextEditingController();
   String selectedWarehouseFilter = 'All';
-  //late Timer _timer;
-
+  late Future<List<dynamic>> _ssFuture;
   @override
   void initState() {
     super.initState();
-    getnamse();
-    _fetchStocks(page).then((stocks) async {
-      setState(() {
-        _stocks = stocks;
-      });
-    });
-    // _timer = Timer.periodic(Duration(seconds: 5), (Timer t) => _fetchStocks());
+    _ssFuture = getNames();
+    _stocksFuture = _fetchStocks(page);
   }
 
-  @override
-  void dispose() {
-    // _timer.cancel();
-    super.dispose();
-  }
-
-  void getnamse() async {
+  Future<List<dynamic>> getNames() async {
     final url = 'http://${await loadIP()}:8080/api/getWarehouseName';
     final response = await http.get(Uri.parse(url), headers: <String, String>{
       'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
     });
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
+      warehouseNames.add("All");
       warehouseNames.addAll(
         (jsonDecode(utf8Body) as List<dynamic>)
             .map((e) => e as String)
@@ -56,6 +46,7 @@ class _StockPageState extends State<StockPage> {
             .toList(),
       );
     }
+    return warehouseNames;
   }
 
   late int totalPages;
@@ -98,51 +89,35 @@ class _StockPageState extends State<StockPage> {
 
   void _applyWarehouseFilter(String warehouse) async {
     _currentPage = 0;
-    _fetchStocks(_currentPage).then((stocks) async => setState(() {
-          _stocks = stocks;
-        }));
+    setState(() {
+      _stocksFuture = _fetchStocks(_currentPage);
+    });
+  }
+
+  void _goToPreviousPage() async {
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
+    }
+  }
+
+  void _goToNextPage() async {
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
+    }
   }
 
   void searchStocks(String query) {
     setState(() {
       _currentPage = 0;
-      _fetchStocks(_currentPage).then((stocks) async {
-        setState(() {
-          _stocks = stocks;
-        });
-      });
+
+      _stocksFuture = _fetchStocks(_currentPage);
     });
-  }
-
-  void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await _fetchStocks(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          _stocks = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
-    }
-  }
-
-  void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await _fetchStocks(_currentPage + 1);
-        setState(() {
-          //  _stocks.addAll(nextPageStocks);
-          //filteredStocks = _stocks;
-          _stocks = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
-    }
   }
 
   void _navigateToUpdateStockPage(dynamic stock) async {
@@ -167,57 +142,76 @@ class _StockPageState extends State<StockPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search stocks...',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(color: Colors.grey),
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search stocks...',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 14.0),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(color: Colors.blue),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 14.0),
+                      onChanged: searchStocks,
                     ),
-                    onChanged: searchStocks,
                   ),
-                ),
-                SizedBox(width: 10),
-                DropdownButton<String>(
-                  value: selectedWarehouseFilter,
-                  items: warehouseNames.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedWarehouseFilter = newValue!;
-                      _applyWarehouseFilter(selectedWarehouseFilter);
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
+                  SizedBox(
+                      width:
+                          16.0), // Adding space between search field and dropdown
+                  FutureBuilder<List<dynamic>>(
+                    future: _ssFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(child: Text('No stocks found'));
+                      } else {
+                        // Assuming warehouseNames is a List<dynamic> initialized elsewhere
+                        warehouseNames = snapshot.data!;
+                        return DropdownButton<dynamic>(
+                          value: selectedWarehouseFilter,
+                          items: warehouseNames.map((dynamic value) {
+                            return DropdownMenuItem<dynamic>(
+                              value: value,
+                              child: Text(value.toString()),
+                            );
+                          }).toList(),
+                          onChanged: (dynamic newValue) {
+                            setState(() {
+                              selectedWarehouseFilter = newValue!;
+                              _applyWarehouseFilter(selectedWarehouseFilter);
+                            });
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ],
+              )),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: _fetchStocks(page),
+              future: _stocksFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No stocks found'));
                 } else {
+                  _stocks = snapshot.data!;
                   return Column(
                     children: [
                       Expanded(

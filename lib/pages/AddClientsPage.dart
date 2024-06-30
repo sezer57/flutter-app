@@ -27,15 +27,13 @@ class _AddClientsPageState extends State<AddClientsPage> {
   void initState() {
     super.initState();
     _fetchClientCode();
-  
+
     //  Uri.parse(
     //'http://${await loadIP()}:8080/api/getDailyMovementsOfClient?date=$selectedDate'),
 
     registrationDateController.text =
-        DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
+        DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now());
   }
-
-  
 
   Future<void> _fetchClientCode() async {
     final response = await http.get(

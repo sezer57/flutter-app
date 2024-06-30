@@ -16,6 +16,7 @@ class _SettingPageState extends State<SalesPage> {
   int _currentPage = 0;
   bool isLoading = false;
   List<dynamic> _stocks = [];
+  late Future<List<dynamic>> _stocksFuture;
   final int pageSize = 6;
   dynamic selectedStock;
   TextEditingController searchController = TextEditingController();
@@ -23,18 +24,14 @@ class _SettingPageState extends State<SalesPage> {
   @override
   void initState() {
     super.initState();
-    _fetchStocks(page).then((stocks) async {
-      setState(() {
-        _stocks = stocks;
-      });
-    });
+    _stocksFuture = _fetchStocks(_currentPage);
   }
 
   late int totalPages;
   Future<List<dynamic>> _fetchStocks(int page) async {
     final url = searchController.text.isEmpty
-        ? 'http://${await loadIP()}:8080/api/getStockWithIdProductByPage?page=$page&warehouse_id=${widget.selectedSourceWarehouse}&size=$pageSize'
-        : 'http://${await loadIP()}:8080/api/getStockWithIdProductByPageSearch?keyword=${searchController.text}&warehouse_id=${widget.selectedSourceWarehouse}&page=$page&size=$pageSize';
+        ? 'http://${await loadIP()}:8080/api/getStocksById?page=$page&warehouse_id=${widget.selectedSourceWarehouse}&size=$pageSize'
+        : 'http://${await loadIP()}:8080/api/getStocksByIdSearch?keyword=${searchController.text}&warehouse_id=${widget.selectedSourceWarehouse}&page=$page&size=$pageSize';
 
     final response = await http.get(Uri.parse(url), headers: <String, String>{
       'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
@@ -52,42 +49,25 @@ class _SettingPageState extends State<SalesPage> {
   void searchStocks(String query) {
     setState(() {
       _currentPage = 0;
-      _fetchStocks(_currentPage).then((stocks) async {
-        setState(() {
-          _stocks = stocks;
-        });
-      });
+      _stocksFuture = _fetchStocks(_currentPage);
     });
   }
 
-  void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await _fetchStocks(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          _stocks = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+  void _goToPreviousPage() {
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
     }
   }
 
-  void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await _fetchStocks(_currentPage + 1);
-        setState(() {
-          //  _stocks.addAll(nextPageStocks);
-          //filteredStocks = _stocks;
-          _stocks = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+  void _goToNextPage() {
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
     }
   }
 
@@ -107,7 +87,7 @@ class _SettingPageState extends State<SalesPage> {
                   child: TextField(
                     controller: searchController,
                     decoration: InputDecoration(
-                      hintText: 'Search stocks...',
+                      hintText: 'Select stocks...',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -129,13 +109,16 @@ class _SettingPageState extends State<SalesPage> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: _fetchStocks(page),
+              future: _stocksFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No sales list found'));
                 } else {
+                  _stocks = snapshot.data!;
                   return Column(
                     children: [
                       Expanded(
@@ -147,9 +130,25 @@ class _SettingPageState extends State<SalesPage> {
                               child: ListTile(
                                 title:
                                     Text('Stock Name: ${stock['stockName']}'),
-                                subtitle: Text(
-                                    'Sales Price: \$${stock['salesPrice']}' +
-                                        " Warehouse: ${stock['warehouse']['name']}"),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Sales Price: \$${stock['salesPrice']}',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color:
+                                              Color.fromARGB(255, 118, 32, 26)),
+                                    ),
+                                    Text(
+                                      'Quantity: ${stock['quantity']}',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Color.fromARGB(255, 54, 98, 244),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 onTap: () {
                                   setState(() {
                                     selectedStock = stock;

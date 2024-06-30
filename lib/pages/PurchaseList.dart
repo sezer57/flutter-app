@@ -15,7 +15,7 @@ class PurchaseList extends StatefulWidget {
 
 class _PurchaseListState extends State<PurchaseList> {
   List<dynamic> purchases = [];
-
+  late Future<List<dynamic>> _stocksFuture;
   int page = 0;
   int _currentPage = 0;
   bool isLoading = false;
@@ -24,9 +24,7 @@ class _PurchaseListState extends State<PurchaseList> {
   @override
   void initState() {
     super.initState();
-    fetchPurchasesByPage(page).then((value) async => setState(() {
-          purchases = value;
-        }));
+    _stocksFuture = fetchPurchasesByPage(_currentPage);
   }
 
   final int pageSize = 6;
@@ -48,45 +46,28 @@ class _PurchaseListState extends State<PurchaseList> {
     }
   }
 
-  void searchPurchases(String query) {
+  void searchStocks(String query) {
     setState(() {
       _currentPage = 0;
-      fetchPurchasesByPage(_currentPage).then((stocks) async {
-        setState(() {
-          purchases = stocks;
-        });
-      });
+      _stocksFuture = fetchPurchasesByPage(_currentPage);
     });
   }
 
-  void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await fetchPurchasesByPage(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          purchases = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+  void _goToPreviousPage() {
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _stocksFuture = fetchPurchasesByPage(_currentPage);
+      });
     }
   }
 
-  void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await fetchPurchasesByPage(_currentPage + 1);
-        setState(() {
-          //  _stocks.addAll(nextPageStocks);
-          //filteredStocks = _stocks;
-          purchases = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+  void _goToNextPage() {
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _stocksFuture = fetchPurchasesByPage(_currentPage);
+      });
     }
   }
 
@@ -164,49 +145,73 @@ class _PurchaseListState extends State<PurchaseList> {
                 hintText: 'Search by client name...',
                 prefixIcon: Icon(Icons.search),
               ),
-              onChanged: searchPurchases,
+              onChanged: searchStocks,
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: purchases.length,
-              itemBuilder: (BuildContext context, int index) {
-                final purchase = purchases[index];
-                return Card(
-                  elevation: 3,
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: ListTile(
-                    title: Text('Invoice Id: ${purchase['purchase_id']}'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Stock Name: ${purchase['stockName']}'),
-                        Text('Price: ${purchase['price']}'),
-                        Text('Client Name: ${purchase['clientName']}'),
-                        Text('Date: ${purchase['date']}'),
-                      ],
-                    ),
-                    onTap: () {
-                      createInvoice(purchase);
-                    },
-                  ),
-                );
+            child: FutureBuilder<List<dynamic>>(
+              future: _stocksFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No purchases found'));
+                } else {
+                  purchases = snapshot.data!;
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: purchases.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final purchase = purchases[index];
+                            return Card(
+                              elevation: 3,
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: ListTile(
+                                title: Text(
+                                    'Invoice Id: ${purchase['purchase_id']}'),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        'Stock Name: ${purchase['stockName']}'),
+                                    Text('Price: ${purchase['price']}'),
+                                    Text(
+                                        'Client Name: ${purchase['clientName']}'),
+                                    Text('Date: ${purchase['date']}'),
+                                  ],
+                                ),
+                                onTap: () {
+                                  createInvoice(purchase);
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: _goToPreviousPage,
+                            icon: Icon(Icons.arrow_back),
+                          ),
+                          Text('Page ${_currentPage + 1}'),
+                          IconButton(
+                            onPressed: _goToNextPage,
+                            icon: Icon(Icons.arrow_forward),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
               },
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: _goToPreviousPage,
-                icon: Icon(Icons.arrow_back),
-              ),
-              Text('Page ${_currentPage + 1}'),
-              IconButton(
-                onPressed: _goToNextPage,
-                icon: Icon(Icons.arrow_forward),
-              ),
-            ],
           ),
         ],
       ),

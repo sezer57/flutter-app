@@ -17,7 +17,7 @@ class SalesList extends StatefulWidget {
 
 class _SalesListState extends State<SalesList> {
   List<dynamic> sales = [];
-
+  late Future<List<dynamic>> _salesFuture;
   int page = 0;
   int _currentPage = 0;
   bool isLoading = false;
@@ -26,9 +26,7 @@ class _SalesListState extends State<SalesList> {
   @override
   void initState() {
     super.initState();
-    fetchSalesByPage(page).then((value) async => setState(() {
-          sales = value;
-        }));
+    _salesFuture = fetchSalesByPage(page);
   }
 
   final int pageSize = 6;
@@ -50,46 +48,30 @@ class _SalesListState extends State<SalesList> {
     }
   }
 
-  void searchSales(String query) {
-    setState(() {
-      _currentPage = 0;
-      fetchSalesByPage(_currentPage).then((stocks) async {
-        setState(() {
-          sales = stocks;
-        });
-      });
-    });
-  }
-
   void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await fetchSalesByPage(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          sales = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _salesFuture = fetchSalesByPage(_currentPage);
+      });
     }
   }
 
   void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await fetchSalesByPage(_currentPage + 1);
-        setState(() {
-          //  _stocks.addAll(nextPageStocks);
-          //filteredStocks = _stocks;
-          sales = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _salesFuture = fetchSalesByPage(_currentPage);
+      });
     }
+  }
+
+  void searchClients(String query) {
+    setState(() {
+      _currentPage = 0;
+
+      _salesFuture = fetchSalesByPage(_currentPage);
+    });
   }
 
   Future<void> createInvoice(dynamic sale) async {
@@ -161,49 +143,68 @@ class _SalesListState extends State<SalesList> {
                 hintText: 'Search by client name...',
                 prefixIcon: Icon(Icons.search),
               ),
-              onChanged: searchSales,
+              onChanged: searchClients,
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: sales.length,
-              itemBuilder: (BuildContext context, int index) {
-                final sale = sales[index];
-                return Card(
-                  elevation: 3,
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: ListTile(
-                    title: Text('Invoice Id: ${sale['expense_id']}'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Stock Name: ${sale['stockName']}'),
-                        Text('Price: ${sale['price']}'),
-                        Text('Client Name: ${sale['clientName']}'),
-                        Text('Date: ${sale['date']}'),
-                      ],
+            child: FutureBuilder<List<dynamic>>(
+              future: _salesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No sales list found'));
+                } else {
+                  sales = snapshot.data!;
+                  return Column(children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: sales.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final sale = sales[index];
+                          return Card(
+                            elevation: 3,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
+                            child: ListTile(
+                              title: Text('Invoice Id: ${sale['expense_id']}'),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Stock Name: ${sale['stockName']}'),
+                                  Text('Price: ${sale['price']}'),
+                                  Text('Client Name: ${sale['clientName']}'),
+                                  Text('Date: ${sale['date']}'),
+                                ],
+                              ),
+                              onTap: () {
+                                createInvoice(sale);
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                    onTap: () {
-                      createInvoice(sale);
-                    },
-                  ),
-                );
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: _goToPreviousPage,
+                          icon: Icon(Icons.arrow_back),
+                        ),
+                        Text('Page ${_currentPage + 1}'),
+                        IconButton(
+                          onPressed: _goToNextPage,
+                          icon: Icon(Icons.arrow_forward),
+                        ),
+                      ],
+                    )
+                  ]);
+                }
               },
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: _goToPreviousPage,
-                icon: Icon(Icons.arrow_back),
-              ),
-              Text('Page ${_currentPage + 1}'),
-              IconButton(
-                onPressed: _goToNextPage,
-                icon: Icon(Icons.arrow_forward),
-              ),
-            ],
           ),
         ],
       ),

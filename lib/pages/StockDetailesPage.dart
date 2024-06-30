@@ -145,9 +145,11 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
 
     if (response.statusCode == 200) {
       // Show a success message if the update was successful
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stock details updated successfully')),
       );
+      Navigator.pop(context,true);
     } else {
       // Show an error message if the update failed
       ScaffoldMessenger.of(context).showSnackBar(

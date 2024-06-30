@@ -15,7 +15,7 @@ class ReceiptPage extends StatefulWidget {
 
 class _ReceiptPageState extends State<ReceiptPage> {
   List<dynamic> receipts = [];
-
+  late Future<List<dynamic>> _receiptsFuture;
   int page = 0;
   int _currentPage = 0;
   bool isLoading = false;
@@ -24,9 +24,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
   @override
   void initState() {
     super.initState();
-    fetchPurchasesByPage(page).then((value) async => setState(() {
-          receipts = value;
-        }));
+    _receiptsFuture = fetchPurchasesByPage(page);
   }
 
   final int pageSize = 6;
@@ -48,46 +46,30 @@ class _ReceiptPageState extends State<ReceiptPage> {
     }
   }
 
-  void searchReceipt(String query) {
-    setState(() {
-      _currentPage = 0;
-      fetchPurchasesByPage(_currentPage).then((stocks) async {
-        setState(() {
-          receipts = stocks;
-        });
-      });
-    });
-  }
-
   void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await fetchPurchasesByPage(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          receipts = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _receiptsFuture = fetchPurchasesByPage(_currentPage);
+      });
     }
   }
 
   void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await fetchPurchasesByPage(_currentPage + 1);
-        setState(() {
-          //  _stocks.addAll(nextPageStocks);
-          //filteredStocks = _stocks;
-          receipts = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _receiptsFuture = fetchPurchasesByPage(_currentPage);
+      });
     }
+  }
+
+  void searchClients(String query) {
+    setState(() {
+      _currentPage = 0;
+
+      _receiptsFuture = fetchPurchasesByPage(_currentPage);
+    });
   }
 
   Future<void> createReceipt(dynamic purchase) async {
@@ -140,50 +122,71 @@ class _ReceiptPageState extends State<ReceiptPage> {
                 hintText: 'Search by client name...',
                 prefixIcon: Icon(Icons.search),
               ),
-              onChanged: searchReceipt,
+              onChanged: searchClients,
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: receipts.length,
-              itemBuilder: (BuildContext context, int index) {
-                final purchase = receipts[index];
-                return Card(
-                  elevation: 3,
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: ListTile(
-                    title: Text('Process Type: ${purchase['comment']}'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            'Client Name: ${purchase['clientName'] ?? ''} ${purchase['clientSurname'] ?? ''}'),
-                        Text('Amount: ${purchase['amount']}'),
-                        Text('Payment Type: ${purchase['paymentType']}'),
-                        Text('Date: ${purchase['date']}'),
-                      ],
+            child: FutureBuilder<List<dynamic>>(
+              future: _receiptsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No receipt found'));
+                } else {
+                  receipts = snapshot.data!;
+                  return Column(children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: receipts.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final purchase = receipts[index];
+                          return Card(
+                            elevation: 3,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
+                            child: ListTile(
+                              title:
+                                  Text('Process Type: ${purchase['comment']}'),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      'Client Name: ${purchase['clientName'] ?? ''} ${purchase['clientSurname'] ?? ''}'),
+                                  Text('Amount: ${purchase['amount']}'),
+                                  Text(
+                                      'Payment Type: ${purchase['paymentType']}'),
+                                  Text('Date: ${purchase['date']}'),
+                                ],
+                              ),
+                              onTap: () {
+                                createReceipt(purchase);
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                    onTap: () {
-                      createReceipt(purchase);
-                    },
-                  ),
-                );
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: _goToPreviousPage,
+                          icon: Icon(Icons.arrow_back),
+                        ),
+                        Text('Page ${_currentPage + 1}'),
+                        IconButton(
+                          onPressed: _goToNextPage,
+                          icon: Icon(Icons.arrow_forward),
+                        ),
+                      ],
+                    )
+                  ]);
+                }
               },
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: _goToPreviousPage,
-                icon: Icon(Icons.arrow_back),
-              ),
-              Text('Page ${_currentPage + 1}'),
-              IconButton(
-                onPressed: _goToNextPage,
-                icon: Icon(Icons.arrow_forward),
-              ),
-            ],
           ),
         ],
       ),

@@ -12,29 +12,65 @@ class PdfPage extends StatefulWidget {
   _PdfPageState createState() => _PdfPageState();
 }
 
+TextEditingController searchController = TextEditingController();
+
 class _PdfPageState extends State<PdfPage> {
-  List<dynamic> clients = [];
+  late Future<List<dynamic>> _clientsFuture;
+  List<dynamic> _clients = [];
+  int page = 0;
+  int _currentPage = 0;
+  bool isLoading = false;
+  late int totalPages;
+  final int pageSize = 6; // Sayfa başına gösterilecek stok sayısı
+
   Map<String, dynamic>? balanceData;
   @override
   void initState() {
     super.initState();
-    fetchclnts();
+    _clientsFuture = _fetchClients(page);
   }
 
-  Future<void> fetchclnts() async {
-    final response = await http.get(
-        Uri.parse('http://${await loadIP()}:8080/api/getClients'),
-        headers: <String, String>{
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        });
+  Future<List<dynamic>> _fetchClients(int page) async {
+    final url = searchController.text.isEmpty
+        ? 'http://${await loadIP()}:8080/api/getClientsByPage?page=$page&size=$pageSize'
+        : 'http://${await loadIP()}:8080/api/getClientsBySearch?keyword=${searchController.text}&page=$page&size=$pageSize';
+
+    final response = await http.get(Uri.parse(url), headers: <String, String>{
+      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+    });
     if (response.statusCode == 200) {
-      setState(() {
-        clients = jsonDecode(utf8.decode(response.bodyBytes));
-        clients.sort((a, b) => b['name'].compareTo(a['name']));
-      });
+      final utf8Body = utf8.decode(response.bodyBytes);
+      totalPages = jsonDecode(utf8Body)['totalPages'];
+      return jsonDecode(utf8Body)['content'];
     } else {
-      // Handle errors
+      return List.empty();
     }
+  }
+
+  void _goToPreviousPage() async {
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _clientsFuture = _fetchClients(_currentPage);
+      });
+    }
+  }
+
+  void _goToNextPage() async {
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _clientsFuture = _fetchClients(_currentPage);
+      });
+    }
+  }
+
+  void searchClients(String query) {
+    setState(() {
+      _currentPage = 0;
+
+      _clientsFuture = _fetchClients(_currentPage);
+    });
   }
 
   Future<void> createInvoices(List<dynamic> clients) async {
@@ -130,36 +166,88 @@ class _PdfPageState extends State<PdfPage> {
             icon: Icon(Icons.print),
             onPressed: () {
               // Butona tıklandığında PDF oluşturulsun
-              createInvoices(clients);
+              createInvoices(_clients);
             },
           ),
         ],
       ),
       body: Column(
         children: [
+          TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              hintText: 'Search Client...',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+            ),
+            onChanged: searchClients,
+          ),
           Expanded(
-            child: ListView.builder(
-              itemCount: clients.length,
-              itemBuilder: (BuildContext context, int index) {
-                final purchase = clients[index];
-                return Card(
-                  elevation: 3,
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: ListTile(
-                    title: Text('Client Code: ${purchase['clientCode']}'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Name: ${purchase['name']}'),
-                        Text('Surname: ${purchase['surname']}'),
-                        Text('Address: ${purchase['address']}'),
-                        Text('Phone: ${purchase['phone']}'),
-                      ],
+            child: FutureBuilder<List<dynamic>>(
+              future: _clientsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No clients found'));
+                } else {
+                  _clients = snapshot.data!;
+                  return Column(children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _clients.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final purchase = _clients[index];
+                          return Card(
+                            elevation: 3,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
+                            child: ListTile(
+                              title: Text(
+                                  'Client Code: ${purchase['clientCode']}'),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Name: ${purchase['name']}'),
+                                  Text('Surname: ${purchase['surname']}'),
+                                  Text('Address: ${purchase['address']}'),
+                                  Text('Phone: ${purchase['phone']}'),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                );
+                  ]);
+                }
               },
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: _goToPreviousPage,
+                icon: Icon(Icons.arrow_back),
+              ),
+              Text('Page ${_currentPage + 1}'),
+              IconButton(
+                onPressed: _goToNextPage,
+                icon: Icon(Icons.arrow_forward),
+              ),
+            ],
           ),
         ],
       ),

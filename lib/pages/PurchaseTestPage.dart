@@ -42,7 +42,8 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
     fetchWarehouses();
     initializeState();
     // Automatically generate registration date
-    DateController.text = DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
+    DateController.text =
+        DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now());
   }
 
   Future<void> initializeState() async {
@@ -161,9 +162,20 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
               ),
               SizedBox(height: 16),
               TextField(
+                readOnly: true,
                 controller: commercialTitleController,
-                decoration: InputDecoration(labelText: 'Seller'),
-                onTap: _navigateToClientSelectionPage,
+                decoration: InputDecoration(
+                  labelText: 'Seller',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      _navigateToClientSelectionPage();
+                    },
+                  ),
+                ),
+                onTap: () {
+                  _navigateToClientSelectionPage();
+                },
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -194,14 +206,55 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                     return Column(
                       children: [
                         TextField(
+                          readOnly: true,
                           controller: stockController,
-                          decoration: InputDecoration(labelText: 'Product'),
+                          decoration: InputDecoration(
+                            labelText: 'Product',
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.arrow_forward),
+                              onPressed: () {
+                                if (stockController.text.isEmpty) {
+                                  _navigateTopProductSelectionPage()
+                                      .then((result) async {
+                                    productList[index]['product'] =
+                                        stockController.text;
+                                  });
+                                } else {
+                                  setState(() {
+                                    stockController.clear();
+                                    quantityController.clear();
+                                    priceController.clear();
+                                  });
+                                  productids.removeLast();
+                                  _navigateTopProductSelectionPage()
+                                      .then((result) async {
+                                    productList[index]['product'] =
+                                        stockController.text;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
                           onTap: () {
-                            _navigateTopProductSelectionPage()
-                                .then((result) async {
-                              productList[index]['product'] =
-                                  stockController.text;
-                            });
+                            if (stockController.text.isEmpty) {
+                              _navigateTopProductSelectionPage()
+                                  .then((result) async {
+                                productList[index]['product'] =
+                                    stockController.text;
+                              });
+                            } else {
+                              setState(() {
+                                stockController.clear();
+                                quantityController.clear();
+                                priceController.clear();
+                              });
+                              productids.removeLast();
+                              _navigateTopProductSelectionPage()
+                                  .then((result) async {
+                                productList[index]['product'] =
+                                    stockController.text;
+                              });
+                            }
                           },
                         ),
                         TextField(
@@ -316,7 +369,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
         "vat": VatController.text ?? 0,
         "autherized": ownerController.text,
         "clientId": clientId,
-        "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
+        "date": DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now()),
       }),
       headers: {
         'Content-Type': 'application/json',

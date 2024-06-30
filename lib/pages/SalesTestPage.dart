@@ -16,7 +16,6 @@ class SalesTestPage extends StatefulWidget {
   _SalesTestPageState createState() => _SalesTestPageState();
 }
 
-List<dynamic> filteredClients = [];
 dynamic selectedClient;
 dynamic selectedStock;
 List<dynamic> warehouses = [];
@@ -46,7 +45,8 @@ class _SalesTestPageState extends State<SalesTestPage> {
     productprice.clear();
     productquantity.clear();
     // Automatically generate registration date
-    DateController.text = DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now());
+    DateController.text =
+        DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now());
   }
 
   Future<void> initializeState() async {
@@ -110,19 +110,22 @@ class _SalesTestPageState extends State<SalesTestPage> {
         selectedStock = result;
       });
       productids.add(selectedStock['stockId'].toString());
-      await fetchAndSetRemainingStock(); // Wait for remaining stock information
+      productController.text = selectedStock['stockName'] +
+          " Remaing: " +
+          selectedStock['quantity'].toString();
+      // await fetchAndSetRemainingStock(); // Wait for remaining stock information
     }
   }
 
-  Future<String> fetchAndSetRemainingStock() async {
-    final String? remaningValue = await fetchStocksRemaing();
-    setState(() {
-      remaning = remaningValue;
-      productController.text =
-          selectedStock['stockName'] + " Remaing: " + (remaning ?? '');
-    });
-    return selectedStock['stockName'] + " Remaing: " + (remaning ?? '');
-  }
+  // Future<String> fetchAndSetRemainingStock() async {
+  //   final String? remaningValue = await fetchStocksRemaing();
+  //   setState(() {
+  //     remaning = remaningValue;
+  //     productController.text =
+  //         selectedStock['stockName'] + " Remaing: " + (remaning ?? '');
+  //   });
+  //   return selectedStock['stockName'] + " Remaing: " + (remaning ?? '');
+  // }
 
   void _navigateToClientSelectionPage() async {
     final dynamic result1 = await Navigator.push(
@@ -154,22 +157,22 @@ class _SalesTestPageState extends State<SalesTestPage> {
     }
   }
 
-  String? remaning;
-  Future<String?> fetchStocksRemaing() async {
-    final response = await http.get(
-        Uri.parse(
-            'http://${await loadIP()}:8080/api/getStocksRemainigById?stock_id=${selectedStock['stockId']}'),
-        headers: <String, String>{
-          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-        });
-    if (response.statusCode == 200) {
-      json.decode(response.body);
+  // String? remaning;
+  // Future<String?> fetchStocksRemaing() async {
+  //   final response = await http.get(
+  //       Uri.parse(
+  //           'http://${await loadIP()}:8080/api/getStocksRemainigById?stock_id=${selectedStock['stockId']}'),
+  //       headers: <String, String>{
+  //         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+  //       });
+  //   if (response.statusCode == 200) {
+  //     json.decode(response.body);
 
-      return response.body;
-    } else {
-      //    throw Exception('Failed to load stocks');
-    }
-  }
+  //     return response.body;
+  //   } else {
+  //     //    throw Exception('Failed to load stocks');
+  //   }
+  // }
 
   TextEditingController productController = TextEditingController();
 
@@ -200,9 +203,20 @@ class _SalesTestPageState extends State<SalesTestPage> {
               ),
               SizedBox(height: 16),
               TextField(
+                readOnly: true,
                 controller: commercialTitleController,
-                decoration: InputDecoration(labelText: 'Buyer'),
-                onTap: _navigateToClientSelectionPage,
+                decoration: InputDecoration(
+                  labelText: 'Buyer',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      _navigateToClientSelectionPage();
+                    },
+                  ),
+                ),
+                onTap: () {
+                  _navigateToClientSelectionPage();
+                },
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -227,7 +241,25 @@ class _SalesTestPageState extends State<SalesTestPage> {
               if (productController.text.isEmpty)
                 TextField(
                   controller: productController,
-                  decoration: InputDecoration(labelText: 'Choose Product'),
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Choose Product',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      onPressed: () {
+                        _navigateTopProductSelectionPage().then((result) async {
+                          setState(() {
+                            product0Controller.text = productController.text;
+                            if (productList.isEmpty) {
+                              setState(() {
+                                productList.add({});
+                              });
+                            }
+                          });
+                        });
+                      },
+                    ),
+                  ),
                   onTap: () {
                     _navigateTopProductSelectionPage().then((result) async {
                       setState(() {
@@ -253,14 +285,55 @@ class _SalesTestPageState extends State<SalesTestPage> {
                         children: [
                           TextField(
                             controller: productController,
-                            enabled: false,
-                            decoration: InputDecoration(labelText: 'Product'),
-                            // onTap: () {
-                            //   _navigateTopProductSelectionPage().then((result) {
-                            //     productList[index]['product'] =
-                            //         productController.text;
-                            //   });
-                            // },
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              labelText: 'Product',
+                              suffixIcon: IconButton(
+                                icon: Icon(Icons.arrow_forward),
+                                onPressed: () {
+                                  setState(() {
+                                    quantityController.clear();
+                                    priceController.clear();
+                                    productController.clear();
+                                  });
+
+                                  productids.removeLast();
+
+                                  _navigateTopProductSelectionPage()
+                                      .then((result) async {
+                                    setState(() {
+                                      product0Controller.text =
+                                          productController.text;
+                                      if (productList.isEmpty) {
+                                        setState(() {
+                                          productList.add({});
+                                        });
+                                      }
+                                    });
+                                  });
+                                },
+                              ),
+                            ),
+                            onTap: () {
+                              productids.removeLast();
+                              setState(() {
+                                quantityController.clear();
+                                priceController.clear();
+                                productController.clear();
+                              });
+                              _navigateTopProductSelectionPage()
+                                  .then((result) async {
+                                setState(() {
+                                  product0Controller.text =
+                                      productController.text;
+                                  if (productList.isEmpty) {
+                                    setState(() {
+                                      productList.add({});
+                                    });
+                                  }
+                                });
+                              });
+                            },
                           ),
                           TextField(
                             controller: quantityController,
@@ -379,7 +452,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
           "price": productprice ?? 0,
           "vat": VatController.text ?? 0,
           "clientId": clientId,
-          "date": DateFormat('yyyy-MM-ddTHH:mm').format(DateTime.now()),
+          "date": DateFormat('yyyy-MM-ddTHH:mm:ss:ss').format(DateTime.now()),
         }),
         headers: {
           'Content-Type': 'application/json',

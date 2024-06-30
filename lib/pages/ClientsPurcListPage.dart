@@ -10,6 +10,7 @@ class ClientsPurcListPage extends StatefulWidget {
 }
 
 class _ClientsPurcListPageState extends State<ClientsPurcListPage> {
+  late Future<List<dynamic>> _clientsFuture;
   List<dynamic> _clients = [];
   dynamic selectedClient;
   int page = 0;
@@ -23,7 +24,7 @@ class _ClientsPurcListPageState extends State<ClientsPurcListPage> {
   @override
   void initState() {
     super.initState();
-    fetchClientsByPage(page).then((client) async => _clients = client);
+    _clientsFuture = fetchClientsByPage(page);
   }
 
   Future<List<dynamic>> fetchClientsByPage(int page) async {
@@ -44,44 +45,28 @@ class _ClientsPurcListPageState extends State<ClientsPurcListPage> {
   }
 
   void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await fetchClientsByPage(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          _clients = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _clientsFuture = fetchClientsByPage(_currentPage);
+      });
     }
   }
 
   void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await fetchClientsByPage(_currentPage + 1);
-        setState(() {
-          //  _clients.addAll(nextPageStocks);
-          //filteredStocks = _clients;
-          _clients = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _clientsFuture = fetchClientsByPage(_currentPage);
+      });
     }
   }
 
   void searchClients(String query) {
     setState(() {
       _currentPage = 0;
-      fetchClientsByPage(_currentPage).then((stocks) async {
-        setState(() {
-          _clients = stocks;
-        });
-      });
+
+      _clientsFuture = fetchClientsByPage(_currentPage);
     });
   }
 
@@ -106,13 +91,16 @@ class _ClientsPurcListPageState extends State<ClientsPurcListPage> {
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: fetchClientsByPage(page),
+              future: _clientsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No clients found'));
                 } else {
+                  _clients = snapshot.data!;
                   return Column(children: [
                     Expanded(
                       child: ListView.builder(

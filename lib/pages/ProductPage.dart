@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/StockDetailesPage.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_1/pages/AddProductPage.dart';
-
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
-import 'package:flutter_application_1/pages/ProductPdfPage.dart'; // Import PdfViewPage.dart
+
+import 'AddProductPage.dart';
+import 'StockDetailesPage.dart';
 
 TextEditingController searchController = TextEditingController();
 
@@ -15,26 +14,18 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-  int page = 0;
   int _currentPage = 0;
-  bool isLoading = false;
   List<dynamic> _stocks = [];
-
+  late Future<List<dynamic>> _stocksFuture;
   final int pageSize = 6; // Sayfa başına gösterilecek stok sayısı
+  late int totalPages;
 
   @override
   void initState() {
     super.initState();
-    // Load stocks initially
-    searchController.clear();
-    _fetchStocks(page).then((stocks) async {
-      setState(() {
-        _stocks = stocks;
-      });
-    });
+    _stocksFuture = _fetchStocks(_currentPage);
   }
 
-  late int totalPages;
   Future<List<dynamic>> _fetchStocks(int page) async {
     final url = searchController.text.isEmpty
         ? 'http://${await loadIP()}:8080/api/getStocksByPage?page=$page&size=$pageSize'
@@ -46,8 +37,9 @@ class _ProductPageState extends State<ProductPage> {
 
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
-      totalPages = jsonDecode(utf8Body)['totalPages'];
-      return jsonDecode(utf8Body)['content'];
+      final decodedBody = jsonDecode(utf8Body);
+      totalPages = decodedBody['totalPages'];
+      return decodedBody['content'];
     } else {
       return List.empty();
     }
@@ -62,11 +54,7 @@ class _ProductPageState extends State<ProductPage> {
     );
     if (result == true) {
       setState(() {
-        _fetchStocks(page).then((stocks) async {
-          setState(() {
-            _stocks = stocks;
-          });
-        });
+        _stocksFuture = _fetchStocks(_currentPage);
       });
     }
   }
@@ -74,42 +62,25 @@ class _ProductPageState extends State<ProductPage> {
   void searchStocks(String query) {
     setState(() {
       _currentPage = 0;
-      _fetchStocks(_currentPage).then((stocks) async {
-        setState(() {
-          _stocks = stocks;
-        });
-      });
+      _stocksFuture = _fetchStocks(_currentPage);
     });
   }
 
-  void _goToPreviousPage() async {
-    try {
-      if (_currentPage > 0) {
-        final nextPageStocks = await _fetchStocks(_currentPage - 1);
-        setState(() {
-          _currentPage--;
-          _stocks = nextPageStocks;
-          //    filteredStocks = stocks;
-        });
-      }
-    } catch (e) {
-      // Handle error
+  void _goToPreviousPage() {
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
     }
   }
 
-  void _goToNextPage() async {
-    try {
-      if (_currentPage + 1 < totalPages) {
-        final nextPageStocks = await _fetchStocks(_currentPage + 1);
-        setState(() {
-          //  _stocks.addAll(nextPageStocks);
-          //filteredStocks = _stocks;
-          _stocks = nextPageStocks;
-          _currentPage++;
-        });
-      } else {}
-    } catch (e) {
-      // Handle error
+  void _goToNextPage() {
+    if (_currentPage + 1 < totalPages) {
+      setState(() {
+        _currentPage++;
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
     }
   }
 
@@ -118,7 +89,6 @@ class _ProductPageState extends State<ProductPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Products'),
-        actions: [],
       ),
       body: Column(
         children: [
@@ -137,11 +107,7 @@ class _ProductPageState extends State<ProductPage> {
                     );
                     if (result == true) {
                       setState(() {
-                        _fetchStocks(page).then((stocks) async {
-                          setState(() {
-                            _stocks = stocks;
-                          });
-                        });
+                        _stocksFuture = _fetchStocks(_currentPage);
                       });
                     }
                   },
@@ -150,33 +116,39 @@ class _ProductPageState extends State<ProductPage> {
               ],
             ),
           ),
-          TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              hintText: 'Search Product...',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(color: Colors.grey),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Search Product...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(color: Colors.blue),
-              ),
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+              onChanged: searchStocks,
             ),
-            onChanged: searchStocks,
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
-              future: _fetchStocks(page),
+              future: _stocksFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No products found'));
                 } else {
+                  _stocks = snapshot.data!;
                   return Column(
                     children: [
                       Expanded(
