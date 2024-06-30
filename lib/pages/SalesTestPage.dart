@@ -452,7 +452,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
           "price": productprice ?? 0,
           "vat": VatController.text ?? 0,
           "clientId": clientId,
-          "date": DateFormat('yyyy-MM-ddTHH:mm:ss:ss').format(DateTime.now()),
+          "date": DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now()),
         }),
         headers: {
           'Content-Type': 'application/json',
