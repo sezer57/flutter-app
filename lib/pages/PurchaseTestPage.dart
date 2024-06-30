@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/SalesPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -86,7 +87,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
       context,
       MaterialPageRoute(
           builder: (context) =>
-              PurchasePage(selectedSourceWarehouse: selectedSourceWarehouse)),
+              SalesPage(selectedSourceWarehouse: selectedSourceWarehouse)),
     );
     selectedStock = result;
     for (int i = 0; i < productids.length; i++) {
@@ -331,16 +332,16 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
               ),
               SizedBox(height: 16),
               TextField(
+                controller: VatController,
+                decoration: InputDecoration(labelText: 'Vat'),
+                keyboardType: TextInputType.datetime,
+              ),
+              TextField(
                 controller: ownerController,
                 decoration: InputDecoration(labelText: 'Process owner'),
                 enabled: false,
               ),
               SizedBox(height: 16),
-              TextField(
-                controller: VatController,
-                decoration: InputDecoration(labelText: 'Vat'),
-                keyboardType: TextInputType.datetime,
-              ),
               SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {

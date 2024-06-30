@@ -67,14 +67,14 @@ class PdfApi {
       rows.add(row);
     }
 
-    if (rows.length > 10) {
+    if (rows.length > 5) {
       List<Widget> tables = [];
       int i = 0;
       int pageNumber = 1;
 
       while (i < rows.length) {
         List<List<String>> currentRows =
-            rows.sublist(i, i + 10 < rows.length ? i + 10 : rows.length);
+            rows.sublist(i, i + 5 < rows.length ? i + 5 : rows.length);
         tables.add(
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +92,7 @@ class PdfApi {
             ],
           ),
         );
-        i += 10;
+        i += 5;
         pageNumber++;
       }
 

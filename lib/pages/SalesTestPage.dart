@@ -412,16 +412,16 @@ class _SalesTestPageState extends State<SalesTestPage> {
                   }
                 },
               ),
+              TextField(
+                controller: VatController,
+                decoration: InputDecoration(labelText: 'Vat'),
+                keyboardType: TextInputType.datetime,
+              ),
               SizedBox(height: 8),
               TextField(
                 controller: ownerController,
                 decoration: InputDecoration(labelText: 'Process owner'),
                 enabled: false,
-              ),
-              TextField(
-                controller: VatController,
-                decoration: InputDecoration(labelText: 'Vat'),
-                keyboardType: TextInputType.datetime,
               ),
               SizedBox(height: 32),
               ElevatedButton(

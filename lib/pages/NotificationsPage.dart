@@ -35,6 +35,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
     if (response.statusCode == 200) {
       List<dynamic> expenses = jsonDecode(utf8.decode(response.bodyBytes));
+
       setState(() {
         _warehouseTransfers = expenses
             .where((expense) => expense.containsKey('warehousetransfer_id'))
@@ -135,7 +136,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ElevatedButton(
             onPressed: () async {
               String formattedDate =
-                  "${_selectedDay.year}-${_selectedDay.month.toString().padLeft(2, '0')}-${_selectedDay.day.toString().padLeft(2, '0')}";
+                  DateFormat('yyyy-MM-ddTHH:mm:ss').format(_selectedDay);
               await _getDailyExpenses(formattedDate);
               _navigateToDailyExpensesPage(formattedDate);
             },
@@ -154,7 +155,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           return isSameDay(_selectedDay, day);
         },
         onDaySelected: (selectedDay, focusedDay) async {
-          print(selectedDay);
+          //  print(selectedDay);
           setState(() {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
@@ -264,8 +265,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           mode: CupertinoDatePickerMode.date,
                           initialDateTime: DateTime.now(),
                           onDateTimeChanged: (DateTime newDateTime) {
-                            formattedDate2 = DateFormat('yyyy-MM-ddTHH:mm:ss')
-                                .format(newDateTime);
+                            DateTime endDate = DateTime(newDateTime.year,
+                                newDateTime.month, newDateTime.day, 23, 59, 59);
+                            String formattedDate2 =
+                                DateFormat('yyyy-MM-ddTHH:mm:ss')
+                                    .format(endDate);
                             setState(() {
                               dateController2.text = formattedDate2;
                             });
@@ -282,8 +286,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       lastDate: DateTime(2101));
 
                   if (pickedDate2 != null) {
-                    formattedDate2 =
-                        DateFormat('yyyy-MM-ddTHH:mm:ss').format(pickedDate2);
+                    DateTime endDate = DateTime(pickedDate2.year,
+                        pickedDate2.month, pickedDate2.day, 23, 59, 59);
+                    String formattedDate2 =
+                        DateFormat('yyyy-MM-ddTHH:mm:ss').format(endDate);
                     setState(() {
                       dateController2.text = formattedDate2;
                     });
@@ -299,8 +305,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
                 String formattedDate1 =
                     DateFormat('yyyy-MM-ddTHH:mm:ss').format(_selectedDate1);
+
+                DateTime endDate = DateTime(_selectedDate2.year,
+                    _selectedDate2.month, _selectedDate2.day, 23, 59, 59);
                 String formattedDate2 =
-                    DateFormat('yyyy-MM-ddTHH:mm:ss').format(_selectedDate2);
+                    DateFormat('yyyy-MM-ddTHH:mm:ss').format(endDate);
+
                 await _getWeeklyPurchaseInvoices();
                 _navigateToDailyExpensesPage("$formattedDate1|$formattedDate2");
               },
