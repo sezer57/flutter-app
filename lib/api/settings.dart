@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_application_1/api/checkLoginStatus.dart';
+import 'dart:convert';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -9,27 +9,76 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   TextEditingController _ipController = TextEditingController();
-  String? _savedIP;
+  TextEditingController _nameController = TextEditingController();
+  List<Map<String, String>> _savedIPs = [];
+  String? _selectedIP;
 
   @override
   void initState() {
     super.initState();
-    _loadIP();
+    _loadIPs();
   }
 
-  _loadIP() async {
-    _savedIP = await loadIP();
-    setState(() {
-      _ipController.text = _savedIP!;
-    });
+  _loadIPs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedIPs = prefs.getString('ips');
+    List<dynamic> ipList = savedIPs != null ? json.decode(savedIPs) : [];
+    String? selectedIP = prefs.getString('ip');
+
+    if (ipList.isNotEmpty) {
+      setState(() {
+        _savedIPs = List<Map<String, String>>.from(
+            ipList.map((ip) => Map<String, String>.from(ip)));
+        _selectedIP = selectedIP;
+      });
+    } else {
+      setState(() {
+        _savedIPs = []; // Başlangıç değeri olarak boş bir liste atanıyor
+        _savedIPs.add({
+          'ip': '104.248.42.73',
+          'name': 'Test',
+        });
+        _selectedIP = "104.248.42.73";
+      });
+      await prefs.setString('ips', json.encode(_savedIPs));
+    }
   }
 
   _saveIP() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('ip', _ipController.text);
+    if (_ipController.text.isNotEmpty && _nameController.text.isNotEmpty) {
+      setState(() {
+        _savedIPs.add({
+          'ip': _ipController.text,
+          'name': _nameController.text,
+        });
+        _ipController.clear();
+        _nameController.clear();
+      });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('ips', json.encode(_savedIPs));
+    }
+  }
+
+  _deleteIP(int index) async {
     setState(() {
-      _savedIP = _ipController.text;
+      _savedIPs.removeAt(index);
     });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('ips', json.encode(_savedIPs));
+  }
+
+  _editIP(int index) {
+    _ipController.text = _savedIPs[index]['ip']!;
+    _nameController.text = _savedIPs[index]['name']!;
+    _deleteIP(index);
+  }
+
+  _selectIP(int index) async {
+    setState(() {
+      _selectedIP = _savedIPs[index]['ip'];
+    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('ip', _selectedIP!);
   }
 
   @override
@@ -43,6 +92,12 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           children: [
             TextField(
+              controller: _nameController,
+              decoration: InputDecoration(
+                labelText: 'Enter Name',
+              ),
+            ),
+            TextField(
               controller: _ipController,
               decoration: InputDecoration(
                 labelText: 'Enter IP address',
@@ -53,10 +108,40 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: _saveIP,
               child: Text('Save IP'),
             ),
-            if (_savedIP != null) ...[
+            SizedBox(height: 20),
+            if (_selectedIP != null) ...[
               SizedBox(height: 20),
-              Text('Saved IP: $_savedIP'),
+              Text('Selected IP: $_selectedIP'),
             ],
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _savedIPs.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    tileColor: _savedIPs[index]['ip'] == _selectedIP
+                        ? Colors.green[100]
+                        : null,
+                    title: Text(_savedIPs[index]['name']!),
+                    subtitle: Text(_savedIPs[index]['ip']!),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () => _editIP(index),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => _deleteIP(index),
+                        ),
+                      ],
+                    ),
+                    onTap: () => _selectIP(index),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
