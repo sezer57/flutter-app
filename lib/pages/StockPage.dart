@@ -27,6 +27,7 @@ class _StockPageState extends State<StockPage> {
   @override
   void initState() {
     super.initState();
+    searchController.clear();
     _ssFuture = getNames();
     _stocksFuture = _fetchStocks(page);
   }

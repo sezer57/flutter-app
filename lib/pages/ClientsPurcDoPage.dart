@@ -76,19 +76,9 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
       appBar: AppBar(
         title: Text('Purchases List'),
       ),
-      body: Column(
-        children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: TextField(
-          //     controller: searchController,
-          //     decoration: InputDecoration(
-          //       hintText: 'Search purchases...',
-          //       prefixIcon: Icon(Icons.search),
-          //     ),
-          //     onChanged: searchPurchases,
-          //   ),
-          // ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(children: [
           Expanded(
             child: FutureBuilder<List<dynamic>>(
               future: _stocksFuture,
@@ -98,7 +88,7 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No stocks found'));
+                  return Center(child: Text('No purc found'));
                 } else {
                   purchases = snapshot.data!;
                   return Column(
@@ -108,27 +98,32 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
                           itemCount: purchases.length,
                           itemBuilder: (BuildContext context, int index) {
                             final purchase = purchases[index];
-                            return ListTile(
-                              title:
-                                  Text('Stock Name: ${purchase['stockName']}'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Price: \$${purchase['price']}'),
-                                  Text('Quantity: ${purchase['quantity']}'),
-                                  Text('Date: ${purchase['date']}'),
-                                ],
+                            return Card(
+                              child: ListTile(
+                                title: Text(
+                                  'Stock Name: ${purchase['stockName']}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Price: \$${purchase['price']}',
+                                    ),
+                                    SizedBox(height: 4.0),
+                                    Text(
+                                      'Quantity: ${purchase['quantity']}',
+                                    ),
+                                    SizedBox(height: 4.0),
+                                    Text('Date: ${purchase['date']}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ))
+                                  ],
+                                ),
                               ),
-                              // onTap: () {
-                              //   Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //       builder: (context) => DebtPaymentPage(
-                              //         client: widget.selectedClient,
-                              //       ),
-                              //     ),
-                              //   );
-                              // },
                             );
                           },
                         ),
@@ -153,7 +148,7 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
               },
             ),
           ),
-        ],
+        ]),
       ),
     );
   }

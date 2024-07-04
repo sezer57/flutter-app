@@ -32,7 +32,7 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
   Future<List<dynamic>> fetchPurchasesByPage(int page) async {
     final response = await http.get(
       Uri.parse(
-          'http://${await loadIP()}:8080/api/getPurchaseInvoiceClientByPage?page=$page&client_id=${widget.selectedClient['clientId']}&keyword=${searchController.text}&size=$pageSize'),
+          'http://${await loadIP()}:8080/api/getClientSalesInvoicewithid?page=$page&client_id=${widget.selectedClient['clientId']}&keyword=${searchController.text}&size=$pageSize'),
       headers: <String, String>{
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
       },
@@ -40,7 +40,7 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
       totalPages = jsonDecode(utf8Body)['totalPages'];
-      print(jsonDecode(utf8Body)['content']);
+
       return jsonDecode(utf8Body)['content'];
     } else {
       return List.empty();
@@ -79,84 +79,82 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
       appBar: AppBar(
         title: Text('Sales List'),
       ),
-      body: Column(
-        children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: TextField(
-          //     controller: searchController,
-          //     decoration: InputDecoration(
-          //       hintText: 'Search purchases...',
-          //       prefixIcon: Icon(Icons.search),
-          //     ),
-          //     onChanged: searchPurchases,
-          //   ),
-          // ),
-          Expanded(
-            child: FutureBuilder<List<dynamic>>(
-              future: _stocksFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No stocks found'));
-                } else {
-                  purchases = snapshot.data!;
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: purchases.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final purchase = purchases[index];
-                            return ListTile(
-                              title:
-                                  Text('Stock Name: ${purchase['stockName']}'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Price: \$${purchase['price']}'),
-                                  Text('Quantity: ${purchase['quantity']}'),
-                                  Text('Date: ${purchase['date']}'),
-                                ],
-                              ),
-                              // onTap: () {
-                              //   Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //       builder: (context) => DebtPaymentPage2(
-                              //         client: widget.selectedClient,
-                              //       ),
-                              //     ),
-                              //   );
-                              // },
-                            );
-                          },
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder<List<dynamic>>(
+                future: _stocksFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No sales found'));
+                  } else {
+                    purchases = snapshot.data!;
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: purchases.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final purchase = purchases[index];
+                              return Card(
+                                child: ListTile(
+                                  title: Text(
+                                    'Stock Name: ${purchase['stockName']}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Price: \$${purchase['price']}',
+                                      ),
+                                      SizedBox(height: 4.0),
+                                      Text(
+                                        'Quantity: ${purchase['quantity']}',
+                                      ),
+                                      SizedBox(height: 4.0),
+                                      Text('Date: ${purchase['date']}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: _goToPreviousPage,
-                            icon: Icon(Icons.arrow_back),
-                          ),
-                          Text('Page ${page + 1}'),
-                          IconButton(
-                            onPressed: _goToNextPage,
-                            icon: Icon(Icons.arrow_forward),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                }
-              },
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: _goToPreviousPage,
+                              icon: Icon(Icons.arrow_back),
+                            ),
+                            Text('Page ${_currentPage + 1}'),
+                            IconButton(
+                              onPressed: _goToNextPage,
+                              icon: Icon(Icons.arrow_forward),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

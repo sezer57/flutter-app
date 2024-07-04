@@ -23,6 +23,7 @@ class _ProductPageState extends State<ProductPage> {
   @override
   void initState() {
     super.initState();
+    searchController.clear();
     _stocksFuture = _fetchStocks(_currentPage);
   }
 
