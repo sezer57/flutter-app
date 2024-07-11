@@ -32,7 +32,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
     barcodeController.text = widget.stock['barcode'];
     groupNameController.text = widget.stock['groupName'];
     middleGroupNameController.text = widget.stock['middleGroupName'];
-    unitController.text = widget.stock['unit'];
+    unitController.text = widget.stock['unitType'];
     salesPriceController.text = widget.stock['salesPrice'].toString();
     purchasePriceController.text = widget.stock['purchasePrice'].toString();
   }
@@ -145,11 +145,11 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
 
     if (response.statusCode == 200) {
       // Show a success message if the update was successful
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stock details updated successfully')),
       );
-      Navigator.pop(context,true);
+      Navigator.pop(context, true);
     } else {
       // Show an error message if the update failed
       ScaffoldMessenger.of(context).showSnackBar(

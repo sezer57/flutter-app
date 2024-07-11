@@ -147,6 +147,13 @@ class _SettingPageState extends State<SalesPage> {
                                         color: Color.fromARGB(255, 54, 98, 244),
                                       ),
                                     ),
+                                    Text(
+                                      'Type: ${stock['type']}',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Color.fromARGB(255, 54, 98, 244),
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 onTap: () {

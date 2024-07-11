@@ -16,9 +16,11 @@ class _AddStockPageState extends State<AddStockPage> {
   final TextEditingController stockCodeController = TextEditingController();
   final TextEditingController barcodeController = TextEditingController();
   final TextEditingController groupNameController = TextEditingController();
+  final TextEditingController pieceController = TextEditingController();
   final TextEditingController middleGroupNameController =
       TextEditingController();
-  String? selectedUnit = 'Cartons';
+  String? selectedUnitType = 'Carton';
+  String? selectedUnit = 'Piece';
   final TextEditingController salesPriceController = TextEditingController();
   final TextEditingController purchasePriceController = TextEditingController();
   List<String?> warehouseIdController = [];
@@ -26,6 +28,7 @@ class _AddStockPageState extends State<AddStockPage> {
   List<String> selectedWarehouseIds =
       []; // Add this variable to hold the selected warehouse IDs
   String? _ip;
+
   @override
   void initState() {
     super.initState();
@@ -45,9 +48,10 @@ class _AddStockPageState extends State<AddStockPage> {
         });
 
     if (response.statusCode == 200) {
-      setState(() {
-        warehouses = jsonDecode(utf8.decode(response.bodyBytes));
-      });
+      warehouses = jsonDecode(utf8.decode(response.bodyBytes));
+      warehouses.map((warehouse) {
+        selectedWarehouseIds.add(warehouse["warehouseId"].toString());
+      }).toList();
     } else {
       // Handle API error
     }
@@ -63,6 +67,7 @@ class _AddStockPageState extends State<AddStockPage> {
     if (response.statusCode == 200) {
       setState(() {
         stockCodeController.text = "S" + response.body;
+        barcodeController.text = "B" + response.body;
       });
     } else {
       // Handle API error
@@ -105,8 +110,8 @@ class _AddStockPageState extends State<AddStockPage> {
               decoration: InputDecoration(labelText: 'Middle Group Name'),
             ),
             DropdownButtonFormField(
-              value: selectedUnit,
-              items: <String>['Cartons']
+              value: selectedUnitType,
+              items: <String>['Carton', 'Dozen', 'Piece']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -115,11 +120,59 @@ class _AddStockPageState extends State<AddStockPage> {
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
-                  selectedUnit = newValue;
+                  selectedUnitType = newValue;
+                  if (newValue == 'Carton') {
+                    selectedUnit = 'Piece';
+                  }
+                  if (newValue == 'Dozen') {
+                    pieceController.text = '12';
+                  } else {
+                    pieceController.clear();
+                    selectedUnit = null;
+                  }
                 });
               },
-              decoration: InputDecoration(labelText: 'Unit'),
+              decoration: InputDecoration(labelText: 'Unit Type'),
             ),
+            if (selectedUnitType == 'Carton')
+              DropdownButtonFormField(
+                value: selectedUnit,
+                items: <String>['Dozen', 'Piece']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedUnit = newValue;
+                    if (selectedUnit == "Dozen") {
+                      pieceController.text = "12";
+                    }
+                    if (selectedUnit == "Piece") {
+                      pieceController.clear();
+                    }
+                  });
+                },
+                decoration: InputDecoration(labelText: 'Unit'),
+              ),
+            if (selectedUnitType == 'Carton' && selectedUnit == 'Piece')
+              TextField(
+                controller: pieceController,
+                decoration: InputDecoration(labelText: 'Piece'),
+              ),
+            if (selectedUnitType == 'Dozen' || selectedUnit == 'Dozen')
+              TextField(
+                readOnly: true,
+                controller: pieceController,
+                decoration: InputDecoration(labelText: 'Piece'),
+              ),
+            if (selectedUnitType == 'Piece')
+              TextField(
+                controller: pieceController,
+                decoration: InputDecoration(labelText: 'Piece'),
+              ),
             TextField(
               controller: salesPriceController,
               decoration: InputDecoration(labelText: 'Sales Price'),
@@ -132,51 +185,52 @@ class _AddStockPageState extends State<AddStockPage> {
               keyboardType: TextInputType.numberWithOptions(
                   decimal: true), // Accept decimal numbers
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: selectedWarehouseIds.length + 1,
-              itemBuilder: (context, index) {
-                if (index == selectedWarehouseIds.length) {
-                  // Last item, show dropdown button to add more warehouses
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: DropdownButtonFormField<String>(
-                      onChanged: (newValue) {
-                        setState(() {
-                          selectedWarehouseIds.add(newValue!);
-                        });
-                      },
-                      items: warehouses.map((warehouse) {
-                        return DropdownMenuItem<String>(
-                          value: warehouse['warehouseId'].toString(),
-                          child: Text(warehouse['name']),
-                        );
-                      }).toList(),
-                      decoration: InputDecoration(
-                        labelText: 'Warehouse',
-                      ),
-                    ),
-                  );
-                } else {
-                  // Show selected warehouse
-                  String selectedWarehouseId = selectedWarehouseIds[index];
-                  var selectedWarehouse = warehouses.firstWhere((warehouse) =>
-                      warehouse['warehouseId'].toString() ==
-                      selectedWarehouseId);
-                  return ListTile(
-                    title: Text(selectedWarehouse['name']),
-                    trailing: IconButton(
-                      icon: Icon(Icons.remove),
-                      onPressed: () {
-                        setState(() {
-                          selectedWarehouseIds.removeAt(index);
-                        });
-                      },
-                    ),
-                  );
-                }
-              },
-            ),
+            ////// warehouse kaldırıldı hepsini eklenicek
+            // ListView.builder(
+            //   shrinkWrap: true,
+            //   itemCount: selectedWarehouseIds.length + 1,
+            //   itemBuilder: (context, index) {
+            //     if (index == selectedWarehouseIds.length) {
+            //       // Last item, show dropdown button to add more warehouses
+            //       return Padding(
+            //         padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            //         child: DropdownButtonFormField<String>(
+            //           onChanged: (newValue) {
+            //             setState(() {
+            //               selectedWarehouseIds.add(newValue!);
+            //             });
+            //           },
+            //           items: warehouses.map((warehouse) {
+            //             return DropdownMenuItem<String>(
+            //               value: warehouse['warehouseId'].toString(),
+            //               child: Text(warehouse['name']),
+            //             );
+            //           }).toList(),
+            //           decoration: InputDecoration(
+            //             labelText: 'Warehouse',
+            //           ),
+            //         ),
+            //       );
+            //     } else {
+            //       // Show selected warehouse
+            //       String selectedWarehouseId = selectedWarehouseIds[index];
+            //       var selectedWarehouse = warehouses.firstWhere((warehouse) =>
+            //           warehouse['warehouseId'].toString() ==
+            //           selectedWarehouseId);
+            //       return ListTile(
+            //         title: Text(selectedWarehouse['name']),
+            //         trailing: IconButton(
+            //           icon: Icon(Icons.remove),
+            //           onPressed: () {
+            //             setState(() {
+            //               selectedWarehouseIds.removeAt(index);
+            //             });
+            //           },
+            //         ),
+            //       );
+            //     }
+            //   },
+            // ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -191,46 +245,64 @@ class _AddStockPageState extends State<AddStockPage> {
   }
 
   Future<void> _addStock(BuildContext context) async {
+    int? piece;
     final String apiUrl = 'http://${await loadIP()}:8080/api/stocks';
+//eğer type piece se direkt sayıyı gir eğer kartonsa cartounun picenin sayısıyla çarp
+    try {
+      if (selectedUnitType == 'Piece') {
+        piece = int.parse(pieceController.text);
+      } else if (selectedUnitType == 'Carton' && selectedUnit == 'Dozen') {
+        piece = int.parse(pieceController.text) *
+            12; // Assuming 1 Dozen = 12 Pieces
+      } else if (selectedUnitType == 'Dozen') {
+        piece = int.parse(pieceController.text) * 12;
+      } // Assuming 1 Dozen = 12 Pieces
+      else if (selectedUnitType == 'Carton' && selectedUnit == 'Piece') {
+        piece = int.parse(pieceController.text);
+      }
 
-    final Map<String, dynamic> postData = {
-      "registrationDate": registrationDateController.text,
-      "stockName": stockNameController.text,
-      "stockCode": stockCodeController.text,
-      "barcode": barcodeController.text,
-      "groupName": groupNameController.text,
-      "middleGroupName": middleGroupNameController.text,
-      "unit": int.tryParse(selectedUnit.toString()) ??
-          0, // Parse as int, default to 0 if parsing fails
-      "salesPrice": double.parse(salesPriceController.text),
-      "purchasePrice": double.parse(purchasePriceController.text),
-      "warehouse_id": selectedWarehouseIds ??
-          0, // Parse as int, default to 0 if parsing fails
-    };
+      final Map<String, dynamic> postData = {
+        "registrationDate": registrationDateController.text,
+        "stockName": stockNameController.text,
+        "stockCode": stockCodeController.text,
+        "barcode": barcodeController.text,
+        "groupName": groupNameController.text,
+        "middleGroupName": middleGroupNameController.text,
+        "unitType": selectedUnitType,
+        "unit": piece,
+        "salesPrice": double.parse(salesPriceController.text),
+        "purchasePrice": double.parse(purchasePriceController.text),
+        "warehouse_id": selectedWarehouseIds,
+      };
 
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-      },
-      body: jsonEncode(postData),
-    );
-
-    if (response.statusCode == 200) {
-      // Show success notification
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Stock added successfully')),
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+        },
+        body: jsonEncode(postData),
       );
-      // Navigate back to previous page
-      Navigator.pop(context,
-          true); // Pass a result back indicating that a new stock was added
-    } else {
+
+      if (response.statusCode == 200) {
+        // Show success notification
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Stock added successfully')),
+        );
+        // Navigate back to previous page
+        Navigator.pop(context,
+            true); // Pass a result back indicating that a new stock was added
+      } else {
+        // Show error notification
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('${response.body}. Error: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
       // Show error notification
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content:
-                Text('Failed to add stock. Error: ${response.statusCode}')),
+        SnackBar(content: Text('Failed to add stock. Error: $e')),
       );
     }
   }

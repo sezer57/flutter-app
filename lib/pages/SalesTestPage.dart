@@ -7,6 +7,18 @@ import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:flutter_application_1/pages/SalesClientSelectionPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/pages/SalesPage.dart';
+import 'package:flutter_application_1/api/pdf_receipt_api.dart';
+import 'package:flutter_application_1/api/pdf_api.dart';
+import 'package:flutter_application_1/model/customer.dart';
+import 'package:flutter_application_1/model/receipt.dart';
+import 'package:flutter_application_1/model/supplier.dart';
+
+import 'package:flutter_application_1/api/pdf_api.dart';
+import 'package:flutter_application_1/model/customer.dart';
+import 'package:flutter_application_1/model/invoice.dart';
+import 'package:flutter_application_1/model/supplier.dart';
+import 'package:flutter_application_1/pages/utils.dart';
+import 'package:flutter_application_1/api/pdf_invoice_api.dart';
 
 class SalesTestPage extends StatefulWidget {
   final dynamic selectedClient;
@@ -175,7 +187,8 @@ class _SalesTestPageState extends State<SalesTestPage> {
   // }
 
   TextEditingController productController = TextEditingController();
-
+  String? selectedUnitType = 'Carton';
+  String? selectedUnit = 'Dozen';
   TextEditingController product0Controller = TextEditingController();
   List<Map<String, dynamic>> productList =
       []; // List to store product, quantity, and price data
@@ -335,20 +348,67 @@ class _SalesTestPageState extends State<SalesTestPage> {
                               });
                             },
                           ),
+                          DropdownButtonFormField(
+                            value: selectedUnitType,
+                            items: <String>['Carton', 'Dozen', 'Piece']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedUnitType = newValue;
+                                quantityController.clear();
+                                priceController.clear();
+                              });
+                            },
+                            decoration: InputDecoration(labelText: 'Unit Type'),
+                          ),
                           TextField(
                             controller: quantityController,
                             onChanged: (newValue) {
                               setState(() {
-                                priceController.text =
-                                    (double.parse(newValue!) *
-                                            selectedStock['salesPrice'])
-                                        .toString();
-                                productList[index]['quantity'] = newValue;
+                                if (newValue.isEmpty) {
+                                  newValue = "0";
+                                }
+                                if (selectedUnitType == "Carton") {
+                                  priceController.text =
+                                      (double.parse(newValue) *
+                                              selectedStock['salesPrice'])
+                                          .toString();
+                                  productList[index]['quantity'] = newValue;
 
-                                productList[index]['price'] =
-                                    priceController.text;
-                                productList[index]['product'] =
-                                    productController.text;
+                                  productList[index]['price'] =
+                                      priceController.text;
+                                  productList[index]['product'] =
+                                      productController.text;
+                                } else if (selectedUnitType == "Dozen") {
+                                  priceController.text =
+                                      (double.parse(newValue) *
+                                              selectedStock['salesPrice'] /
+                                              12)
+                                          .toString();
+                                  productList[index]['quantity'] = newValue;
+
+                                  productList[index]['price'] =
+                                      priceController.text;
+                                  productList[index]['product'] =
+                                      productController.text;
+                                } else {
+                                  priceController.text =
+                                      (double.parse(newValue) *
+                                              selectedStock['salesPrice'] /
+                                              selectedStock['typeS'])
+                                          .toString();
+                                  productList[index]['quantity'] = newValue;
+
+                                  productList[index]['price'] =
+                                      priceController.text;
+                                  productList[index]['product'] =
+                                      productController.text;
+                                }
                               });
                             },
                             decoration: InputDecoration(labelText: 'Quantity'),
@@ -371,7 +431,21 @@ class _SalesTestPageState extends State<SalesTestPage> {
                                 productList.add({});
                                 if (quantityController.text.isNotEmpty &&
                                     priceController.text.isNotEmpty) {
-                                  productquantity.add(quantityController.text);
+                                  if (selectedUnitType == "Carton") {
+                                    productquantity.add(
+                                        (int.parse(quantityController.text) *
+                                                (selectedStock['typeS']))
+                                            .toString());
+                                  } else if (selectedUnitType == "Dozen") {
+                                    productquantity.add(
+                                        (int.parse(quantityController.text) *
+                                                (12))
+                                            .toString());
+                                  } else {
+                                    productquantity
+                                        .add(quantityController.text);
+                                  }
+
                                   productprice.add(priceController.text);
                                   productController.clear();
                                   quantityController.clear();
@@ -431,7 +505,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
                   purchaseStock(selectedClient['clientId']);
                 },
-                child: Text('Sales'),
+                child: Text('Sales & Print'),
               ),
             ],
           ),
@@ -462,19 +536,21 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
       if (response.statusCode == 200) {
         // Sales successful, show confirmation message
-        Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Sales successful!'),
+            content: Text('Purchase successful!'),
           ),
         );
+
         productids.clear();
         productList.clear();
         productprice.clear();
         productquantity.clear();
+        await createInvoice(jsonDecode(response.body));
+        Navigator.pop(context);
       } else {
         // Sales failed, show error message
-        Navigator.of(context).pop();
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response.body)),
         );
@@ -490,5 +566,58 @@ class _SalesTestPageState extends State<SalesTestPage> {
         ),
       );
     }
+  }
+
+  Future<void> createInvoice(dynamic sale) async {
+    // InvoiceInfo oluşturma
+    InvoiceInfo info = InvoiceInfo(
+      number: sale['expense_id'].toString(),
+      date: DateTime.now(),
+      description: 'Sales Invoice for ${sale['stockName']}',
+    );
+
+    // Customer oluşturma
+    Customer customer = Customer(
+      name: sale['clientName'],
+      address: sale['clientAdress'],
+      number: sale['clientPhone'],
+    );
+
+    // Supplier oluşturma
+    Supplier supplier = Supplier(
+      Tel: ' +971 4 2266114',
+      WhatsApp: ' +971559438444',
+      POBox: 'P.O.Box 65127',
+      name: 'Murshid Bazar',
+      name2: 'Obaid Omayar Bldg',
+      address: 'Shop No:1, Dubai, U.A.E',
+    );
+
+    List<InvoiceItem> invoiceItems = [];
+
+    for (int i = 0; i < sale['stockName'].length; i++) {
+      InvoiceItem item = InvoiceItem(
+        description: 'Product: ${sale['stockName'][i]}',
+        date: DateTime.now(),
+        quantity: int.parse(sale['quantity'][i]),
+        unitPrice:
+            double.parse(sale['price'][i]) / (1 + (sale['vat'][i]) / 100),
+        vat: (sale['vat'][i]) / 100, // 0.05, // Example VAT rate 5%
+      );
+      invoiceItems.add(item);
+    }
+
+    // Invoice oluşturma
+    Invoice invoice = Invoice(
+      info: info,
+      supplier: supplier,
+      customer: customer,
+      items: invoiceItems,
+      type: "sale",
+    );
+
+    // Fatura oluşturma ve dosyayı kaydetme
+    final pdfFile = await PdfInvoiceApi.generate(invoice);
+    PdfApi.openFile(pdfFile);
   }
 }
