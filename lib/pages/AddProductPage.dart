@@ -250,10 +250,9 @@ class _AddStockPageState extends State<AddStockPage> {
 //eğer type piece se direkt sayıyı gir eğer kartonsa cartounun picenin sayısıyla çarp
     try {
       if (selectedUnitType == 'Piece') {
-        piece = int.parse(pieceController.text);
+        piece = 1;
       } else if (selectedUnitType == 'Carton' && selectedUnit == 'Dozen') {
-        piece = int.parse(pieceController.text) *
-            12; // Assuming 1 Dozen = 12 Pieces
+        piece = 12; // Assuming 1 Dozen = 12 Pieces
       } else if (selectedUnitType == 'Dozen') {
         piece = int.parse(pieceController.text) * 12;
       } // Assuming 1 Dozen = 12 Pieces

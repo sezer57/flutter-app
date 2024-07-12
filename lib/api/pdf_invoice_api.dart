@@ -372,11 +372,11 @@ class PdfInvoiceApi {
     ];
     final data = invoice.items.map((item) {
       final total = item.unitPrice * (1 + item.vat);
-
+      print(item.quantity_type);
       return [
         item.description,
         Utils.formatDate(item.date),
-        '${item.quantity}',
+        '${item.quantity_type} * ${item.quantity}',
         '${(item.vat * 100).toStringAsFixed(2)} %',
         '\ ${item.unitPrice.toStringAsFixed(2)}',
         '\ ${total.toStringAsFixed(2)}',

@@ -8,8 +8,7 @@ class Invoice {
   final List<InvoiceItem> items;
   final String type;
   const Invoice(
-      {
-      required this.info,
+      {required this.info,
       required this.supplier,
       required this.customer,
       required this.items,
@@ -36,6 +35,7 @@ class InvoiceItem {
   final String description;
   final DateTime date;
   final int quantity;
+  final String quantity_type;
   final double vat;
   final double unitPrice;
 
@@ -43,6 +43,7 @@ class InvoiceItem {
     required this.description,
     required this.date,
     required this.quantity,
+    required this.quantity_type,
     required this.vat,
     required this.unitPrice,
   });

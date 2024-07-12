@@ -104,6 +104,7 @@ class _PurchaseListState extends State<PurchaseList> {
         description: 'Product: ${purchase['stockName'][i]}',
         date: DateTime.now(),
         quantity: (purchase['quantity'][i]),
+        quantity_type: '${purchase['quantity_type'][i]}',
         unitPrice: (purchase['price'][i]) / (1 + (purchase['vat'][i]) / 100),
         vat: (purchase['vat'][i]) / 100, // 0.05, // Example VAT rate 5%
       );

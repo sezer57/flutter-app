@@ -4,20 +4,12 @@ import 'package:flutter_application_1/pages/SalesClientSelectionPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
-import 'package:flutter_application_1/pages/SalesClientSelectionPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/pages/SalesPage.dart';
-import 'package:flutter_application_1/api/pdf_receipt_api.dart';
 import 'package:flutter_application_1/api/pdf_api.dart';
 import 'package:flutter_application_1/model/customer.dart';
-import 'package:flutter_application_1/model/receipt.dart';
 import 'package:flutter_application_1/model/supplier.dart';
-
-import 'package:flutter_application_1/api/pdf_api.dart';
-import 'package:flutter_application_1/model/customer.dart';
 import 'package:flutter_application_1/model/invoice.dart';
-import 'package:flutter_application_1/model/supplier.dart';
-import 'package:flutter_application_1/pages/utils.dart';
 import 'package:flutter_application_1/api/pdf_invoice_api.dart';
 
 class SalesTestPage extends StatefulWidget {
@@ -196,6 +188,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
   List<String> productprice = [];
   late String productvat;
   List<String> productquantity = [];
+  List<String> productquantity_types = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -431,20 +424,10 @@ class _SalesTestPageState extends State<SalesTestPage> {
                                 productList.add({});
                                 if (quantityController.text.isNotEmpty &&
                                     priceController.text.isNotEmpty) {
-                                  if (selectedUnitType == "Carton") {
-                                    productquantity.add(
-                                        (int.parse(quantityController.text) *
-                                                (selectedStock['typeS']))
-                                            .toString());
-                                  } else if (selectedUnitType == "Dozen") {
-                                    productquantity.add(
-                                        (int.parse(quantityController.text) *
-                                                (12))
-                                            .toString());
-                                  } else {
-                                    productquantity
-                                        .add(quantityController.text);
-                                  }
+                                  productquantity.add(quantityController.text);
+
+                                  productquantity_types
+                                      .add(selectedUnitType.toString());
 
                                   productprice.add(priceController.text);
                                   productController.clear();
@@ -479,6 +462,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                             productids.removeAt(index);
                             productquantity.removeAt(index);
                             productprice.removeAt(index);
+                            productquantity_types.removeAt(index);
                           });
                         },
                       ),
@@ -522,6 +506,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
           "stockCodes":
               productids ?? 0, // Parse as int, default to 0 if parsing fails
           "quantity": productquantity ?? 0,
+          "quantity_type": productquantity_types ?? 0,
           "autherized": ownerController.text,
           "price": productprice ?? 0,
           "vat": VatController.text ?? 0,
@@ -538,7 +523,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
         // Sales successful, show confirmation message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Purchase successful!'),
+            content: Text('Sales successful!'),
           ),
         );
 
@@ -600,6 +585,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
         description: 'Product: ${sale['stockName'][i]}',
         date: DateTime.now(),
         quantity: int.parse(sale['quantity'][i]),
+        quantity_type: sale['quantity_type'][i],
         unitPrice:
             double.parse(sale['price'][i]) / (1 + (sale['vat'][i]) / 100),
         vat: (sale['vat'][i]) / 100, // 0.05, // Example VAT rate 5%

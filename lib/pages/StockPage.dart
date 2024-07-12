@@ -241,7 +241,8 @@ class _StockPageState extends State<StockPage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Quantity Remaining: ${stock['quantityRemaining']}',
+                                            //${stock['stock']['unit']}
+                                            'Quantity: ${stock['stock']['unitType']}:${(stock['quantityRemaining'] / stock['stock']['unit']).toStringAsFixed(2)} Piece:${stock['quantityRemaining']}',
                                             style:
                                                 TextStyle(color: Colors.orange),
                                           ),

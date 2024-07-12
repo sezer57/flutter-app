@@ -7,6 +7,11 @@ import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:flutter_application_1/pages/PurchaseClientSelectionPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/pages/PurchasePage.dart';
+import 'package:flutter_application_1/api/pdf_api.dart';
+import 'package:flutter_application_1/model/customer.dart';
+import 'package:flutter_application_1/model/supplier.dart';
+import 'package:flutter_application_1/model/invoice.dart';
+import 'package:flutter_application_1/api/pdf_invoice_api.dart';
 
 class PurchaseTestPage extends StatefulWidget {
   final dynamic selectedClient;
@@ -37,6 +42,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController gsmController = TextEditingController();
+  String? selectedUnitType = 'Carton';
   @override
   void initState() {
     super.initState();
@@ -87,7 +93,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
       context,
       MaterialPageRoute(
           builder: (context) =>
-              SalesPage(selectedSourceWarehouse: selectedSourceWarehouse)),
+              PurchasePage(selectedSourceWarehouse: selectedSourceWarehouse)),
     );
     selectedStock = result;
     for (int i = 0; i < productids.length; i++) {
@@ -143,6 +149,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
   List<String> productids = [];
   List<String> productprice = [];
   List<String> productquantity = [];
+  List<String> productquantity_types = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -258,17 +265,58 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                             }
                           },
                         ),
+                        DropdownButtonFormField(
+                          value: selectedUnitType,
+                          items: <String>['Carton', 'Dozen', 'Piece']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedUnitType = newValue;
+                              quantityController.clear();
+                              priceController.clear();
+                            });
+                          },
+                          decoration: InputDecoration(labelText: 'Unit Type'),
+                        ),
                         TextField(
                           controller: quantityController,
                           onChanged: (newValue) {
                             setState(() {
-                              priceController.text = (double.parse(newValue!) *
-                                      selectedStock['purchasePrice'])
-                                  .toString();
-                              productList[index]['quantity'] = newValue;
+                              if (newValue.isEmpty) {
+                                newValue = "0";
+                              }
+                              if (selectedUnitType == "Carton") {
+                                priceController.text = (double.parse(newValue) *
+                                        selectedStock['purchasePrice'])
+                                    .toString();
+                                productList[index]['quantity'] = newValue;
 
-                              productList[index]['price'] =
-                                  priceController.text;
+                                productList[index]['price'] =
+                                    priceController.text;
+                              } else if (selectedUnitType == "Dozen") {
+                                priceController.text = (double.parse(newValue) *
+                                        selectedStock['purchasePrice'] /
+                                        12)
+                                    .toString();
+                                productList[index]['quantity'] = newValue;
+
+                                productList[index]['price'] =
+                                    priceController.text;
+                              } else {
+                                priceController.text = (double.parse(newValue) *
+                                        selectedStock['purchasePrice'] /
+                                        selectedStock['typeS'])
+                                    .toString();
+                                productList[index]['quantity'] = newValue;
+
+                                productList[index]['price'] =
+                                    priceController.text;
+                              }
                             });
                           },
                           decoration: InputDecoration(labelText: 'Quantity'),
@@ -301,6 +349,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                             productids.removeAt(index);
                             productquantity.removeAt(index);
                             productprice.removeAt(index);
+                            productquantity_types.removeAt(index);
                           });
                         },
                       ),
@@ -316,6 +365,8 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                         priceController.text.isNotEmpty) {
                       productquantity.add(quantityController.text);
                       productprice.add(priceController.text);
+                      productquantity_types.add(selectedUnitType.toString());
+
                       stockController.clear();
                       quantityController.clear();
                       priceController.clear();
@@ -350,7 +401,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                   //print(selectedStock);
                   purchaseStock(selectedClient['clientId']);
                 },
-                child: Text('Purchase'),
+                child: Text('Purchase & Print'),
               ),
             ],
           ),
@@ -366,6 +417,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
         "stockCode":
             productids ?? 0, // Parse as int, default to 0 if parsing fails
         "quantity": productquantity ?? 0,
+        "quantity_type": productquantity_types ?? 0,
         "price": productprice ?? 0,
         "vat": VatController.text ?? 0,
         "autherized": ownerController.text,
@@ -385,6 +437,11 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
           content: Text('Purchase successful!'),
         ),
       );
+      productids.clear();
+      productList.clear();
+      productprice.clear();
+      productquantity.clear();
+      await createInvoice(jsonDecode(response.body));
       Navigator.pop(context);
     } else {
       // Purchase failed, show error message
@@ -394,5 +451,58 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
         ),
       );
     }
+  }
+
+  Future<void> createInvoice(dynamic purchase) async {
+    // InvoiceInfo oluşturma
+    // Örnek olarak, her satın alma için aynı fatura bilgilerini kullanıyoruz
+    InvoiceInfo info = InvoiceInfo(
+      number: purchase['purchase_id'].toString(),
+      date: DateTime.now(),
+      description: 'Purchase Invoice for ${purchase['stockName']}',
+    );
+
+    // Supplier oluşturma (Varsayılan değerler kullanıldı, isteğe bağlı olarak değiştirilebilir)
+    Supplier supplier = Supplier(
+      Tel: ' +971 4 2266114',
+      WhatsApp: ' +971559438444',
+      POBox: 'P.O.Box 65127',
+      name: 'Murshid Bazar',
+      name2: 'Obaid Omayar Bldg',
+      address: 'Shop No:1, Dubai, U.A.E',
+    );
+
+    // Customer oluşturma
+    Customer customer = Customer(
+        name: purchase['clientName'],
+        address: purchase['clientAdress'],
+        number: purchase['clientPhone']);
+
+    // Item oluşturma
+
+    List<InvoiceItem> invoiceItems = [];
+    for (int i = 0; i < purchase['stockName'].length; i++) {
+      InvoiceItem item = InvoiceItem(
+        description: 'Product: ${purchase['stockName'][i]}',
+        date: DateTime.now(),
+        quantity: (purchase['quantity'][i]),
+        quantity_type: purchase['quantity_type'][i],
+        unitPrice: (purchase['price'][i]) / (1 + (purchase['vat'][i]) / 100),
+        vat: (purchase['vat'][i]) / 100, // 0.05, // Example VAT rate 5%
+      );
+      invoiceItems.add(item);
+    }
+    // Invoice oluşturma
+    Invoice invoice = Invoice(
+      info: info,
+      supplier: supplier,
+      customer: customer,
+      items: invoiceItems,
+      type: "sale",
+    );
+
+    // Fatura oluşturma ve dosyayı kaydetme
+    final pdfFile = await PdfInvoiceApi.generate(invoice);
+    PdfApi.openFile(pdfFile);
   }
 }

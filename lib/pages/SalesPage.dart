@@ -141,14 +141,14 @@ class _SettingPageState extends State<SalesPage> {
                                               Color.fromARGB(255, 118, 32, 26)),
                                     ),
                                     Text(
-                                      'Quantity: ${stock['quantity']}',
+                                      'Quantity: ${stock['quantity'].toStringAsFixed(2)} Piece:${stock['quantity_remaing']}',
                                       style: TextStyle(
                                         fontSize: 15,
                                         color: Color.fromARGB(255, 54, 98, 244),
                                       ),
                                     ),
                                     Text(
-                                      'Type: ${stock['type']}',
+                                      'Type: ${stock['type']}/${stock['typeS']}',
                                       style: TextStyle(
                                         fontSize: 15,
                                         color: Color.fromARGB(255, 54, 98, 244),
