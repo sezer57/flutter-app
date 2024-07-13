@@ -21,6 +21,10 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   String? selectedStockId;
   String? DateController;
   String? quantityRemaing;
+  String? quantity_type;
+  var count_carton;
+  var quantity;
+
   @override
   void initState() {
     super.initState();
@@ -87,13 +91,15 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
           productController.text = result['stockName'] +
               " Remaing: " +
               result['quantity'].toString();
-
+          count_carton = result['typeS'];
           // await fetchAndSetRemainingStock(); // Wait for remaining stock information
         });
       }
     }
   }
 
+  String? selectedUnitType = 'Carton';
+  //String? selectedUnit = 'Dozen';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,6 +148,34 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
               },
             ),
             SizedBox(height: 10),
+            DropdownButtonFormField(
+              value: selectedUnitType,
+              items: <String>['Carton', 'Dozen', 'Piece']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedUnitType = newValue;
+                  quantityController.clear();
+                });
+              },
+              decoration: InputDecoration(labelText: 'Unit Type'),
+            ),
+            TextField(
+              controller: quantityController,
+              onChanged: (newValue) {
+                setState(() {
+                  quantity = newValue;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Quantity'),
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+            ),
+            SizedBox(height: 10),
             DropdownButtonFormField<String>(
               value: selectedTargetWarehouse,
               onChanged: (newValue) {
@@ -157,14 +191,6 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
               }).toList(),
               decoration: InputDecoration(
                 labelText: 'To Warehouse',
-              ),
-            ),
-            SizedBox(height: 10),
-            TextFormField(
-              controller: quantityController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Quantity',
               ),
             ),
             SizedBox(height: 20),
@@ -184,9 +210,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   }
 
   Future<void> _transfer() async {
-    final int quantity = int.tryParse(quantityController.text) ?? 0;
-
-    if (quantity > 0 &&
+    if (int.parse(quantity) > 0 &&
         selectedSourceWarehouse != null &&
         selectedTargetWarehouse != null &&
         selectedStockId != null) {
@@ -197,10 +221,11 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
         'target_id': selectedTargetWarehouse,
         'stock_id': selectedStockId,
         'date': DateController,
+        "quantity_type": selectedUnitType ?? 0,
         'quantity': quantity.toString(),
         'comment': "process owner:" + userName,
       };
-
+      print(transferData);
       final response = await http.post(
         Uri.parse('http://${await loadIP()}:8080/api/warehouseStock/transfer'),
         body: jsonEncode(transferData),

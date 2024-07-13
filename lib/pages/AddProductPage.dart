@@ -168,11 +168,7 @@ class _AddStockPageState extends State<AddStockPage> {
                 controller: pieceController,
                 decoration: InputDecoration(labelText: 'Piece'),
               ),
-            if (selectedUnitType == 'Piece')
-              TextField(
-                controller: pieceController,
-                decoration: InputDecoration(labelText: 'Piece'),
-              ),
+
             TextField(
               controller: salesPriceController,
               decoration: InputDecoration(labelText: 'Sales Price'),

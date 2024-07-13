@@ -115,7 +115,7 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Price: \$${purchase['price']}',
+                                        'Price: \ ${purchase['price']}',
                                       ),
                                       SizedBox(height: 4.0),
                                       Text(

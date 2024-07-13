@@ -29,6 +29,8 @@ String? selectedSourceWarehouse;
 
 String? selectedStockId;
 
+var sa = <String>{'Carton', 'Dozen', 'Piece'};
+
 class _PurchaseTestPageState extends State<PurchaseTestPage> {
   final TextEditingController clientCodeController = TextEditingController();
   final TextEditingController DateController = TextEditingController();
@@ -95,6 +97,9 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
           builder: (context) =>
               PurchasePage(selectedSourceWarehouse: selectedSourceWarehouse)),
     );
+    if (result == null) {
+      return null;
+    }
     selectedStock = result;
     for (int i = 0; i < productids.length; i++) {
       if (productids[i] == selectedStock['stockId'].toString()) {
@@ -111,6 +116,16 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
         stockController.text = selectedStock['stockName'];
         productids.add(selectedStock['stockId'].toString());
       });
+    }
+    if (selectedStock['type'].toString() == "Piece") ////////////////soooonnnnn
+    {
+      sa = <String>{'Piece'};
+      selectedUnitType = 'Piece';
+    } else if (selectedStock['type'].toString() ==
+        "Carton") ////////////////soooonnnnn
+    {
+      sa = <String>{'Carton', 'Dozen', 'Piece'};
+      selectedUnitType = 'Carton';
     }
   }
 
@@ -267,8 +282,8 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                         ),
                         DropdownButtonFormField(
                           value: selectedUnitType,
-                          items: <String>['Carton', 'Dozen', 'Piece']
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items:
+                              sa.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),

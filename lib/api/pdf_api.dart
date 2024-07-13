@@ -33,17 +33,17 @@ class PdfApi {
           if (expenses != null && expenses.isNotEmpty)
             _buildTable('Sales', expenses),
           if (totalExpenses != 0.00)
-            Text('Total Sales: \$${totalExpenses.toStringAsFixed(2)}'),
+            Text('Total Sales: \ ${totalExpenses.toStringAsFixed(2)}'),
           SizedBox(height: 30),
           if (purchases != null && purchases.isNotEmpty)
             _buildTable('Purchases', purchases),
           if (totalPurchases != 0.00)
-            Text('Total Purchases: \$${totalPurchases.toStringAsFixed(2)}'),
+            Text('Total Purchases: \ ${totalPurchases.toStringAsFixed(2)}'),
           SizedBox(height: 30),
           if (warehouseTransfers != null && warehouseTransfers.isNotEmpty)
             _buildTable('Warehouse Transfers', warehouseTransfers),
           if (totalTransfers != 0.00)
-            Text('Total Transfers: \$${totalTransfers.toStringAsFixed(2)}'),
+            Text('Total Transfers: \ ${totalTransfers.toStringAsFixed(2)}'),
           if (clients != null && clients.isNotEmpty)
             _buildTable('Clients', clients),
           if (stocks != null && stocks.isNotEmpty)

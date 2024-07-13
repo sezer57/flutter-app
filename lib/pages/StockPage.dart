@@ -134,6 +134,27 @@ class _StockPageState extends State<StockPage> {
     }
   }
 
+  void _changeStatus(dynamic stock) async {
+    final url =
+        'http://${await loadIP()}:8080/api/setStatus?stockId=${stock['stock']['stockId']}';
+    final response = await http.post(Uri.parse(url), headers: <String, String>{
+      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+    });
+    if (response.statusCode == 200) {
+      setState(() {
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${response.body}  ')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('${response.body}. Error: ${response.statusCode}')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -260,6 +281,43 @@ class _StockPageState extends State<StockPage> {
                                         ],
                                       ),
                                     ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      // Icon(
+                                      //   stock['statusStock'].toString() !=
+                                      //           'false'
+                                      //       ? Icons.check_circle
+                                      //       : Icons.cancel,
+                                      //   color:
+                                      //       stock['statusStock'].toString() !=
+                                      //               'false'
+                                      //           ? Colors.green
+                                      //           : Colors.red,
+                                      // ),
+                                      // SizedBox(width: 4),
+                                      Text(
+                                        stock['stock']['statusStock']
+                                                    .toString() ==
+                                                'false'
+                                            ? 'Active'
+                                            : 'Pasive',
+                                        style: TextStyle(
+                                          color: stock['stock']['statusStock']
+                                                      .toString() ==
+                                                  'false'
+                                              ? Colors.green
+                                              : Colors.red,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon:
+                                            Icon(Icons.change_circle_outlined),
+                                        onPressed: () async {
+                                          _changeStatus(stock);
+                                        },
+                                      ),
+                                    ],
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.edit),

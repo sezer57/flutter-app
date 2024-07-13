@@ -136,7 +136,7 @@ class _SettingPageState extends State<PurchasePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Purchase Price: \$${stock['purchasePrice']}',
+                                      'Purchase Price: \ ${stock['purchasePrice']}',
                                       style: TextStyle(
                                           fontSize: 15,
                                           color:
@@ -154,6 +154,31 @@ class _SettingPageState extends State<PurchasePage> {
                                       style: TextStyle(
                                         fontSize: 15,
                                         color: Color.fromARGB(255, 54, 98, 244),
+                                      ),
+                                    ),
+
+                                    // Icon(
+                                    //   stock['statusStock'].toString() !=
+                                    //           'false'
+                                    //       ? Icons.check_circle
+                                    //       : Icons.cancel,
+                                    //   color:
+                                    //       stock['statusStock'].toString() !=
+                                    //               'false'
+                                    //           ? Colors.green
+                                    //           : Colors.red,
+                                    // ),
+                                    // SizedBox(width: 4),
+                                    Text(
+                                      stock['statusStock'].toString() == 'false'
+                                          ? 'Active'
+                                          : 'Pasive',
+                                      style: TextStyle(
+                                        color:
+                                            stock['statusStock'].toString() ==
+                                                    'false'
+                                                ? Colors.green
+                                                : Colors.red,
                                       ),
                                     ),
                                   ],
@@ -176,7 +201,7 @@ class _SettingPageState extends State<PurchasePage> {
                             onPressed: _goToPreviousPage,
                             icon: Icon(Icons.arrow_back),
                           ),
-                          Text('Page ${page + 1}'),
+                          Text('Page ${_currentPage + 1}'),
                           IconButton(
                             onPressed: _goToNextPage,
                             icon: Icon(Icons.arrow_forward),

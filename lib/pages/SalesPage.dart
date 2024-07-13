@@ -39,8 +39,9 @@ class _SettingPageState extends State<SalesPage> {
 
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
-      totalPages = jsonDecode(utf8Body)['totalPages'];
-      return jsonDecode(utf8Body)['content'];
+      final decodedBody = jsonDecode(utf8Body);
+      totalPages = decodedBody['totalPages'];
+      return decodedBody['content'];
     } else {
       return List.empty();
     }
@@ -68,6 +69,27 @@ class _SettingPageState extends State<SalesPage> {
         _currentPage++;
         _stocksFuture = _fetchStocks(_currentPage);
       });
+    }
+  }
+
+  void _changeStatus(dynamic stock) async {
+    final url =
+        'http://${await loadIP()}:8080/api/setStatus?stockId=${stock['stockId']}';
+    final response = await http.post(Uri.parse(url), headers: <String, String>{
+      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+    });
+    if (response.statusCode == 200) {
+      setState(() {
+        _stocksFuture = _fetchStocks(_currentPage);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${response.body}  ')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('${response.body}. Error: ${response.statusCode}')),
+      );
     }
   }
 
@@ -134,7 +156,7 @@ class _SettingPageState extends State<SalesPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Sales Price: \$${stock['salesPrice']}',
+                                      'Sales Price: \ ${stock['salesPrice']}',
                                       style: TextStyle(
                                           fontSize: 15,
                                           color:
@@ -152,6 +174,31 @@ class _SettingPageState extends State<SalesPage> {
                                       style: TextStyle(
                                         fontSize: 15,
                                         color: Color.fromARGB(255, 54, 98, 244),
+                                      ),
+                                    ),
+
+                                    // Icon(
+                                    //   stock['statusStock'].toString() !=
+                                    //           'false'
+                                    //       ? Icons.check_circle
+                                    //       : Icons.cancel,
+                                    //   color:
+                                    //       stock['statusStock'].toString() !=
+                                    //               'false'
+                                    //           ? Colors.green
+                                    //           : Colors.red,
+                                    // ),
+                                    // SizedBox(width: 4),
+                                    Text(
+                                      stock['statusStock'].toString() == 'false'
+                                          ? 'Active'
+                                          : 'Pasive',
+                                      style: TextStyle(
+                                        color:
+                                            stock['statusStock'].toString() ==
+                                                    'false'
+                                                ? Colors.green
+                                                : Colors.red,
                                       ),
                                     ),
                                   ],
@@ -174,7 +221,7 @@ class _SettingPageState extends State<SalesPage> {
                             onPressed: _goToPreviousPage,
                             icon: Icon(Icons.arrow_back),
                           ),
-                          Text('Page ${page + 1}'),
+                          Text('Page ${_currentPage + 1}'),
                           IconButton(
                             onPressed: _goToNextPage,
                             icon: Icon(Icons.arrow_forward),

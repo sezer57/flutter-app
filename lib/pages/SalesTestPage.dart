@@ -91,6 +91,8 @@ class _SalesTestPageState extends State<SalesTestPage> {
     gsmController.clear();
   }
 
+  var sa = <String>{'Carton', 'Dozen', 'Piece'};
+  String? selectedUnitType = 'Carton';
   Future<String?> _navigateTopProductSelectionPage() async {
     final dynamic result = await Navigator.push(
       context,
@@ -98,7 +100,11 @@ class _SalesTestPageState extends State<SalesTestPage> {
           builder: (context) =>
               SalesPage(selectedSourceWarehouse: selectedSourceWarehouse)),
     );
+    if (result == null) {
+      return null;
+    }
     selectedStock = result;
+
     for (int i = 0; i < productids.length; i++) {
       if (productids[i] == selectedStock['stockId'].toString()) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -116,7 +122,21 @@ class _SalesTestPageState extends State<SalesTestPage> {
       productids.add(selectedStock['stockId'].toString());
       productController.text = selectedStock['stockName'] +
           " Remaing: " +
-          selectedStock['quantity'].toString();
+          selectedStock['quantity'].toString() +
+          " " +
+          selectedStock['type'].toString();
+
+      if (selectedStock['type'].toString() ==
+          "Piece") ////////////////soooonnnnn
+      {
+        sa = <String>{'Piece'};
+        selectedUnitType = 'Piece';
+      } else if (selectedStock['type'].toString() ==
+          "Carton") ////////////////soooonnnnn
+      {
+        sa = <String>{'Carton', 'Dozen', 'Piece'};
+        selectedUnitType = 'Carton';
+      }
       // await fetchAndSetRemainingStock(); // Wait for remaining stock information
     }
   }
@@ -179,7 +199,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
   // }
 
   TextEditingController productController = TextEditingController();
-  String? selectedUnitType = 'Carton';
+
   String? selectedUnit = 'Dozen';
   TextEditingController product0Controller = TextEditingController();
   List<Map<String, dynamic>> productList =
@@ -189,6 +209,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
   late String productvat;
   List<String> productquantity = [];
   List<String> productquantity_types = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -343,7 +364,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                           ),
                           DropdownButtonFormField(
                             value: selectedUnitType,
-                            items: <String>['Carton', 'Dozen', 'Piece']
+                            items: sa
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,

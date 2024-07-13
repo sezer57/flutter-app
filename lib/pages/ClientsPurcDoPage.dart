@@ -110,7 +110,7 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Price: \$${purchase['price']}',
+                                      'Price: \ ${purchase['price']}',
                                     ),
                                     SizedBox(height: 4.0),
                                     Text(
