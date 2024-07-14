@@ -152,8 +152,8 @@ class _SettingPageState extends State<SalesPage> {
                             final stock = _stocks[index];
                             return Card(
                               child: ListTile(
-                                title:
-                                    Text('Stock Name: ${stock['stockName']}'),
+                                title: Text(
+                                    'Stock Name: ${stock['stockName']} Code: ${stock['stockCode']} Barcode: ${stock['barcode']}'),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
