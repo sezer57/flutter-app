@@ -19,6 +19,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
   TextEditingController barcodeController = TextEditingController();
   TextEditingController groupNameController = TextEditingController();
   TextEditingController middleGroupNameController = TextEditingController();
+  TextEditingController unitTypeController = TextEditingController();
   TextEditingController unitController = TextEditingController();
   TextEditingController salesPriceController = TextEditingController();
   TextEditingController purchasePriceController = TextEditingController();
@@ -32,11 +33,13 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
     barcodeController.text = widget.stock['barcode'];
     groupNameController.text = widget.stock['groupName'];
     middleGroupNameController.text = widget.stock['middleGroupName'];
-    unitController.text = widget.stock['unitType'];
+    unitTypeController.text = widget.stock['unitType'];
+    unitController.text = widget.stock['unit'].toString();
     salesPriceController.text = widget.stock['salesPrice'].toString();
     purchasePriceController.text = widget.stock['purchasePrice'].toString();
   }
 
+  var sa = <String>{'Carton', 'Dozen', 'Piece'};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,10 +71,30 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
               controller: middleGroupNameController,
               decoration: InputDecoration(labelText: 'Middle Group Name'),
             ),
-            TextFormField(
-              controller: unitController,
-              decoration: InputDecoration(labelText: 'Unit'),
+            DropdownButtonFormField(
+              value: unitTypeController.text,
+              items: sa.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  unitTypeController.text = newValue.toString();
+                  if (unitTypeController.text == 'Piece') {
+                    unitController.text = '1';
+                  } else if (unitTypeController.text == 'Dozen') {
+                    unitController.text = '12';
+                  } else {}
+                });
+              },
+              decoration: InputDecoration(labelText: 'Unit Type'),
             ),
+            if (unitTypeController.text == 'Carton')
+              TextFormField(
+                  controller: unitController,
+                  decoration: InputDecoration(labelText: 'Unit ')),
             TextFormField(
               controller: salesPriceController,
               decoration: InputDecoration(labelText: 'Sales Price'),
@@ -118,6 +141,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
     String barcode = barcodeController.text;
     String groupName = groupNameController.text;
     String middleGroupName = middleGroupNameController.text;
+
     String unit = unitController.text;
     double salesPrice = double.tryParse(salesPriceController.text) ?? 0.0;
     double purchasePrice = double.tryParse(purchasePriceController.text) ?? 0.0;
@@ -131,6 +155,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
       "groupName": groupName,
       "middleGroupName": middleGroupName,
       "unit": unit,
+      "unitType": unitTypeController.text,
       "salesPrice": salesPrice,
       "purchasePrice": purchasePrice,
     };

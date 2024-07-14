@@ -41,8 +41,10 @@ class _SettingPageState extends State<SalesPage> {
       final utf8Body = utf8.decode(response.bodyBytes);
       final decodedBody = jsonDecode(utf8Body);
       totalPages = decodedBody['totalPages'];
+
       return decodedBody['content'];
     } else {
+      print(response.statusCode);
       return List.empty();
     }
   }

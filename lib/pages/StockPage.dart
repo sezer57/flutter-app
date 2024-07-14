@@ -46,7 +46,9 @@ class _StockPageState extends State<StockPage> {
             .toSet()
             .toList(),
       );
+      selectedWarehouseFilter = warehouseNames[1];
     }
+    ;
     return warehouseNames;
   }
 

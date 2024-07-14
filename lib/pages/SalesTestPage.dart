@@ -307,7 +307,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                 itemBuilder: (context, index) {
                   if (index == productList.length - 1) {
                     // Last item, show text fields to add more products
-                    if (product0Controller.text.isNotEmpty)
+                    if (product0Controller.text.isNotEmpty) {
                       return Column(
                         children: [
                           TextField(
@@ -468,6 +468,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                           ),
                         ],
                       );
+                    }
                   } else {
                     // Show selected product, quantity, and price
                     var product = productList[index];
