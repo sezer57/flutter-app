@@ -48,7 +48,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
     if (response.statusCode == 200) {
       setState(() {
         balanceData = {
-          'Balance': json.decode(response.body)['balance'],
+          'Balance': json.decode(response.body)['balanceReceive'],
         };
       });
     } else {
@@ -168,7 +168,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
               SizedBox(height: 20),
               if (balanceData!['Balance'] > 0)
                 Text(
-                  'The amount we need to pay',
+                  'Purchase payment',
                   style: TextStyle(fontSize: 16, color: Colors.red),
                 )
               else if (balanceData!['Balance'] == 0)
