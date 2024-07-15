@@ -25,6 +25,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   var count_carton;
   var quantity;
 
+  var sa = <String>{'Carton', 'Dozen', 'Piece'};
   @override
   void initState() {
     super.initState();
@@ -88,12 +89,41 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
       if (result != null) {
         setState(() {
           selectedStockId = result['stockId'].toString();
-          productController.text = result['stockName'] +
-              " Remaing: " +
-              result['quantity'].toString();
+
+          if (result['type'].toString() == "Piece") ////////////////soooonnnnn
+          {
+            productController.text = result['stockName'] +
+                " Remaing: " +
+                result['quantity_remaing'].toString() +
+                " " +
+                result['type'].toString();
+            sa = <String>{'Piece'};
+            selectedUnitType = 'Piece';
+          } else if (result['type'].toString() ==
+              "Carton") ////////////////soooonnnnn
+          {
+            productController.text = result['stockName'] +
+                " Remaing: " +
+                result['quantity'].toString() +
+                " " +
+                result['type'].toString();
+            sa = <String>{'Carton', 'Dozen', 'Piece'};
+            selectedUnitType = 'Carton';
+          }
+
           count_carton = result['typeS'];
           // await fetchAndSetRemainingStock(); // Wait for remaining stock information
         });
+        if (result['type'].toString() == "Piece") ////////////////soooonnnnn
+        {
+          sa = <String>{'Piece'};
+          selectedUnitType = 'Piece';
+        } else if (result['type'].toString() ==
+            "Carton") ////////////////soooonnnnn
+        {
+          sa = <String>{'Carton', 'Dozen', 'Piece'};
+          selectedUnitType = 'Carton';
+        }
       }
     }
   }
@@ -150,8 +180,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
             SizedBox(height: 10),
             DropdownButtonFormField(
               value: selectedUnitType,
-              items: <String>['Carton', 'Dozen', 'Piece']
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: sa.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -245,11 +274,11 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
         selectedTargetWarehouse = null;
         quantityController.clear();
         selectedStockId = null;
-        Navigator.pop(context, WareHousePage());
+        Navigator.pop(context);
       } else {
         // Handle transfer failure, for example showing an error message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.body)),
+          SnackBar(content: Text(response.body + "ERROR")),
         );
       }
     } else {

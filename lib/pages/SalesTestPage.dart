@@ -120,22 +120,27 @@ class _SalesTestPageState extends State<SalesTestPage> {
         selectedStock = result;
       });
       productids.add(selectedStock['stockId'].toString());
-      productController.text = selectedStock['stockName'] +
-          " Remaing: " +
-          selectedStock['quantity'].toString() +
-          " " +
-          selectedStock['type'].toString();
 
       if (selectedStock['type'].toString() ==
           "Piece") ////////////////soooonnnnn
       {
         sa = <String>{'Piece'};
         selectedUnitType = 'Piece';
+        productController.text = selectedStock['stockName'] +
+            " Remaing: " +
+            selectedStock['quantity_remaing'].toString() +
+            " " +
+            selectedStock['type'].toString();
       } else if (selectedStock['type'].toString() ==
           "Carton") ////////////////soooonnnnn
       {
         sa = <String>{'Carton', 'Dozen', 'Piece'};
         selectedUnitType = 'Carton';
+        productController.text = selectedStock['stockName'] +
+            " Remaing: " +
+            selectedStock['quantity'].toString() +
+            " " +
+            selectedStock['type'].toString();
       }
       // await fetchAndSetRemainingStock(); // Wait for remaining stock information
     }
@@ -608,8 +613,8 @@ class _SalesTestPageState extends State<SalesTestPage> {
         date: DateTime.now(),
         quantity: int.parse(sale['quantity'][i]),
         quantity_type: sale['quantity_type'][i],
-        unitPrice: double.parse(sale['price'][i].toStringAsFixed(2)) /
-            (1 + (sale['vat'][i]) / 100),
+        unitPrice:
+            double.parse(sale['price'][i]) / (1 + (sale['vat'][i]) / 100),
         vat: (sale['vat'][i]) / 100, // 0.05, // Example VAT rate 5%
       );
       invoiceItems.add(item);

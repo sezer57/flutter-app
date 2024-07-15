@@ -81,6 +81,8 @@ class _WaitingTransferState extends State<WaitingTransfer> {
                   Text('Quantity: ${transfer['quantity']}'),
                   Text('Approvel Status: ${transfer['approvelstatus']}'),
                   Text('Transfer Date: ${transfer['date']}'),
+                  Text('Transferred product: ${transfer['stockName']}'),
+                  Text('Stock Code: ${transfer['stockCode']}'),
                 ],
               ),
               trailing: Row(
