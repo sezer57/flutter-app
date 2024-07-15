@@ -416,7 +416,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                   //print(selectedStock);
                   purchaseStock(selectedClient['clientId']);
                 },
-                child: Text('Purchase & Print'),
+                child: Text('Save & Print'),
               ),
             ],
           ),

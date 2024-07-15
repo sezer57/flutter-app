@@ -511,7 +511,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
                   purchaseStock(selectedClient['clientId']);
                 },
-                child: Text('Sales & Print'),
+                child: Text('Save & Print'),
               ),
             ],
           ),
@@ -608,8 +608,8 @@ class _SalesTestPageState extends State<SalesTestPage> {
         date: DateTime.now(),
         quantity: int.parse(sale['quantity'][i]),
         quantity_type: sale['quantity_type'][i],
-        unitPrice:
-            double.parse(sale['price'][i]) / (1 + (sale['vat'][i]) / 100),
+        unitPrice: double.parse(sale['price'][i].toStringAsFixed(2)) /
+            (1 + (sale['vat'][i]) / 100),
         vat: (sale['vat'][i]) / 100, // 0.05, // Example VAT rate 5%
       );
       invoiceItems.add(item);
