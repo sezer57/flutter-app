@@ -17,7 +17,7 @@ class _WarehouseEditPageState extends State<WarehouseEditPage> {
   late TextEditingController _authorizedController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
-
+  bool _copyProducts = false;
   @override
   void initState() {
     super.initState();
@@ -32,7 +32,7 @@ class _WarehouseEditPageState extends State<WarehouseEditPage> {
   Future<void> _updateWarehouse() async {
     final response = await http.put(
       Uri.parse(
-          'http://${await loadIP()}:8080/api/warehouse/${widget.warehouse["warehouseId"]}'),
+          'http://${await loadIP()}:8080/api/warehouse/${_copyProducts ? 'true' : 'false'}/${widget.warehouse["warehouseId"]}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
@@ -85,6 +85,25 @@ class _WarehouseEditPageState extends State<WarehouseEditPage> {
               decoration: InputDecoration(labelText: 'Address'),
             ),
             SizedBox(height: 20),
+            Row(
+              children: [
+                Checkbox(
+                  value: _copyProducts,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _copyProducts = value!;
+                    });
+                  },
+                ),
+                Flexible(
+                  child: Text(
+                    'Copy the products currently in stock to this warehouse',
+                    overflow: TextOverflow
+                        .visible, // or ellipsis or clip as per your design
+                  ),
+                ),
+              ],
+            ),
             ElevatedButton(
               onPressed: _updateWarehouse,
               child: Text('Update Warehouse'),
@@ -126,7 +145,6 @@ class _WarehouseEditPageState extends State<WarehouseEditPage> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close dialog
                 deletewarehouse();
-
                 print('Warehouse deleted successfully');
               },
               child: Text("Delete"),

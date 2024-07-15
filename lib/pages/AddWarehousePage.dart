@@ -24,6 +24,7 @@ class _AddWareHousePageState extends State<AddWareHousePage> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController userAuthoritiesController = TextEditingController();
+  bool _copyProducts = false;
 
   Future<void> _postData() async {
     if (_validateInputs()) {
@@ -36,7 +37,8 @@ class _AddWareHousePageState extends State<AddWareHousePage> {
       };
 
       final response = await http.post(
-        Uri.parse('http://${await loadIP()}:8080/api/warehouse'),
+        Uri.parse(
+            'http://${await loadIP()}:8080/api/${_copyProducts ? 'true' : 'false'}/warehouse'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
@@ -106,6 +108,26 @@ class _AddWareHousePageState extends State<AddWareHousePage> {
             TextField(
               controller: userAuthoritiesController,
               decoration: InputDecoration(labelText: 'User Authorities'),
+            ),
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Checkbox(
+                  value: _copyProducts,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _copyProducts = value!;
+                    });
+                  },
+                ),
+                Flexible(
+                  child: Text(
+                    'Copy the products currently in stock to this warehouse',
+                    overflow: TextOverflow
+                        .visible, // or ellipsis or clip as per your design
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 20),
             ElevatedButton(

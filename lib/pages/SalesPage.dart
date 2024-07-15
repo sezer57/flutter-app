@@ -152,65 +152,155 @@ class _SettingPageState extends State<SalesPage> {
                             final stock = _stocks[index];
                             return Card(
                               child: ListTile(
-                                title: Text(
-                                    'Stock Name: ${stock['stockName']} Code: ${stock['stockCode']} Barcode: ${stock['barcode']}'),
-                                subtitle: Column(
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 16.0),
+                                tileColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  side: BorderSide(
+                                      color: Colors.purple.shade200,
+                                      width: 1.5),
+                                ),
+                                title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'Sales Price: \ ${stock['salesPrice']}',
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          color:
-                                              Color.fromARGB(255, 118, 32, 26)),
-                                    ),
-                                    Text(
-                                      'Quantity: ${stock['quantity'].toStringAsFixed(2)} Piece:${stock['quantity_remaing']}',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: Color.fromARGB(255, 54, 98, 244),
-                                      ),
-                                    ),
-                                    Text(
-                                      'Type: ${stock['type']}/${stock['typeS']}',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: Color.fromARGB(255, 54, 98, 244),
-                                      ),
-                                    ),
-
-                                    // Icon(
-                                    //   stock['statusStock'].toString() !=
-                                    //           'false'
-                                    //       ? Icons.check_circle
-                                    //       : Icons.cancel,
-                                    //   color:
-                                    //       stock['statusStock'].toString() !=
-                                    //               'false'
-                                    //           ? Colors.green
-                                    //           : Colors.red,
-                                    // ),
-                                    // SizedBox(width: 4),
-                                    Text(
-                                      stock['statusStock'].toString() == 'false'
-                                          ? 'Active'
-                                          : 'Pasive',
-                                      style: TextStyle(
-                                        color:
-                                            stock['statusStock'].toString() ==
-                                                    'false'
-                                                ? Colors.green
-                                                : Colors.red,
+                                    RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: 'Stock Name: ',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: '${stock['stockName']}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.purple,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: ' Code: ',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: '${stock['stockCode']}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: ' Barcode: ',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: '${stock['barcode']}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Sales Price: \$${stock['salesPrice']}',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.purple,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Quantity: ${stock['quantity'].toStringAsFixed(2)} Piece: ${stock['quantity_remaing']}',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Type: ${stock['type']}/${stock['typeS']}',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          stock['statusStock'].toString() ==
+                                                  'false'
+                                              ? Icons.check_circle
+                                              : Icons.cancel,
+                                          color:
+                                              stock['statusStock'].toString() ==
+                                                      'false'
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          stock['statusStock'].toString() ==
+                                                  'false'
+                                              ? 'Active'
+                                              : 'Passive',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: stock['statusStock']
+                                                        .toString() ==
+                                                    'false'
+                                                ? Colors.green
+                                                : Colors.red,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(Icons.arrow_forward_ios,
+                                    color: Colors.blue),
                                 onTap: () {
                                   setState(() {
                                     selectedStock = stock;
                                   });
                                   Navigator.pop(context, selectedStock);
                                 },
+                                leading: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      colors: [Colors.purple, Colors.blue],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(Icons.inventory,
+                                      color: Colors.white),
+                                ),
                               ),
                             );
                           },

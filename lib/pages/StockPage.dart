@@ -24,12 +24,18 @@ class _StockPageState extends State<StockPage> {
   TextEditingController searchController = TextEditingController();
   String selectedWarehouseFilter = 'All';
   late Future<List<dynamic>> _ssFuture;
+
   @override
   void initState() {
     super.initState();
     searchController.clear();
     _ssFuture = getNames();
-    _stocksFuture = _fetchStocks(page);
+    _stocksFuture = _initializeState();
+  }
+
+  Future<List<dynamic>> _initializeState() async {
+    await _ssFuture;
+    return _fetchStocks(page);
   }
 
   Future<List<dynamic>> getNames() async {
@@ -48,45 +54,33 @@ class _StockPageState extends State<StockPage> {
       );
       selectedWarehouseFilter = warehouseNames[1];
     }
-    ;
+
     return warehouseNames;
   }
 
   late int totalPages;
   Future<List<dynamic>> _fetchStocks(int page) async {
+    String url;
     if (selectedWarehouseFilter == "All") {
-      final url = searchController.text.isEmpty
+      url = searchController.text.isEmpty
           ? 'http://${await loadIP()}:8080/api/getWarehouseStockByPage?page=$page&size=$pageSize'
           : 'http://${await loadIP()}:8080/api/getWarehouseStockBySearch?keyword=${searchController.text}&page=$page&size=$pageSize';
-
-      final response = await http.get(Uri.parse(url), headers: <String, String>{
-        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-      });
-
-      if (response.statusCode == 200) {
-        final utf8Body = utf8.decode(response.bodyBytes);
-        totalPages = jsonDecode(utf8Body)['totalPages'];
-
-        return jsonDecode(utf8Body)['content'];
-      } else {
-        return List.empty();
-      }
     } else {
-      final url =
+      url =
           'http://${await loadIP()}:8080/api/getWarehouseStockBySearchAndWarehouse?warehouse=${selectedWarehouseFilter}&keyword=${searchController.text}&page=$page&size=$pageSize';
+    }
 
-      final response = await http.get(Uri.parse(url), headers: <String, String>{
-        'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
-      });
+    final response = await http.get(Uri.parse(url), headers: <String, String>{
+      'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
+    });
 
-      if (response.statusCode == 200) {
-        final utf8Body = utf8.decode(response.bodyBytes);
-        totalPages = jsonDecode(utf8Body)['totalPages'];
+    if (response.statusCode == 200) {
+      final utf8Body = utf8.decode(response.bodyBytes);
+      totalPages = jsonDecode(utf8Body)['totalPages'];
 
-        return jsonDecode(utf8Body)['content'];
-      } else {
-        return List.empty();
-      }
+      return jsonDecode(utf8Body)['content'];
+    } else {
+      return List.empty();
     }
   }
 
@@ -118,7 +112,6 @@ class _StockPageState extends State<StockPage> {
   void searchStocks(String query) {
     setState(() {
       _currentPage = 0;
-
       _stocksFuture = _fetchStocks(_currentPage);
     });
   }
@@ -147,7 +140,7 @@ class _StockPageState extends State<StockPage> {
         _stocksFuture = _fetchStocks(_currentPage);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${response.body}  ')),
+        SnackBar(content: Text('${response.body}')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -264,7 +257,6 @@ class _StockPageState extends State<StockPage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            //${stock['stock']['unit']}
                                             'Quantity: ${stock['stock']['unitType']}:${(stock['quantityRemaining'] / stock['stock']['unit']).toStringAsFixed(2)} Piece:${stock['quantityRemaining']}',
                                             style:
                                                 TextStyle(color: Colors.orange),
@@ -286,18 +278,6 @@ class _StockPageState extends State<StockPage> {
                                   ),
                                   Row(
                                     children: [
-                                      // Icon(
-                                      //   stock['statusStock'].toString() !=
-                                      //           'false'
-                                      //       ? Icons.check_circle
-                                      //       : Icons.cancel,
-                                      //   color:
-                                      //       stock['statusStock'].toString() !=
-                                      //               'false'
-                                      //           ? Colors.green
-                                      //           : Colors.red,
-                                      // ),
-                                      // SizedBox(width: 4),
                                       Text(
                                         stock['stock']['statusStock']
                                                     .toString() ==

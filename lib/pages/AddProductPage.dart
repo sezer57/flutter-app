@@ -290,8 +290,7 @@ class _AddStockPageState extends State<AddStockPage> {
       } else {
         // Show error notification
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('${response.body}. Error: ${response.statusCode}')),
+          SnackBar(content: Text('${response.body}')),
         );
       }
     } catch (e) {
