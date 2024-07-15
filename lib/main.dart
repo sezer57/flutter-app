@@ -26,13 +26,14 @@ class MyApp extends StatelessWidget {
       title: 'E-STOCK & FINANCE',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: Colors.white,
       ),
       home: FutureBuilder<bool>(
         future: checkLoginStatus(),
         builder: (context, snapshot) {
+          // Check if the user is logged in
+
           if (snapshot.data == true) {
+            // User is logged in, navigate to the home page
             return Navigator(
               onGenerateRoute: (settings) {
                 return MaterialPageRoute(
@@ -51,64 +52,79 @@ class MyApp extends StatelessWidget {
                           MenuData('Info', Icons.info),
                         ],
                         onMenuItemTap: (index) {
+                          // Handle navigation based on the index
                           switch (index) {
                             case 0:
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ProductPage()));
-                              break;
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProductPage()),
+                              );
+                              break; // Make sure to break after each case
+
                             case 1:
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => WareHousePage()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WareHousePage()),
+                              );
                               break;
+
                             case 2:
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ClientsPage()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ClientsPage()),
+                              );
                               break;
+
                             case 3:
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => StockPage()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => StockPage()),
+                              );
                               break;
+
                             case 4:
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => InvoicePage()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => InvoicePage()),
+                              );
                               break;
+
                             case 5:
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Payment()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Payment()),
+                              );
                               break;
                             case 6:
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SalesTestPage()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SalesTestPage()),
+                              );
                               break;
                             case 7:
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PurchaseTestPage()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PurchaseTestPage()),
+                              );
                               break;
                             case 8:
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          NotificationsPage()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => NotificationsPage()),
+                              );
                               break;
+
                             default:
+                            // Do nothing or handle default case
                           }
                         },
                       ),
@@ -123,6 +139,7 @@ class MyApp extends StatelessWidget {
               },
             );
           } else {
+            // User is not logged in, navigate to the login page
             return LoginPage();
           }
         },
@@ -130,3 +147,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// Entegre edilecek kod buradan başlıyor
+ 
