@@ -39,7 +39,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
     purchasePriceController.text = widget.stock['purchasePrice'].toString();
   }
 
-  var sa = <String>{'Carton', 'Dozen', 'Piece'};
+  var sa = <String>{'Carton', 'Piece'}; //'Dozen',
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,9 +84,11 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
                   unitTypeController.text = newValue.toString();
                   if (unitTypeController.text == 'Piece') {
                     unitController.text = '1';
-                  } else if (unitTypeController.text == 'Dozen') {
-                    unitController.text = '12';
-                  } else {}
+                  }
+                  // else if (unitTypeController.text == 'Dozen') {
+                  //   unitController.text = '12';
+                  // }
+                  else {}
                 });
               },
               decoration: InputDecoration(labelText: 'Unit Type'),

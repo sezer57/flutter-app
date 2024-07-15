@@ -153,11 +153,11 @@ class _ClientEditPageState extends State<ClientEditPage> {
     if (response.statusCode == 200) {
       // Handle success
       Navigator.pop(context, true);
-      print('Client updated successfully');
+      //print('Client updated successfully');
       // Optionally navigate back to previous screen or show success message
     } else {
       // Handle error
-      print('Failed to update client: ${response.body}');
+      //print('Failed to update client: ${response.body}');
       // Show error message or handle accordingly
     }
   }

@@ -211,15 +211,15 @@ class _SettingPageState extends State<PurchasePage> {
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      'Quantity: ${stock['quantity'].toStringAsFixed(2)} Piece: ${stock['quantity_remaing']}',
+                                      'Quantity: ${stock['type']}: ${stock['quantity'].toStringAsFixed(2)} Piece: ${stock['quantity_remaing']}',
                                       style: TextStyle(
                                         fontSize: 15,
-                                        color: Colors.blue,
+                                        color: Color.fromARGB(255, 33, 33, 243),
                                       ),
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      'Type: ${stock['type']}/${stock['typeS']}',
+                                      'Type: ${stock['type']}|${stock['typeS']}',
                                       style: TextStyle(
                                         fontSize: 15,
                                         color: Colors.blue,

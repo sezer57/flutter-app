@@ -257,9 +257,25 @@ class _StockPageState extends State<StockPage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
+                                            "Stock Code: " +
+                                                stock['stock']['stockCode'] +
+                                                " Barcode: " +
+                                                stock['stock']['barcode'],
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 81, 81, 81)),
+                                          ),
+                                          Text(
                                             'Quantity: ${stock['stock']['unitType']}:${(stock['quantityRemaining'] / stock['stock']['unit']).toStringAsFixed(2)} Piece:${stock['quantityRemaining']}',
-                                            style:
-                                                TextStyle(color: Colors.orange),
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 255, 77, 0)),
+                                          ),
+                                          Text(
+                                            'Type: ${stock['stock']['unitType']}|${stock['stock']['unit']}',
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 1, 50, 128)),
                                           ),
                                           Text(
                                             'Quantity Transfer: ${stock['quantityTransfer']}',

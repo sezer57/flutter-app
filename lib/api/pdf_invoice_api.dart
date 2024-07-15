@@ -372,7 +372,7 @@ class PdfInvoiceApi {
     ];
     final data = invoice.items.map((item) {
       final total = item.unitPrice * (1 + item.vat);
-      print(item.quantity_type);
+      // print(item.quantity_type);
       return [
         item.description,
         Utils.formatDate(item.date),

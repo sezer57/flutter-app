@@ -91,7 +91,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
     gsmController.clear();
   }
 
-  var sa = <String>{'Carton', 'Dozen', 'Piece'};
+  var sa = <String>{'Carton', 'Piece'}; //'Dozen',
   String? selectedUnitType = 'Carton';
   Future<String?> _navigateTopProductSelectionPage() async {
     final dynamic result = await Navigator.push(
@@ -128,17 +128,17 @@ class _SalesTestPageState extends State<SalesTestPage> {
         selectedUnitType = 'Piece';
         productController.text = selectedStock['stockName'] +
             " Remaing: " +
-            selectedStock['quantity_remaing'].toString() +
+            selectedStock['quantity_remaing'].toStringAsFixed(2) +
             " " +
             selectedStock['type'].toString();
       } else if (selectedStock['type'].toString() ==
           "Carton") ////////////////soooonnnnn
       {
-        sa = <String>{'Carton', 'Dozen', 'Piece'};
+        sa = <String>{'Carton', 'Piece'}; //'Dozen',
         selectedUnitType = 'Carton';
         productController.text = selectedStock['stockName'] +
             " Remaing: " +
-            selectedStock['quantity'].toString() +
+            selectedStock['quantity'].toStringAsFixed(2) +
             " " +
             selectedStock['type'].toString();
       }
@@ -205,7 +205,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
 
   TextEditingController productController = TextEditingController();
 
-  String? selectedUnit = 'Dozen';
+  String? selectedUnit = 'Carton';
   TextEditingController product0Controller = TextEditingController();
   List<Map<String, dynamic>> productList =
       []; // List to store product, quantity, and price data
@@ -396,31 +396,33 @@ class _SalesTestPageState extends State<SalesTestPage> {
                                   priceController.text =
                                       (double.parse(newValue) *
                                               selectedStock['salesPrice'])
-                                          .toString();
+                                          .toStringAsFixed(2);
                                   productList[index]['quantity'] = newValue;
 
                                   productList[index]['price'] =
                                       priceController.text;
                                   productList[index]['product'] =
                                       productController.text;
-                                } else if (selectedUnitType == "Dozen") {
-                                  priceController.text =
-                                      (double.parse(newValue) *
-                                              selectedStock['salesPrice'] /
-                                              12)
-                                          .toString();
-                                  productList[index]['quantity'] = newValue;
+                                }
+                                // else if (selectedUnitType == "Dozen") {
+                                //   priceController.text =
+                                //       (double.parse(newValue) *
+                                //               selectedStock['salesPrice'] /
+                                //               12)
+                                //           .toString();
+                                //   productList[index]['quantity'] = newValue;
 
-                                  productList[index]['price'] =
-                                      priceController.text;
-                                  productList[index]['product'] =
-                                      productController.text;
-                                } else {
+                                //   productList[index]['price'] =
+                                //       priceController.text;
+                                //   productList[index]['product'] =
+                                //       productController.text;
+                                // }
+                                else {
                                   priceController.text =
                                       (double.parse(newValue) *
                                               selectedStock['salesPrice'] /
                                               selectedStock['typeS'])
-                                          .toString();
+                                          .toStringAsFixed(2);
                                   productList[index]['quantity'] = newValue;
 
                                   productList[index]['price'] =

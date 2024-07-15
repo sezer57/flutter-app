@@ -37,7 +37,7 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
     if (response.statusCode == 200) {
       final utf8Body = utf8.decode(response.bodyBytes);
       totalPages = jsonDecode(utf8Body)['totalPages'];
-      print(jsonDecode(utf8Body)['content']);
+      //print(jsonDecode(utf8Body)['content']);
       return jsonDecode(utf8Body)['content'];
     } else {
       return List.empty();

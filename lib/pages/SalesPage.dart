@@ -44,7 +44,7 @@ class _SettingPageState extends State<SalesPage> {
 
       return decodedBody['content'];
     } else {
-      print(response.statusCode);
+      //print(response.statusCode);
       return List.empty();
     }
   }
@@ -233,15 +233,16 @@ class _SettingPageState extends State<SalesPage> {
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      'Quantity: ${stock['quantity'].toStringAsFixed(2)} Piece: ${stock['quantity_remaing']}',
+                                      'Quantity: ${stock['type']}: ${stock['quantity'].toStringAsFixed(2)} Piece: ${stock['quantity_remaing']}',
                                       style: TextStyle(
                                         fontSize: 15,
-                                        color: Colors.blue,
+                                        color: const Color.fromARGB(
+                                            255, 33, 40, 243),
                                       ),
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      'Type: ${stock['type']}/${stock['typeS']}',
+                                      'Type: ${stock['type']}|${stock['typeS']}',
                                       style: TextStyle(
                                         fontSize: 15,
                                         color: Colors.blue,

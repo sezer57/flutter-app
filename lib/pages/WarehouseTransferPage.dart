@@ -25,7 +25,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   var count_carton;
   var quantity;
 
-  var sa = <String>{'Carton', 'Dozen', 'Piece'};
+  var sa = <String>{'Carton', 'Piece'}; //'Dozen',
   @override
   void initState() {
     super.initState();
@@ -48,7 +48,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
       });
     } else {
       // Handle API error
-      print('Failed to fetch warehouses');
+      //print('Failed to fetch warehouses');
     }
   }
 
@@ -94,7 +94,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
           {
             productController.text = result['stockName'] +
                 " Remaing: " +
-                result['quantity_remaing'].toString() +
+                result['quantity_remaing'].toStringAsFixed(2) +
                 " " +
                 result['type'].toString();
             sa = <String>{'Piece'};
@@ -104,10 +104,10 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
           {
             productController.text = result['stockName'] +
                 " Remaing: " +
-                result['quantity'].toString() +
+                result['quantity'].toStringAsFixed(2) +
                 " " +
                 result['type'].toString();
-            sa = <String>{'Carton', 'Dozen', 'Piece'};
+            sa = <String>{'Carton', 'Piece'}; //'Dozen',
             selectedUnitType = 'Carton';
           }
 
@@ -121,7 +121,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
         } else if (result['type'].toString() ==
             "Carton") ////////////////soooonnnnn
         {
-          sa = <String>{'Carton', 'Dozen', 'Piece'};
+          sa = <String>{'Carton', 'Piece'}; //'Dozen',
           selectedUnitType = 'Carton';
         }
       }
@@ -254,7 +254,7 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
         'quantity': quantity.toString(),
         'comment': "process owner:" + userName,
       };
-      print(transferData);
+      //print(transferData);
       final response = await http.post(
         Uri.parse('http://${await loadIP()}:8080/api/warehouseStock/transfer'),
         body: jsonEncode(transferData),

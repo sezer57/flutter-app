@@ -86,14 +86,14 @@ class _SettingsPageProfileState extends State<SettingsPageProfile> {
         headers: <String, String>{
           'Authorization': 'Bearer ${await getTokenFromLocalStorage()}'
         });
-    print(response);
+    //print(response);
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       _usernameController.text = data['name'];
       _emailController.text = data['email'];
-      print(data);
+      //print(data);
     } else {
-      print('Failed to get user info');
+      // print('Failed to get user info');
     }
   }
 
@@ -128,14 +128,14 @@ class _SettingsPageProfileState extends State<SettingsPageProfile> {
           builder: (context) => LoginPage(),
         ),
       );
-      print('Profile updated successfully');
+      //print('Profile updated successfully');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update profile'),
         ),
       );
-      print('Failed to update profile');
+      // print('Failed to update profile');
     }
   }
 
@@ -187,7 +187,7 @@ class _SettingsPageProfileState extends State<SettingsPageProfile> {
           ),
         );
 
-        print('Account deleted successfully');
+        //print('Account deleted successfully');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -195,7 +195,7 @@ class _SettingsPageProfileState extends State<SettingsPageProfile> {
           ),
         );
 
-        print('Failed to delete account');
+        //print('Failed to delete account');
       }
     } else {
       print('Operation cancelled');

@@ -29,7 +29,7 @@ String? selectedSourceWarehouse;
 
 String? selectedStockId;
 
-var sa = <String>{'Carton', 'Dozen', 'Piece'};
+//'Dozen',
 
 class _PurchaseTestPageState extends State<PurchaseTestPage> {
   final TextEditingController clientCodeController = TextEditingController();
@@ -44,7 +44,8 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController gsmController = TextEditingController();
-  String? selectedUnitType = 'Carton';
+  String? selectedUnitType;
+  var sa = <String>{'Carton', 'Piece'};
   @override
   void initState() {
     super.initState();
@@ -120,12 +121,12 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
     if (selectedStock['type'].toString() == "Piece") ////////////////soooonnnnn
     {
       sa = <String>{'Piece'};
-      selectedUnitType = 'Piece';
+      selectedUnitType = sa.first;
     } else if (selectedStock['type'].toString() ==
         "Carton") ////////////////soooonnnnn
     {
-      sa = <String>{'Carton', 'Dozen', 'Piece'};
-      selectedUnitType = 'Carton';
+      sa = <String>{'Carton', 'Piece'}; //'Dozen',
+      selectedUnitType = sa.first;
     }
   }
 
@@ -308,25 +309,27 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                               if (selectedUnitType == "Carton") {
                                 priceController.text = (double.parse(newValue) *
                                         selectedStock['purchasePrice'])
-                                    .toString();
+                                    .toStringAsFixed(2);
                                 productList[index]['quantity'] = newValue;
 
                                 productList[index]['price'] =
                                     priceController.text;
-                              } else if (selectedUnitType == "Dozen") {
-                                priceController.text = (double.parse(newValue) *
-                                        selectedStock['purchasePrice'] /
-                                        12)
-                                    .toString();
-                                productList[index]['quantity'] = newValue;
+                              }
+                              // else if (selectedUnitType == "Dozen") {
+                              //   priceController.text = (double.parse(newValue) *
+                              //           selectedStock['purchasePrice'] /
+                              //           12)
+                              //       .toString();
+                              //   productList[index]['quantity'] = newValue;
 
-                                productList[index]['price'] =
-                                    priceController.text;
-                              } else {
+                              //   productList[index]['price'] =
+                              //       priceController.text;
+                              // }
+                              else {
                                 priceController.text = (double.parse(newValue) *
                                         selectedStock['purchasePrice'] /
                                         selectedStock['typeS'])
-                                    .toString();
+                                    .toStringAsFixed(2);
                                 productList[index]['quantity'] = newValue;
 
                                 productList[index]['price'] =

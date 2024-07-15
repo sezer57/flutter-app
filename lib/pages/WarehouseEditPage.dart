@@ -145,7 +145,7 @@ class _WarehouseEditPageState extends State<WarehouseEditPage> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close dialog
                 deletewarehouse();
-                print('Warehouse deleted successfully');
+                // print('Warehouse deleted successfully');
               },
               child: Text("Delete"),
             ),

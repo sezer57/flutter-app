@@ -111,7 +111,7 @@ class _AddStockPageState extends State<AddStockPage> {
             ),
             DropdownButtonFormField(
               value: selectedUnitType,
-              items: <String>['Carton', 'Dozen', 'Piece']
+              items: <String>['Carton', 'Piece'] //'Dozen',
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -124,9 +124,10 @@ class _AddStockPageState extends State<AddStockPage> {
                   if (newValue == 'Carton') {
                     selectedUnit = 'Piece';
                   }
-                  if (newValue == 'Dozen') {
-                    pieceController.text = '12';
-                  } else {
+                  // if (newValue == 'Dozen') {
+                  //   pieceController.text = '12';
+                  // }
+                  else {
                     pieceController.clear();
                     selectedUnit = null;
                   }
@@ -137,7 +138,7 @@ class _AddStockPageState extends State<AddStockPage> {
             if (selectedUnitType == 'Carton')
               DropdownButtonFormField(
                 value: selectedUnit,
-                items: <String>['Dozen', 'Piece']
+                items: <String>['Piece'] //'Dozen',
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -147,9 +148,9 @@ class _AddStockPageState extends State<AddStockPage> {
                 onChanged: (String? newValue) {
                   setState(() {
                     selectedUnit = newValue;
-                    if (selectedUnit == "Dozen") {
-                      pieceController.text = "12";
-                    }
+                    // if (selectedUnit == "Dozen") {
+                    //   pieceController.text = "12";
+                    // }
                     if (selectedUnit == "Piece") {
                       pieceController.clear();
                     }
@@ -162,12 +163,12 @@ class _AddStockPageState extends State<AddStockPage> {
                 controller: pieceController,
                 decoration: InputDecoration(labelText: 'Piece'),
               ),
-            if (selectedUnitType == 'Dozen' || selectedUnit == 'Dozen')
-              TextField(
-                readOnly: true,
-                controller: pieceController,
-                decoration: InputDecoration(labelText: 'Piece'),
-              ),
+            // if (selectedUnitType == 'Dozen' || selectedUnit == 'Dozen')
+            //   TextField(
+            //     readOnly: true,
+            //     controller: pieceController,
+            //     decoration: InputDecoration(labelText: 'Piece'),
+            //   ),
 
             TextField(
               controller: salesPriceController,
@@ -247,11 +248,12 @@ class _AddStockPageState extends State<AddStockPage> {
     try {
       if (selectedUnitType == 'Piece') {
         piece = 1;
-      } else if (selectedUnitType == 'Carton' && selectedUnit == 'Dozen') {
-        piece = 12; // Assuming 1 Dozen = 12 Pieces
-      } else if (selectedUnitType == 'Dozen') {
-        piece = int.parse(pieceController.text) * 12;
-      } // Assuming 1 Dozen = 12 Pieces
+      }
+      //else if (selectedUnitType == 'Carton' && selectedUnit == 'Dozen') {
+      //   piece = 12; // Assuming 1 Dozen = 12 Pieces
+      // } else if (selectedUnitType == 'Dozen') {
+      //   piece = int.parse(pieceController.text) * 12;
+      // } // Assuming 1 Dozen = 12 Pieces
       else if (selectedUnitType == 'Carton' && selectedUnit == 'Piece') {
         piece = int.parse(pieceController.text);
       }
