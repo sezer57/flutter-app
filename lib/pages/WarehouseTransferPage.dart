@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/WareHousePage.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -132,102 +133,114 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
   //String? selectedUnit = 'Dozen';
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Warehouse Transfer'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            DropdownButtonFormField<String>(
-              value: selectedSourceWarehouse,
-              onChanged: (newValue) {
-                setState(() {
-                  selectedSourceWarehouse = newValue;
-                  selectedStockId = null;
-                  // fetchStocks(newValue!);
-                });
-              },
-              items: warehouses.map((warehouse) {
-                return DropdownMenuItem<String>(
-                  value: warehouse['warehouseId'].toString(),
-                  child: Text(warehouse['name']),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'From Warehouse',
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: productController,
-              readOnly: true, // TextField'in değiştirilemez olmasını sağlar
-              decoration: InputDecoration(
-                labelText: 'Choose Product',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.arrow_forward),
-                  onPressed: () {
-                    _navigateTopProductSelectionPage();
-                  },
+    return MaterialApp(
+      theme: AppTheme.lightTheme,
+      home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back,
+                color: const Color.fromARGB(255, 255, 255, 255)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Text(
+            'Warehouse Transfer',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DropdownButtonFormField<String>(
+                value: selectedSourceWarehouse,
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedSourceWarehouse = newValue;
+                    selectedStockId = null;
+                    // fetchStocks(newValue!);
+                  });
+                },
+                items: warehouses.map((warehouse) {
+                  return DropdownMenuItem<String>(
+                    value: warehouse['warehouseId'].toString(),
+                    child: Text(warehouse['name']),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  labelText: 'From Warehouse',
                 ),
               ),
-              onTap: () {
-                _navigateTopProductSelectionPage(); // TextField'e tıklanınca da navigasyon yapılacaksa buraya ekleyebilirsiniz
-              },
-            ),
-            SizedBox(height: 10),
-            DropdownButtonFormField(
-              value: selectedUnitType,
-              items: sa.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedUnitType = newValue;
-                  quantityController.clear();
-                });
-              },
-              decoration: InputDecoration(labelText: 'Unit Type'),
-            ),
-            TextField(
-              controller: quantityController,
-              onChanged: (newValue) {
-                setState(() {
-                  quantity = newValue;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Quantity'),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-            ),
-            SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              value: selectedTargetWarehouse,
-              onChanged: (newValue) {
-                setState(() {
-                  selectedTargetWarehouse = newValue;
-                });
-              },
-              items: warehouses.map((warehouse) {
-                return DropdownMenuItem<String>(
-                  value: warehouse['warehouseId'].toString(),
-                  child: Text(warehouse['name']),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'To Warehouse',
+              SizedBox(height: 12),
+              TextField(
+                controller: productController,
+                readOnly: true, // TextField'in değiştirilemez olmasını sağlar
+                decoration: InputDecoration(
+                  labelText: 'Choose Product',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      _navigateTopProductSelectionPage();
+                    },
+                  ),
+                ),
+                onTap: () {
+                  _navigateTopProductSelectionPage(); // TextField'e tıklanınca da navigasyon yapılacaksa buraya ekleyebilirsiniz
+                },
               ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _transfer,
-              child: Text('Transfer'),
-            ),
-          ],
+              SizedBox(height: 12),
+              DropdownButtonFormField(
+                value: selectedUnitType,
+                items: sa.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedUnitType = newValue;
+                    quantityController.clear();
+                  });
+                },
+                decoration: InputDecoration(labelText: 'Unit Type'),
+              ),
+              SizedBox(height: 12),
+              TextField(
+                controller: quantityController,
+                onChanged: (newValue) {
+                  setState(() {
+                    quantity = newValue;
+                  });
+                },
+                decoration: InputDecoration(labelText: 'Quantity'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+              ),
+              SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: selectedTargetWarehouse,
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedTargetWarehouse = newValue;
+                  });
+                },
+                items: warehouses.map((warehouse) {
+                  return DropdownMenuItem<String>(
+                    value: warehouse['warehouseId'].toString(),
+                    child: Text(warehouse['name']),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  labelText: 'To Warehouse',
+                ),
+              ),
+              SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _transfer,
+                child: Text('Transfer'),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -26,10 +26,10 @@ class PdfApi {
             level: 1,
             child: Text('Report - $selectedDate'),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 12),
           Text('Report',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          SizedBox(height: 10),
+          SizedBox(height: 12),
           if (expenses != null && expenses.isNotEmpty)
             _buildTable('Sales', expenses),
           if (totalExpenses != 0.00)
@@ -83,7 +83,7 @@ class PdfApi {
                 '$title (Page $pageNumber)',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 12),
               Table.fromTextArray(
                 headers: headers,
                 data: currentRows,
@@ -108,7 +108,7 @@ class PdfApi {
             '$title (Page 1)',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 12),
           Table.fromTextArray(
             headers: headers,
             data: rows,

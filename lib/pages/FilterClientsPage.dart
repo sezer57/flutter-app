@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/DebtPaymentPage.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'DebtPaymentPage.dart'; // Gerekli olduğu sayıda
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -48,6 +49,11 @@ class _FilterClientsPageState extends State<FilterClientsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: TextField(
           controller: searchController,
           decoration: InputDecoration(

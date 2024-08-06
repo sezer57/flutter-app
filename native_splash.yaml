@@ -1,0 +1,13 @@
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+
+  color: "#d4e4ed"
+  image: "images/ic_launcher_sp.png"
+  branding: "images/e-stock-transparant.png"
+
+  android_12:
+    color: "#d4e4ed"
+    image: "images/ic_launcher_sp.png"
+    branding: "images/e-stock-transparant.png"

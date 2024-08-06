@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async'; // Eklemeyi unutmayın
@@ -63,7 +64,15 @@ class _WaitingTransferState extends State<WaitingTransfer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Waiting Transfers'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Waiting Transfers',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: ListView.builder(
         itemCount: _waitingTransfers.length,

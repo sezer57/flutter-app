@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/SalesPage.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -170,7 +171,15 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Purchase'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Purchase',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -178,13 +187,14 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              SizedBox(height: 12),
               TextField(
                 controller: DateController,
                 decoration: InputDecoration(labelText: 'Date'),
                 keyboardType: TextInputType.datetime,
                 enabled: false,
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 readOnly: true,
                 controller: commercialTitleController,
@@ -201,7 +211,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                   _navigateToClientSelectionPage();
                 },
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: selectedSourceWarehouse,
                 onChanged: (newValue) {
@@ -220,7 +230,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                   labelText: 'Which Warehouse',
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: productList.length,
@@ -229,6 +239,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                     // Last item, show text fields to add more products
                     return Column(
                       children: [
+                        SizedBox(height: 12),
                         TextField(
                           readOnly: true,
                           controller: stockController,
@@ -281,6 +292,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                             }
                           },
                         ),
+                        SizedBox(height: 12),
                         DropdownButtonFormField(
                           value: selectedUnitType,
                           items:
@@ -299,6 +311,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                           },
                           decoration: InputDecoration(labelText: 'Unit Type'),
                         ),
+                        SizedBox(height: 12),
                         TextField(
                           controller: quantityController,
                           onChanged: (newValue) {
@@ -341,6 +354,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                           keyboardType:
                               TextInputType.numberWithOptions(decimal: true),
                         ),
+                        SizedBox(height: 12),
                         TextField(
                           controller: priceController,
                           decoration: InputDecoration(labelText: 'Price'),
@@ -376,6 +390,7 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                 },
               ),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                 onPressed: () {
                   setState(() {
                     productList.add({});
@@ -399,18 +414,19 @@ class _PurchaseTestPageState extends State<PurchaseTestPage> {
                     ? 'Add Product'
                     : 'Add Cart'),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: VatController,
                 decoration: InputDecoration(labelText: 'Vat'),
                 keyboardType: TextInputType.datetime,
               ),
+              SizedBox(height: 12),
               TextField(
                 controller: ownerController,
                 decoration: InputDecoration(labelText: 'Process owner'),
                 enabled: false,
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {

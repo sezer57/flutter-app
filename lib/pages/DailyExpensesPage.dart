@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/api/pdf_api.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/Stocks.dart';
+import 'package:flutter_application_1/components/theme.dart';
 
 class DailyExpensesPage extends StatelessWidget {
   final String selectedDate;
@@ -24,9 +26,14 @@ class DailyExpensesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Report - $selectedDate'),
-        actions: [
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Report - $selectedDate',
+        widgetx: [
           IconButton(
             icon: Icon(Icons.picture_as_pdf),
             onPressed: () async {
@@ -42,24 +49,24 @@ class DailyExpensesPage extends StatelessWidget {
               children: [
                 if (expenses != null && expenses!.isNotEmpty) ...[
                   _buildExpensesTable(),
-                  SizedBox(height: 16),
+                  SizedBox(height: 12),
                 ],
                 if (purchases != null && purchases!.isNotEmpty) ...[
                   _buildPurchasesTable(),
-                  SizedBox(height: 16),
+                  SizedBox(height: 12),
                 ],
                 if (warehouseTransfers != null &&
                     warehouseTransfers!.isNotEmpty) ...[
                   _buildWarehouseTransfersTable(),
-                  SizedBox(height: 16),
+                  SizedBox(height: 12),
                 ],
                 if (stocks != null && stocks!.isNotEmpty) ...[
                   _buildStocksTable(),
-                  SizedBox(height: 16),
+                  SizedBox(height: 12),
                 ],
                 if (clients != null && clients!.isNotEmpty) ...[
                   _buildClientsTable(),
-                  SizedBox(height: 16),
+                  SizedBox(height: 12),
                 ],
               ],
             ),

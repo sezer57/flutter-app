@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:flutter_application_1/pages/UpdateStockPage.dart';
 
 class StockDetailesPageList extends StatelessWidget {
@@ -42,7 +42,15 @@ class StockDetailesPageList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stock Details'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Stock Details',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -92,7 +100,7 @@ class StockDetailesPageList extends StatelessWidget {
                 SizedBox(
                     width: 8), // Empty space to balance the row if necessary
               ]),
-              SizedBox(height: 20),
+              SizedBox(height: 12),
               Center(
                 child: ElevatedButton(
                   onPressed: () {

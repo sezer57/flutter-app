@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -129,8 +131,12 @@ class _AddClientsPageState extends State<AddClientsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Client'),
+      appBar: CustomAppBar(
+        title: 'Add Client',
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -138,56 +144,57 @@ class _AddClientsPageState extends State<AddClientsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              SizedBox(height: 12),
               TextField(
                 controller: clientCodeController,
                 decoration: InputDecoration(labelText: 'Client Code'),
                 keyboardType: TextInputType.number,
                 enabled: false,
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: registrationDateController,
                 decoration: InputDecoration(labelText: 'Registration Date'),
                 keyboardType: TextInputType.datetime,
                 enabled: false,
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: commercialTitleController,
                 decoration: InputDecoration(labelText: 'Commercial Title'),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(labelText: 'Name'),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: surnameController,
                 decoration: InputDecoration(labelText: 'Surname'),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: addressController,
                 decoration: InputDecoration(labelText: 'Address'),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: countryController,
                 decoration: InputDecoration(labelText: 'Country'),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: cityController,
                 decoration: InputDecoration(labelText: 'City'),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: phoneController,
                 decoration: InputDecoration(labelText: 'Phone'),
                 keyboardType: TextInputType.phone,
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 controller: gsmController,
                 decoration: InputDecoration(labelText: 'GSM'),

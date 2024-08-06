@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/DailyMovementsOfClient.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -53,8 +55,13 @@ class _ClientNotificationsPageState extends State<ClientNotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Notifications'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Notifications',
       ),
       body: Center(
         child: Column(

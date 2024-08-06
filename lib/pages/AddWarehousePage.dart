@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
@@ -81,35 +83,45 @@ class _AddWareHousePageState extends State<AddWareHousePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Warehouse'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Warehouse',
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(height: 12),
             TextField(
               controller: nameController,
               decoration: InputDecoration(labelText: 'Warehouse Name'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: authorizedController,
               decoration: InputDecoration(labelText: 'Authorized'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: phoneController,
               decoration: InputDecoration(labelText: 'Phone'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: addressController,
               decoration: InputDecoration(labelText: 'Address'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: userAuthoritiesController,
               decoration: InputDecoration(labelText: 'User Authorities'),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             Row(
               children: [
                 Checkbox(
@@ -129,10 +141,12 @@ class _AddWareHousePageState extends State<AddWareHousePage> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             ElevatedButton(
               onPressed: _postData,
-              child: Text('Submit'),
+              child: Text(
+                'Submit',
+              ),
             ),
           ],
         ),

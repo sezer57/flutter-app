@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/api/pdf_api_client.dart';
+import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/pdf_api.dart';
 import 'package:flutter_application_1/model/client.dart';
@@ -158,99 +160,108 @@ class _PdfPageState extends State<PdfPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Client List'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.print),
-            onPressed: () {
-              // Butona tıklandığında PDF oluşturulsun
-              createInvoices(_clients);
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              hintText: 'Search Client...',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: BorderSide(color: Colors.blue),
-              ),
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+    return MaterialApp(
+      theme: AppTheme.lightTheme,
+      home: Scaffold(
+          appBar: CustomAppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back,
+                  color: const Color.fromARGB(255, 255, 255, 255)),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            onChanged: searchClients,
-          ),
-          Expanded(
-            child: FutureBuilder<List<dynamic>>(
-              future: _clientsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No clients found'));
-                } else {
-                  _clients = snapshot.data!;
-                  return Column(children: [
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: _clients.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final purchase = _clients[index];
-                          return Card(
-                            elevation: 3,
-                            margin: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            child: ListTile(
-                              title: Text(
-                                  'Client Code: ${purchase['clientCode']}'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Name: ${purchase['name']}'),
-                                  Text('Surname: ${purchase['surname']}'),
-                                  Text('Address: ${purchase['address']}'),
-                                  Text('Phone: ${purchase['phone']}'),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ]);
-                }
-              },
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            title: 'Client List',
+            widgetx: [
               IconButton(
-                onPressed: _goToPreviousPage,
-                icon: Icon(Icons.arrow_back),
-              ),
-              Text('Page ${_currentPage + 1}'),
-              IconButton(
-                onPressed: _goToNextPage,
-                icon: Icon(Icons.arrow_forward),
+                icon: Icon(Icons.print),
+                onPressed: () {
+                  // Butona tıklandığında PDF oluşturulsun
+                  createInvoices(_clients);
+                },
               ),
             ],
           ),
-        ],
-      ),
+          body: Column(
+            children: [
+              SizedBox(height: 12),
+              TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search Client...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                ),
+                onChanged: searchClients,
+              ),
+              Expanded(
+                child: FutureBuilder<List<dynamic>>(
+                  future: _clientsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No clients found'));
+                    } else {
+                      _clients = snapshot.data!;
+                      return Column(children: [
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _clients.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final purchase = _clients[index];
+                              return Card(
+                                elevation: 3,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                child: ListTile(
+                                  title: Text(
+                                      'Client Code: ${purchase['clientCode']}'),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Name: ${purchase['name']}'),
+                                      Text('Surname: ${purchase['surname']}'),
+                                      Text('Address: ${purchase['address']}'),
+                                      Text('Phone: ${purchase['phone']}'),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ]);
+                    }
+                  },
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: _goToPreviousPage,
+                    icon: Icon(Icons.arrow_back),
+                  ),
+                  Text('Page ${_currentPage + 1}'),
+                  IconButton(
+                    onPressed: _goToNextPage,
+                    icon: Icon(Icons.arrow_forward),
+                  ),
+                ],
+              ),
+            ],
+          )),
     );
   }
 }

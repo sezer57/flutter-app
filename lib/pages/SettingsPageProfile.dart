@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/LoginPage.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -23,8 +25,13 @@ class _SettingsPageProfileState extends State<SettingsPageProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Profile'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Edit Profile',
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -38,6 +45,7 @@ class _SettingsPageProfileState extends State<SettingsPageProfile> {
               ),
             ),
             SizedBox(height: 16.0),
+            SizedBox(height: 12),
             TextField(
               controller: _emailController,
               decoration: InputDecoration(
@@ -45,6 +53,7 @@ class _SettingsPageProfileState extends State<SettingsPageProfile> {
               ),
             ),
             SizedBox(height: 16.0),
+            SizedBox(height: 12),
             TextField(
               controller: _passwordController,
               decoration: InputDecoration(

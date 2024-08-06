@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:flutter_application_1/components/theme.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -84,36 +86,43 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Settings',
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            SizedBox(height: 12),
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Enter Name',
               ),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: _ipController,
               decoration: InputDecoration(
                 labelText: 'Enter IP address',
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             ElevatedButton(
               onPressed: _saveIP,
               child: Text('Save IP'),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             if (_selectedIP != null) ...[
-              SizedBox(height: 20),
+              SizedBox(height: 12),
               Text('Selected IP: $_selectedIP'),
             ],
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             Expanded(
               child: ListView.builder(
                 itemCount: _savedIPs.length,

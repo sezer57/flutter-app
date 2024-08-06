@@ -17,24 +17,7 @@ class MyTextField extends StatelessWidget {
       height: 55,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: TextField(
-          controller: controller,
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: Colors.grey.shade400),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
-              borderSide: BorderSide(color: Colors.grey.shade600),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade300,
-            hintText: hintText,
-            hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 15),
-          ),
-        ),
+        child: TextField(),
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -77,38 +79,49 @@ class _AddStockPageState extends State<AddStockPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Products'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Add Products',
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: ListView(
           children: [
+            SizedBox(height: 12),
             TextField(
               controller: registrationDateController,
               decoration: InputDecoration(labelText: 'Registration Date'),
               enabled: false, // Disable editing
             ),
+            SizedBox(height: 12),
             TextField(
               controller: stockNameController,
               decoration: InputDecoration(labelText: 'Stock Name'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: stockCodeController,
               decoration: InputDecoration(labelText: 'Stock Code'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: barcodeController,
               decoration: InputDecoration(labelText: 'Barcode'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: groupNameController,
               decoration: InputDecoration(labelText: 'Group Name'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: middleGroupNameController,
               decoration: InputDecoration(labelText: 'Middle Group Name'),
             ),
+            SizedBox(height: 12),
             DropdownButtonFormField(
               value: selectedUnitType,
               items: <String>['Carton', 'Piece'] //'Dozen',
@@ -135,6 +148,7 @@ class _AddStockPageState extends State<AddStockPage> {
               },
               decoration: InputDecoration(labelText: 'Unit Type'),
             ),
+            SizedBox(height: 12),
             if (selectedUnitType == 'Carton')
               DropdownButtonFormField(
                 value: selectedUnit,
@@ -158,6 +172,7 @@ class _AddStockPageState extends State<AddStockPage> {
                 },
                 decoration: InputDecoration(labelText: 'Unit'),
               ),
+            SizedBox(height: 12),
             if (selectedUnitType == 'Carton' && selectedUnit == 'Piece')
               TextField(
                 controller: pieceController,
@@ -170,12 +185,14 @@ class _AddStockPageState extends State<AddStockPage> {
             //     decoration: InputDecoration(labelText: 'Piece'),
             //   ),
 
+            SizedBox(height: 12),
             TextField(
               controller: salesPriceController,
               decoration: InputDecoration(labelText: 'Sales Price'),
               keyboardType: TextInputType.numberWithOptions(
                   decimal: true), // Accept decimal numbers
             ),
+            SizedBox(height: 12),
             TextField(
               controller: purchasePriceController,
               decoration: InputDecoration(labelText: 'Purchase Price'),
@@ -228,7 +245,7 @@ class _AddStockPageState extends State<AddStockPage> {
             //     }
             //   },
             // ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
                 _addStock(context);

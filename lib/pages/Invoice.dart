@@ -1,89 +1,99 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/PurchaseClientSelectionPage.dart';
 import 'package:flutter_application_1/pages/PurchaseList.dart'; // Import PurchaseList.dart
 import 'package:flutter_application_1/pages/Receipt.dart';
 import 'package:flutter_application_1/pages/SalesClientSelectionPage.dart';
 import 'package:flutter_application_1/pages/SalesList.dart'; // Import SalesList.dart
+import 'package:flutter_application_1/components/theme.dart';
 
 class InvoicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Invoice'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Invoice',
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Navigate to SalesList.dart
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SalesList(),
+            SizedBox(
+                width: 250,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SalesList(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(255, 173, 37, 0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                );
-              },
-              icon: Icon(Icons.list),
-              label: Text('Sales&Invoice List'),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-                textStyle: MaterialStateProperty.all<TextStyle>(
-                  TextStyle(fontSize: 18),
-                ),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-              ),
-            ),
-
+                  icon: Icon(Icons.list, color: Colors.white),
+                  label: Text(
+                    'Sales & Invoice List',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )),
             SizedBox(height: 40), // Spacer
-
-            ElevatedButton.icon(
-              onPressed: () {
-                // Navigate to PurchaseList.dart
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PurchaseList(),
+            SizedBox(
+                width: 250,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PurchaseList(),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.list, color: Colors.white),
+                  label: Text(
+                    'Purchase & Invoice List',
+                    style: TextStyle(color: Colors.white),
                   ),
-                );
-              },
-              icon: Icon(Icons.list),
-              label: Text('Purchase&Invoice List'),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-                textStyle: MaterialStateProperty.all<TextStyle>(
-                  TextStyle(fontSize: 18),
-                ),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-              ),
-            ),
-
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(255, 0, 173, 23),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                )),
             SizedBox(height: 40), // Spacer
-            ElevatedButton.icon(
-              onPressed: () {
-                // Navigate to PurchaseList.dart
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ReceiptPage(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.list),
-              label: Text('Receipt List'),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-                textStyle: MaterialStateProperty.all<TextStyle>(
-                  TextStyle(fontSize: 18),
+            SizedBox(
+              width: 250,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReceiptPage(),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.receipt, color: Colors.white),
+                label: Text(
+                  'Receipt List',
+                  style: TextStyle(color: Colors.white),
                 ),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 0, 52, 173),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               ),
             )
-
-            
           ],
         ),
       ),

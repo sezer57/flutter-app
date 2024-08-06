@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:flutter_application_1/api/pdf_invoice_api.dart';
@@ -134,10 +135,19 @@ class _PurchaseListState extends State<PurchaseList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Purchase List'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Purchase List',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Column(
         children: [
+          SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(

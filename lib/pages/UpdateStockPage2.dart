@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -32,6 +33,7 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
               controller: quantityInController,
               decoration: InputDecoration(labelText: 'Quantity In'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: quantityOutController,
               decoration: InputDecoration(labelText: 'Quantity Out'),

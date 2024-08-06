@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/SalesClientSelectionPage.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -219,7 +220,15 @@ class _SalesTestPageState extends State<SalesTestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sales'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Sales',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -233,7 +242,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                 keyboardType: TextInputType.datetime,
                 enabled: false,
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               TextField(
                 readOnly: true,
                 controller: commercialTitleController,
@@ -250,7 +259,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                   _navigateToClientSelectionPage();
                 },
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: selectedSourceWarehouse,
                 onChanged: (newValue) {
@@ -269,43 +278,42 @@ class _SalesTestPageState extends State<SalesTestPage> {
                   labelText: 'Which Warehouse',
                 ),
               ),
-              SizedBox(height: 16),
-              if (productController.text.isEmpty)
-                TextField(
-                  controller: productController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    labelText: 'Choose Product',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      onPressed: () {
-                        _navigateTopProductSelectionPage().then((result) async {
-                          setState(() {
-                            product0Controller.text = productController.text;
-                            if (productList.isEmpty) {
-                              setState(() {
-                                productList.add({});
-                              });
-                            }
-                          });
+              if (productController.text.isEmpty) SizedBox(height: 16),
+              TextField(
+                controller: productController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Choose Product',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      _navigateTopProductSelectionPage().then((result) async {
+                        setState(() {
+                          product0Controller.text = productController.text;
+                          if (productList.isEmpty) {
+                            setState(() {
+                              productList.add({});
+                            });
+                          }
                         });
-                      },
-                    ),
-                  ),
-                  onTap: () {
-                    _navigateTopProductSelectionPage().then((result) async {
-                      setState(() {
-                        product0Controller.text = productController.text;
-                        if (productList.isEmpty) {
-                          setState(() {
-                            productList.add({});
-                          });
-                        }
                       });
-                    });
-                  },
+                    },
+                  ),
                 ),
-              SizedBox(height: 16),
+                onTap: () {
+                  _navigateTopProductSelectionPage().then((result) async {
+                    setState(() {
+                      product0Controller.text = productController.text;
+                      if (productList.isEmpty) {
+                        setState(() {
+                          productList.add({});
+                        });
+                      }
+                    });
+                  });
+                },
+              ),
+              SizedBox(height: 12),
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: productList.length,
@@ -367,6 +375,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                               });
                             },
                           ),
+                          SizedBox(height: 12),
                           DropdownButtonFormField(
                             value: selectedUnitType,
                             items: sa
@@ -385,6 +394,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                             },
                             decoration: InputDecoration(labelText: 'Unit Type'),
                           ),
+                          SizedBox(height: 12),
                           TextField(
                             controller: quantityController,
                             onChanged: (newValue) {
@@ -436,6 +446,7 @@ class _SalesTestPageState extends State<SalesTestPage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                           ),
+                          SizedBox(height: 12),
                           TextField(
                             controller: priceController,
                             decoration: InputDecoration(labelText: 'Price'),
@@ -499,12 +510,14 @@ class _SalesTestPageState extends State<SalesTestPage> {
                   }
                 },
               ),
+              SizedBox(height: 12),
               TextField(
                 controller: VatController,
                 decoration: InputDecoration(labelText: 'Vat'),
                 keyboardType: TextInputType.datetime,
               ),
               SizedBox(height: 8),
+              SizedBox(height: 12),
               TextField(
                 controller: ownerController,
                 decoration: InputDecoration(labelText: 'Process owner'),

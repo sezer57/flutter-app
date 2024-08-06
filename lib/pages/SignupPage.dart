@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/LoginPage.dart';
+import 'package:flutter_application_1/components/theme.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -75,31 +77,150 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sign Up'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(labelText: 'Userame'),
+            Row(
+              children: [
+                Image.asset('images/loginlogo.png', height: 125, width: 125),
+                Spacer(),
+                Container(
+                  height: 268,
+                  width: 250,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('images/loginbackground.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "SignUp",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: signup,
-              child: Text('Sign Up'),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 50),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 60),
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      labelStyle: GoogleFonts.dmSans(
+                          fontWeight: FontWeight.normal,
+                          color: Color.fromARGB(255, 59, 58, 58)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Color(0xFF004AAD)),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Color(0xFF004AAD)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Color(0xFF004AAD)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: GoogleFonts.dmSans(
+                          fontWeight: FontWeight.normal,
+                          color: Color.fromARGB(255, 59, 58, 58)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Color(0xFF004AAD)),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Color(0xFF004AAD)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Color(0xFF004AAD)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  TextField(
+                    controller: passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: GoogleFonts.dmSans(
+                          fontWeight: FontWeight.normal,
+                          color: Color.fromARGB(255, 59, 58, 58)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Color(0xFF004AAD)),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Color(0xFF004AAD)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(color: Color(0xFF004AAD)),
+                      ),
+                      suffixIcon: Icon(Icons.lock, color: Color(0xFF004AAD)),
+                    ),
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 40),
+                  ElevatedButton(
+                    onPressed: signup,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF004AAD),
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'Sign Up',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16.1,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Center(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginPage(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Already Registered? Log in here.',
+                        style: GoogleFonts.dmSans(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

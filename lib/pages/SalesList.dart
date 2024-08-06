@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/ClientsPage.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/pdf_api.dart';
 import 'package:flutter_application_1/model/customer.dart';
@@ -132,7 +133,15 @@ class _SalesListState extends State<SalesList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sales List'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Sales List',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Column(
         children: [

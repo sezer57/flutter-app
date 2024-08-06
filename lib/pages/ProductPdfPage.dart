@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/api/pdf_api_client.dart';
 import 'package:flutter_application_1/api/pdf_stock_api.dart';
 import 'package:flutter_application_1/model/stock.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/pdf_api.dart';
 import 'package:flutter_application_1/model/client.dart';
@@ -82,7 +83,15 @@ class _PdfPageState extends State<PdfPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stock List'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Stock List',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.print),

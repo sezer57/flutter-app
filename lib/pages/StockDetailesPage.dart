@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 
 class StockDetailsPage extends StatefulWidget {
@@ -44,7 +45,15 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stock Details'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Stock Details',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -107,7 +116,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
               decoration: InputDecoration(labelText: 'Purchase Price'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
                 // Call the function to update the stock details
@@ -115,7 +124,7 @@ class _StockDetailsPageState extends State<StockDetailsPage> {
               },
               child: Text('Update Stock'),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
                 deleteStock();

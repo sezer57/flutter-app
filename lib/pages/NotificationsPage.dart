@@ -1,7 +1,9 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -132,7 +134,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               },
             ),
           ),
-          SizedBox(height: 10), // Add spacing between date picker and button
+          SizedBox(height: 12), // Add spacing between date picker and button
           ElevatedButton(
             onPressed: () async {
               String formattedDate =
@@ -188,8 +190,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Notifications'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Notifications',
       ),
       body: Center(
         child: Column(
@@ -246,6 +253,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 }
               },
             ),
+            SizedBox(height: 20),
             TextField(
               controller: dateController2,
               decoration: const InputDecoration(
@@ -297,7 +305,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 }
               },
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             ElevatedButton(
               onPressed: () async {
                 // You can use _selectedDate1 and _selectedDate2 directly here

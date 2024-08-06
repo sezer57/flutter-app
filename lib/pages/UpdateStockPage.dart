@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/StockDetailesPage.dart';
 import 'package:flutter_application_1/pages/StockPage.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -43,7 +44,15 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stocks'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Stocks',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -53,26 +62,32 @@ class _UpdateStockFormState extends State<UpdateStockForm> {
             controller: quantityInController,
             decoration: InputDecoration(labelText: 'Quantity In'),
           ),
+          SizedBox(height: 12),
           TextField(
             controller: quantityOutController,
             decoration: InputDecoration(labelText: 'Quantity Out'),
           ),
+          SizedBox(height: 12),
           TextField(
             controller: quantityTransferController,
             decoration: InputDecoration(labelText: 'Quantity Transfer'),
           ),
+          SizedBox(height: 12),
           TextField(
             controller: quantityRemainingController,
             decoration: InputDecoration(labelText: 'Quantity Remaining'),
           ),
+          SizedBox(height: 12),
           TextField(
             controller: quantityReservedController,
             decoration: InputDecoration(labelText: 'Quantity Reserved'),
           ),
+          SizedBox(height: 12),
           TextField(
             controller: quantityBlockedController,
             decoration: InputDecoration(labelText: 'Quantity Blocked'),
           ),
+          SizedBox(height: 12),
           TextField(
             controller: usableQuantityController,
             decoration: InputDecoration(labelText: 'Usable Quantity'),

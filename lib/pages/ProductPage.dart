@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'AddProductPage.dart';
 import 'StockDetailesPage.dart';
 
@@ -109,163 +111,211 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Products'),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddStockPage(),
-                      ),
-                    );
-                    if (result == true) {
-                      setState(() {
-                        _stocksFuture = _fetchStocks(_currentPage);
-                      });
-                    }
-                  },
-                  child: Text('Add Products'),
-                ),
+        appBar: CustomAppBar(
+          title: 'Products',
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: [
+                0.1,
+                0.4,
+                0.7,
+                1
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Search Product...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(color: Colors.grey),
+                  colors: [
+                Color.fromARGB(255, 241, 241, 241),
+                Colors.white,
+                Color.fromARGB(255, 241, 241, 241),
+                Colors.white,
+              ])),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF004AAD),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddStockPage(),
+                          ),
+                        );
+                        if (result == true) {
+                          setState(() {
+                            _stocksFuture = _fetchStocks(_currentPage);
+                          });
+                        }
+                      },
+                      child: Text(
+                        'Add Product',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
               ),
-              onChanged: searchStocks,
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<dynamic>>(
-              future: _stocksFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No products found'));
-                } else {
-                  _stocks = snapshot.data!;
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: _stocks.length,
-                          itemBuilder: (context, index) {
-                            var stock = _stocks[index];
-                            var warehouseName = stock['warehouse']['name'];
-                            var salesPrice = stock['salesPrice'];
-                            return Card(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: ListTile(
-                                      title: Text(stock['stockName']),
-                                      subtitle: Text("Code: " +
-                                          stock['stockCode'] +
-                                          " Price: " +
-                                          salesPrice.toString() +
-                                          " Warehouse: " +
-                                          warehouseName +
-                                          " Date: " +
-                                          stock['registrationDate']),
+              SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: TextField(
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    hintText: 'Search Product...',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                  ),
+                  onChanged: searchStocks,
+                ),
+              ),
+              Expanded(
+                child: FutureBuilder<List<dynamic>>(
+                  future: _stocksFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No products found'));
+                    } else {
+                      _stocks = snapshot.data!;
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              padding: EdgeInsets.all(5),
+                              itemCount: _stocks.length,
+                              itemBuilder: (context, index) {
+                                var stock = _stocks[index];
+                                var warehouseName = stock['warehouse']['name'];
+                                var salesPrice = stock['salesPrice'];
+                                return Card(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    side: BorderSide(
+                                      color: Color.fromARGB(255, 174, 174, 174),
+                                      width: 1,
                                     ),
                                   ),
-                                  Row(
+                                  color: Colors.white,
+                                  child: Row(
                                     children: [
-                                      // Icon(
-                                      //   stock['statusStock'].toString() !=
-                                      //           'false'
-                                      //       ? Icons.check_circle
-                                      //       : Icons.cancel,
-                                      //   color:
-                                      //       stock['statusStock'].toString() !=
-                                      //               'false'
-                                      //           ? Colors.green
-                                      //           : Colors.red,
-                                      // ),
-                                      // SizedBox(width: 4),
-                                      Text(
-                                        stock['statusStock'].toString() ==
-                                                'false'
-                                            ? 'Active'
-                                            : 'Pasive',
-                                        style: TextStyle(
-                                          color:
-                                              stock['statusStock'].toString() ==
+                                      Expanded(
+                                        child: ListTile(
+                                          title: Text(stock['stockName']),
+                                          subtitle: Text("Code: " +
+                                              stock['stockCode'] +
+                                              " Price: " +
+                                              salesPrice.toString() +
+                                              " Warehouse: " +
+                                              warehouseName +
+                                              " Date: " +
+                                              stock['registrationDate']),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          // Icon(
+                                          //   stock['statusStock'].toString() !=
+                                          //           'false'
+                                          //       ? Icons.check_circle
+                                          //       : Icons.cancel,
+                                          //   color:
+                                          //       stock['statusStock'].toString() !=
+                                          //               'false'
+                                          //           ? Colors.green
+                                          //           : Colors.red,
+                                          // ),
+                                          // SizedBox(width: 4),
+                                          Text(
+                                            stock['statusStock'].toString() ==
+                                                    'false'
+                                                ? 'Active'
+                                                : 'Pasive',
+                                            style: TextStyle(
+                                              color: stock['statusStock']
+                                                          .toString() ==
                                                       'false'
                                                   ? Colors.green
                                                   : Colors.red,
-                                        ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: Icon(
+                                                Icons.change_circle_outlined),
+                                            onPressed: () async {
+                                              _changeStatus(stock);
+                                            },
+                                          ),
+                                        ],
                                       ),
                                       IconButton(
-                                        icon:
-                                            Icon(Icons.change_circle_outlined),
+                                        icon: Icon(Icons.edit),
                                         onPressed: () async {
-                                          _changeStatus(stock);
+                                          _navigateToUpdateStockPage(stock);
                                         },
                                       ),
                                     ],
                                   ),
-                                  IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () async {
-                                      _navigateToUpdateStockPage(stock);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: _goToPreviousPage,
-                            icon: Icon(Icons.arrow_back),
+                                );
+                              },
+                            ),
                           ),
-                          Text('Page ${_currentPage + 1}'),
-                          IconButton(
-                            onPressed: _goToNextPage,
-                            icon: Icon(Icons.arrow_forward),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                onPressed: _goToPreviousPage,
+                                icon: Icon(Icons.arrow_back),
+                              ),
+                              Text('Page ${_currentPage + 1}'),
+                              IconButton(
+                                onPressed: _goToNextPage,
+                                icon: Icon(Icons.arrow_forward),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ],
-                  );
-                }
-              },
-            ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 }

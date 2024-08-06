@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/model/client.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/ClientsPurcDoPage.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -133,8 +135,13 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Debt Payment Purchase'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Debt Payment Purchase',
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -158,14 +165,14 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             if (balanceData != null) ...[
               for (var entry in balanceData!.entries)
                 Text(
                   '${entry.key}: ${entry.value}',
                   style: TextStyle(fontSize: 16),
                 ),
-              SizedBox(height: 20),
+              SizedBox(height: 12),
               if (balanceData!['Balance'] > 0)
                 Text(
                   'Purchase payment',
@@ -183,7 +190,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
                   style: TextStyle(fontSize: 16, color: Colors.green),
                 )
             ],
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             DropdownButtonFormField<String>(
               value: selectedPaymentType,
               onChanged: (value) {
@@ -208,7 +215,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 12),
             if (selectedPaymentType != null) ...[
               SizedBox(height: 0),
               Text(
@@ -216,7 +223,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
                 style: TextStyle(fontSize: 10),
               ),
             ],
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -233,7 +240,7 @@ class _DebtPaymentPageState extends State<DebtPaymentPage> {
                 Text("${selectedDate.toLocal()}".split(' ')[0]),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [

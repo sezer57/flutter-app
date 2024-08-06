@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 
@@ -62,7 +63,15 @@ class _WarehouseEditPageState extends State<WarehouseEditPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Warehouse'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Edit Warehouse',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -72,19 +81,22 @@ class _WarehouseEditPageState extends State<WarehouseEditPage> {
               controller: _nameController,
               decoration: InputDecoration(labelText: 'Warehouse Name'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: _authorizedController,
               decoration: InputDecoration(labelText: 'Authorized'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: _phoneController,
               decoration: InputDecoration(labelText: 'Phone'),
             ),
+            SizedBox(height: 12),
             TextField(
               controller: _addressController,
               decoration: InputDecoration(labelText: 'Address'),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 12),
             Row(
               children: [
                 Checkbox(

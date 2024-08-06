@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/DebtPaymentPage2.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -76,8 +78,13 @@ class _ClientsPayDoPageState extends State<ClientsPayDoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sales List'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: const Color.fromARGB(255, 255, 255, 255)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Sales List',
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
@@ -153,8 +156,12 @@ class _StockPageState extends State<StockPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Stocks Page'),
+      appBar: CustomAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: 'Stocks Page',
       ),
       body: Column(
         children: [
@@ -166,6 +173,8 @@ class _StockPageState extends State<StockPage> {
                     child: TextField(
                       controller: searchController,
                       decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
                         hintText: 'Search stocks...',
                         prefixIcon: Icon(Icons.search),
                         border: OutlineInputBorder(
@@ -237,8 +246,18 @@ class _StockPageState extends State<StockPage> {
                           itemBuilder: (context, index) {
                             final stock = _stocks[index];
                             return Card(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 7.0, horizontal: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(
+                                  color: Color.fromARGB(255, 174, 174, 174),
+                                  width: 0,
+                                ),
+                              ),
+                              elevation: 2,
                               color: index % 2 == 0
-                                  ? Colors.grey[200]
+                                  ? const Color.fromARGB(255, 255, 255, 255)
                                   : Colors.white,
                               child: Row(
                                 children: [

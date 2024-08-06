@@ -1,92 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/LoginPage.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatelessWidget {
   final List<MenuData> menuItems;
   final Function(int) onMenuItemTap;
 
   HomePage({required this.menuItems, required this.onMenuItemTap});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: Colors.white,
-            expandedHeight: 70,
-            flexibleSpace: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                return FlexibleSpaceBar(
-                  background: Container(
-                    alignment: Alignment.bottomLeft,
-                    child: Image.asset(
-                      'images/e-stock.jpeg',
-                      height: constraints.maxHeight *
-                          0.7, // Set image height based on available height
-                    ),
-                  ),
-                );
-              },
-            ),
-            actions: [
-              Row(
-                children: [
-                  FutureBuilder<String>(
-                    future: getUserNameFromSharedPreferences(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Text(
+        appBar: CustomAppBar(
+          title: "E-Stock&Finance",
+          leading: IconButton(
+            icon: Icon(Icons.menu, color: Colors.black),
+            onPressed: () {
+              // Handle menu button press
+            },
+          ),
+          widgetx: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: FutureBuilder<String>(
+                future: getUserNameFromSharedPreferences(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
                           snapshot.data ?? 'User Name',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                        );
-                      } else {
-                        return SizedBox();
-                      }
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.logout),
-                    onPressed: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      await prefs.remove('token');
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginPage(),
                         ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SliverPadding(
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            sliver: SliverGrid(
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200.0, // Maximum card width
-                mainAxisSpacing: 20.0,
-                crossAxisSpacing: 20.0,
-                childAspectRatio: 1.2, // Aspect ratio of cards
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return _buildMenuCard(
-                      context, menuItems[index].title, menuItems[index].icon);
+                        SizedBox(width: 8),
+                        IconButton(
+                          icon: Icon(
+                            Icons.logout,
+                            color: Colors.black,
+                          ),
+                          onPressed: () async {
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            await prefs.remove('token');
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  } else {
+                    return SizedBox();
+                  }
                 },
-                childCount: menuItems.length,
               ),
-            ),
+            )
+          ],
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: [
+                0.1,
+                0.4,
+                0.7,
+                1
+              ],
+                  colors: [
+                Color.fromARGB(255, 241, 241, 241),
+                Colors.white,
+                Color.fromARGB(255, 241, 241, 241),
+                Colors.white,
+              ])),
+          child: ListView.builder(
+            padding: EdgeInsets.all(16.0),
+            itemCount: menuItems.length,
+            itemBuilder: (context, index) {
+              return _buildMenuCard(
+                context,
+                menuItems[index].title,
+                menuItems[index].icon,
+                menuItems[index].description,
+              );
+            },
           ),
-        ],
-      ),
-    );
+        ));
   }
 
   Future<String> getUserNameFromSharedPreferences() async {
@@ -95,31 +107,52 @@ class HomePage extends StatelessWidget {
         ''; // Return empty string if name is not found
   }
 
-  Widget _buildMenuCard(BuildContext context, String title, IconData icon) {
+  Widget _buildMenuCard(
+      BuildContext context, String title, IconData icon, String description) {
     return GestureDetector(
       onTap: () {
         int index = menuItems.indexWhere((element) => element.title == title);
         onMenuItemTap(index);
       },
       child: Card(
-        elevation: 4,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 40,
-              color: Theme.of(context).primaryColor,
-            ),
-            SizedBox(height: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+        color: Colors.white,
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        elevation: 2,
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: Color(0xFF004AAD),
+                child: Icon(icon, color: Colors.white),
               ),
-            ),
-          ],
+              SizedBox(width: 16.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 4.0),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -129,6 +162,7 @@ class HomePage extends StatelessWidget {
 class MenuData {
   final String title;
   final IconData icon;
+  final String description;
 
-  MenuData(this.title, this.icon);
+  MenuData(this.title, this.icon, this.description);
 }

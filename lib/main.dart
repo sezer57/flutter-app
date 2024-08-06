@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/theme.dart';
 import 'package:flutter_application_1/pages/ClientsPage.dart';
 import 'package:flutter_application_1/pages/HomePage.dart';
 import 'package:flutter_application_1/pages/BottomNavBarLayout.dart';
@@ -24,9 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'E-STOCK & FINANCE',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: AppTheme.lightTheme,
       home: FutureBuilder<bool>(
         future: checkLoginStatus(),
         builder: (context, snapshot) {
@@ -41,15 +40,22 @@ class MyApp extends StatelessWidget {
                     pages: <Widget>[
                       HomePage(
                         menuItems: [
-                          MenuData('Products', Icons.inventory),
-                          MenuData('Warehouses', Icons.store),
-                          MenuData('Clients', Icons.people),
-                          MenuData('Stocks', Icons.cases_outlined),
-                          MenuData('Invoice', Icons.description),
-                          MenuData('Payment', Icons.payment),
-                          MenuData('Sales', Icons.shopping_cart_checkout),
-                          MenuData('Purchases', Icons.add_shopping_cart),
-                          MenuData('Info', Icons.info),
+                          MenuData(
+                              'Products', Icons.inventory, 'Add,Delete,Actice'),
+                          MenuData('Warehouses', Icons.store,
+                              'Add,Transfer,Waiting'),
+                          MenuData('Clients', Icons.people, 'Add,Delete,List'),
+                          MenuData('Stocks', Icons.cases_outlined,
+                              'Add,Delete,List,Fix'),
+                          MenuData(
+                              'Invoice', Icons.description, 'Description here'),
+                          MenuData(
+                              'Payment', Icons.payment, 'Description here'),
+                          MenuData('Sales', Icons.shopping_cart_checkout,
+                              'Description here'),
+                          MenuData('Purchases', Icons.add_shopping_cart,
+                              'Description here'),
+                          MenuData('Info', Icons.info, 'Description here'),
                         ],
                         onMenuItemTap: (index) {
                           // Handle navigation based on the index
