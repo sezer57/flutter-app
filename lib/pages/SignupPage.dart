@@ -138,6 +138,7 @@ class _SignupPageState extends State<SignupPage> {
                   TextField(
                     controller: emailController,
                     decoration: InputDecoration(
+                      filled: false,
                       labelText: 'Email',
                       labelStyle: GoogleFonts.dmSans(
                           fontWeight: FontWeight.normal,
@@ -160,6 +161,7 @@ class _SignupPageState extends State<SignupPage> {
                   TextField(
                     controller: passwordController,
                     decoration: InputDecoration(
+                      filled: false,
                       labelText: 'Password',
                       labelStyle: GoogleFonts.dmSans(
                           fontWeight: FontWeight.normal,

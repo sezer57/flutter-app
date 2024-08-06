@@ -59,8 +59,7 @@ class _ClientEditPageState extends State<ClientEditPage> {
     return Scaffold(
       appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 255, 255, 255)),
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: 'Edit Client',

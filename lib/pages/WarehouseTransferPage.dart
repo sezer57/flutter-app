@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/WareHousePage.dart';
 import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
@@ -136,16 +137,12 @@ class _WarehouseTransferPageState extends State<WarehouseTransferPage> {
     return MaterialApp(
       theme: AppTheme.lightTheme,
       home: Scaffold(
-        appBar: AppBar(
+        appBar: CustomAppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back,
-                color: const Color.fromARGB(255, 255, 255, 255)),
+            icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          title: Text(
-            'Warehouse Transfer',
-            style: TextStyle(color: Colors.white),
-          ),
+          title: 'Warehouse Transfer',
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),

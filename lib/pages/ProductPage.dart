@@ -221,8 +221,6 @@ class _ProductPageState extends State<ProductPage> {
                                 var warehouseName = stock['warehouse']['name'];
                                 var salesPrice = stock['salesPrice'];
                                 return Card(
-                                  margin: EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 10),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     side: BorderSide(
@@ -230,6 +228,8 @@ class _ProductPageState extends State<ProductPage> {
                                       width: 1,
                                     ),
                                   ),
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 10),
                                   color: Colors.white,
                                   child: Row(
                                     children: [

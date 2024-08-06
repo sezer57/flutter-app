@@ -13,7 +13,8 @@ class InvoicePage extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon:
+              Icon(Icons.arrow_back, color: const Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: 'Invoice',

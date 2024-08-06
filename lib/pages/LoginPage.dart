@@ -126,6 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                   TextField(
                     controller: usernameController,
                     decoration: InputDecoration(
+                      filled: false,
                       labelText: 'Username',
                       labelStyle: GoogleFonts.dmSans(
                           fontWeight: FontWeight.normal,
@@ -148,6 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                   TextField(
                     controller: passwordController,
                     decoration: InputDecoration(
+                      filled: false,
                       labelText: 'Password',
                       labelStyle: GoogleFonts.dmSans(
                           fontWeight: FontWeight.normal,

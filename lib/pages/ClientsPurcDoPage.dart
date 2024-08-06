@@ -77,8 +77,7 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
     return Scaffold(
       appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 255, 255, 255)),
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: 'Purchases List',
@@ -106,6 +105,13 @@ class _ClientsPurcDoPageState extends State<ClientsPurcDoPage> {
                           itemBuilder: (BuildContext context, int index) {
                             final purchase = purchases[index];
                             return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(
+                                  color: Color.fromARGB(255, 174, 174, 174),
+                                  width: 1,
+                                ),
+                              ),
                               child: ListTile(
                                 title: Text(
                                   'Stock Name: ${purchase['stockName']}',

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/SalesClientSelectionPage.dart';
 import 'package:flutter_application_1/components/theme.dart';
 import 'package:http/http.dart' as http;
@@ -219,16 +220,12 @@ class _SalesTestPageState extends State<SalesTestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 255, 255, 255)),
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          'Sales',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: 'Sales',
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -278,41 +275,44 @@ class _SalesTestPageState extends State<SalesTestPage> {
                   labelText: 'Which Warehouse',
                 ),
               ),
-              if (productController.text.isEmpty) SizedBox(height: 16),
-              TextField(
-                controller: productController,
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: 'Choose Product',
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.arrow_forward),
-                    onPressed: () {
-                      _navigateTopProductSelectionPage().then((result) async {
-                        setState(() {
-                          product0Controller.text = productController.text;
-                          if (productList.isEmpty) {
-                            setState(() {
-                              productList.add({});
-                            });
-                          }
-                        });
-                      });
-                    },
-                  ),
-                ),
-                onTap: () {
-                  _navigateTopProductSelectionPage().then((result) async {
-                    setState(() {
-                      product0Controller.text = productController.text;
-                      if (productList.isEmpty) {
-                        setState(() {
-                          productList.add({});
-                        });
-                      }
-                    });
-                  });
-                },
+              SizedBox(
+                height: 12,
               ),
+              if (productController.text.isEmpty)
+                TextField(
+                  controller: productController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Choose Product',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      onPressed: () {
+                        _navigateTopProductSelectionPage().then((result) async {
+                          setState(() {
+                            product0Controller.text = productController.text;
+                            if (productList.isEmpty) {
+                              setState(() {
+                                productList.add({});
+                              });
+                            }
+                          });
+                        });
+                      },
+                    ),
+                  ),
+                  onTap: () {
+                    _navigateTopProductSelectionPage().then((result) async {
+                      setState(() {
+                        product0Controller.text = productController.text;
+                        if (productList.isEmpty) {
+                          setState(() {
+                            productList.add({});
+                          });
+                        }
+                      });
+                    });
+                  },
+                ),
               SizedBox(height: 12),
               ListView.builder(
                 shrinkWrap: true,

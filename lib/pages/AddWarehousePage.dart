@@ -85,8 +85,7 @@ class _AddWareHousePageState extends State<AddWareHousePage> {
     return Scaffold(
       appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 255, 255, 255)),
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: 'Warehouse',
@@ -99,27 +98,39 @@ class _AddWareHousePageState extends State<AddWareHousePage> {
             SizedBox(height: 12),
             TextField(
               controller: nameController,
-              decoration: InputDecoration(labelText: 'Warehouse Name'),
+              decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  labelText: 'Warehouse Name'),
             ),
             SizedBox(height: 12),
             TextField(
               controller: authorizedController,
-              decoration: InputDecoration(labelText: 'Authorized'),
+              decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  labelText: 'Authorized'),
             ),
             SizedBox(height: 12),
             TextField(
               controller: phoneController,
-              decoration: InputDecoration(labelText: 'Phone'),
+              decoration: InputDecoration(
+                  fillColor: Colors.white, filled: true, labelText: 'Phone'),
             ),
             SizedBox(height: 12),
             TextField(
               controller: addressController,
-              decoration: InputDecoration(labelText: 'Address'),
+              decoration: InputDecoration(
+                  fillColor: Colors.white, filled: true, labelText: 'Address'),
             ),
             SizedBox(height: 12),
             TextField(
               controller: userAuthoritiesController,
-              decoration: InputDecoration(labelText: 'User Authorities'),
+              decoration: InputDecoration(
+                fillColor: Colors.white,
+                filled: true,
+                labelText: 'User Authorities',
+              ),
             ),
             SizedBox(height: 12),
             Row(

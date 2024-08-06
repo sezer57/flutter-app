@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/theme.dart';
 import 'package:flutter_application_1/pages/AddProductPage.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/StockPage.dart';
 
 class Stocks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Color(0xFF1e84b5),
-        title: Text(
-          'Stocks',
-          style: TextStyle(color: Colors.white),
-        ),
+      appBar: CustomAppBar(
+        title: 'Stocks',
       ),
       body: Center(
         child: Column(

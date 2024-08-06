@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async'; // Eklemeyi unutmayın
@@ -63,16 +64,12 @@ class _WaitingTransferState extends State<WaitingTransfer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 255, 255, 255)),
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          'Waiting Transfers',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: 'Waiting Transfers',
       ),
       body: ListView.builder(
         itemCount: _waitingTransfers.length,
@@ -80,6 +77,13 @@ class _WaitingTransferState extends State<WaitingTransfer> {
           var transfer = _waitingTransfers[index];
 
           return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(
+                color: Color.fromARGB(255, 174, 174, 174),
+                width: 1,
+              ),
+            ),
             child: ListTile(
               title: Text('Transfer ID: ${transfer['id']}'),
               subtitle: Column(

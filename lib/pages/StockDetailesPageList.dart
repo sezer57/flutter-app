@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:flutter_application_1/pages/UpdateStockPage.dart';
 
 class StockDetailesPageList extends StatelessWidget {
@@ -10,6 +11,13 @@ class StockDetailesPageList extends StatelessWidget {
   Widget _buildDetailItem(String label, dynamic value) {
     return Expanded(
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Color.fromARGB(255, 174, 174, 174),
+            width: 1,
+          ),
+        ),
         margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -41,16 +49,12 @@ class StockDetailesPageList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 255, 255, 255)),
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          'Stock Details',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: 'Stock Details',
       ),
       body: SingleChildScrollView(
         child: Padding(

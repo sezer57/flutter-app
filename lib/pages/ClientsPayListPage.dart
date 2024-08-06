@@ -77,8 +77,7 @@ class _ClientsPayListPageState extends State<ClientsPayListPage> {
     return Scaffold(
       appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 255, 255, 255)),
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: 'Select Client',
@@ -116,6 +115,13 @@ class _ClientsPayListPageState extends State<ClientsPayListPage> {
                         itemBuilder: (BuildContext context, int index) {
                           final client = _clients[index];
                           return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: BorderSide(
+                                color: Color.fromARGB(255, 174, 174, 174),
+                                width: 1,
+                              ),
+                            ),
                             child: ListTile(
                               title: Text(client['name'] +
                                   ' ' +

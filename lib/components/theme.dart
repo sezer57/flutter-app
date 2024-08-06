@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static final lightTheme = ThemeData(
@@ -7,17 +8,21 @@ class AppTheme {
     scaffoldBackgroundColor: Color.fromARGB(255, 241, 241, 241),
     inputDecorationTheme: InputDecorationTheme(
       // contentPadding: const EdgeInsets.all(100),
+      fillColor: Colors.white,
+      filled: true,
+      labelStyle: GoogleFonts.dmSans(
+          fontWeight: FontWeight.w500, color: Color.fromARGB(255, 59, 58, 58)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(color: Color(0xFF004AAD)),
+        borderSide: BorderSide(color: Color.fromARGB(255, 75, 75, 75)),
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(color: Color(0xFF004AAD)),
+        borderSide: BorderSide(color: Color.fromARGB(255, 75, 75, 75)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(color: Color(0xFF004AAD)),
+        borderSide: BorderSide(color: Color.fromARGB(255, 75, 75, 75)),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(

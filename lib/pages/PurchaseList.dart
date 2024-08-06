@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
 import 'package:flutter_application_1/api/pdf_invoice_api.dart';
@@ -134,16 +135,12 @@ class _PurchaseListState extends State<PurchaseList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 255, 255, 255)),
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          'Purchase List',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: 'Purchase List',
       ),
       body: Column(
         children: [
@@ -179,6 +176,13 @@ class _PurchaseListState extends State<PurchaseList> {
                           itemBuilder: (BuildContext context, int index) {
                             final purchase = purchases[index];
                             return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(
+                                  color: Color.fromARGB(255, 174, 174, 174),
+                                  width: 1,
+                                ),
+                              ),
                               elevation: 3,
                               margin: EdgeInsets.symmetric(
                                   vertical: 8, horizontal: 16),

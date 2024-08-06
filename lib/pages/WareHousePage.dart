@@ -178,7 +178,7 @@ class _WareHousePageState extends State<WareHousePage> {
                               borderRadius: BorderRadius.circular(10),
                               side: BorderSide(
                                 color: Color.fromARGB(255, 174, 174, 174),
-                                width: 0,
+                                width: 1,
                               ),
                             ),
                             color: Colors.white,

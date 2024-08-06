@@ -246,15 +246,15 @@ class _StockPageState extends State<StockPage> {
                           itemBuilder: (context, index) {
                             final stock = _stocks[index];
                             return Card(
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 7.0, horizontal: 10),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 side: BorderSide(
                                   color: Color.fromARGB(255, 174, 174, 174),
-                                  width: 0,
+                                  width: 1,
                                 ),
                               ),
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 7.0, horizontal: 10),
                               elevation: 2,
                               color: index % 2 == 0
                                   ? const Color.fromARGB(255, 255, 255, 255)

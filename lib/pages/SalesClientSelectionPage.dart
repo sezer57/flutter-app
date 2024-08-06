@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/theme.dart';
+import 'package:flutter_application_1/pages/Appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/pages/DebtPaymentPage2.dart';
 import 'package:flutter_application_1/api/checkLoginStatus.dart';
@@ -76,13 +77,12 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 255, 255, 255)),
+          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('Select Client'),
+        title: 'Select Client',
       ),
       body: Column(
         children: [
@@ -116,6 +116,13 @@ class _SalesClientSelectionPageState extends State<SalesClientSelectionPage> {
                         itemBuilder: (BuildContext context, int index) {
                           final client = _clients[index];
                           return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: BorderSide(
+                                color: Color.fromARGB(255, 174, 174, 174),
+                                width: 1,
+                              ),
+                            ),
                             child: ListTile(
                               title: Text(client['name'] +
                                   ' ' +

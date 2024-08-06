@@ -165,8 +165,7 @@ class _PdfPageState extends State<PdfPage> {
       home: Scaffold(
           appBar: CustomAppBar(
             leading: IconButton(
-              icon: Icon(Icons.arrow_back,
-                  color: const Color.fromARGB(255, 255, 255, 255)),
+              icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
               onPressed: () => Navigator.of(context).pop(),
             ),
             title: 'Client List',
@@ -220,6 +219,13 @@ class _PdfPageState extends State<PdfPage> {
                             itemBuilder: (BuildContext context, int index) {
                               final purchase = _clients[index];
                               return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side: BorderSide(
+                                    color: Color.fromARGB(255, 174, 174, 174),
+                                    width: 1,
+                                  ),
+                                ),
                                 elevation: 3,
                                 margin: EdgeInsets.symmetric(
                                     vertical: 8, horizontal: 16),
